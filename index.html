@@ -13,7 +13,7 @@
 
 <title>DompetKu — Pencatatan Keuangan</title>
 
-<!-- Web App Manifest untuk memanggil nama dan icon PWA di Android -->
+<!-- Web App Manifest (DIPERBARUI: Start URL menggunakan "/" agar lebih kompatibel sebagai standalone di Android) -->
 <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"DompetKu","short_name":"DompetKu","start_url":"/","display":"standalone","background_color":"#0d0f14","theme_color":"#0d0f14","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 
 <!-- Ikon SVG untuk Android & Web Tab -->
@@ -21,12 +21,10 @@
 
 <!-- 
 =========================================================
-PENTING UNTUK IPHONE (iOS): 
-iOS tidak bisa membaca Ikon SVG. Jika ikon masih hitam/huruf D,
-Anda wajib men-deploy file gambar "logo.png" (resolusi 512x512px ungu) 
-ke server Anda, lalu aktifkan kode di bawah ini:
-
-<link rel="apple-touch-icon" href="/logo.png">
+PENTING UNTUK IPHONE & ANDROID STANDALONE: 
+Jika Android Anda *masih* membaca sebagai browser saat diinstal, 
+Anda disarankan membuat file `manifest.json` asli di server Anda dan 
+melakukan link ulang seperti ini: <link rel="manifest" href="manifest.json">
 =========================================================
 -->
 
@@ -216,7 +214,7 @@ ke server Anda, lalu aktifkan kode di bawah ini:
 .tab-group { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; gap: 4px; margin-bottom: 24px; }
 .tab { flex: 1; text-align: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text3); transition: all 0.2s; }
 .tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.tab.income.active { color: var(--green); } .tab.expense.active { color: var(--red); }
+.tab.income.active { color: var(--green); } .tab.expense.active { color: var(--red); } .tab.transfer.active { color: var(--blue); }
 
 .form-group { margin-bottom: 20px; width: 100%; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -360,13 +358,13 @@ ke server Anda, lalu aktifkan kode di bawah ini:
     <!-- TOPBAR -->
     <div class="topbar">
       <div style="display:flex; align-items:center; gap:8px;">
-        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="openGuideModal()" title="Petunjuk Pemakaian">
-          <i class="ph-bold ph-question" style="font-size: 22px;"></i>
-        </button>
         <div class="page-title" id="pageTitle">Dashboard</div>
       </div>
       
       <div class="topbar-right">
+        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="openGuideModal()" title="Petunjuk Pemakaian">
+          <i class="ph-bold ph-question" style="font-size: 22px;"></i>
+        </button>
         <div class="month-nav">
           <div class="month-nav-btn" onclick="changeMonth(-1)"><i class="ph-bold ph-caret-left"></i></div>
           <div class="month-label" id="monthLabel"></div>
@@ -572,7 +570,7 @@ ke server Anda, lalu aktifkan kode di bawah ini:
       <ol class="guide-list">
         <li>Buka browser <b>Chrome</b>.</li>
         <li>Ketuk ikon <b>Tiga Titik</b> di pojok kanan atas.</li>
-        <li>Pilih <b>"Tambahkan ke Layar Utama"</b> atau <b>"Install App"</b>.</li>
+        <li>Pilih <b>"Tambahkan ke Layar Utama"</b> atau <b>"Install App"</b>. Jika Android masih membaca sebagai browser biasa, pastikan Anda memuat aplikasi ini dari server yang memiliki HTTPS.</li>
       </ol>
     </div>
 
@@ -609,10 +607,30 @@ ke server Anda, lalu aktifkan kode di bawah ini:
   <div class="modal">
     <div class="modal-title"><span id="modalTitleText">Catat Transaksi</span><button class="close-modal" onclick="closeModal()"><i class="ph-bold ph-x"></i></button></div>
     <input type="hidden" id="inp-id">
-    <div class="tab-group"><div class="tab expense active" id="tab-expense" onclick="setTxType('expense')">Pengeluaran</div><div class="tab income" id="tab-income" onclick="setTxType('income')">Pemasukan</div></div>
-    <div class="form-group"><label class="form-label">Sumber Dana / Tujuan Dompet</label><select class="form-input" id="inp-wallet" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
-    <div class="form-group"><label class="form-label">Jumlah Uang</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="number" class="form-input" id="inp-amount" placeholder="0" min="0"></div></div>
-    <div class="form-group"><label class="form-label">Kategori</label><div class="cat-picker" id="catPicker"></div></div>
+    
+    <div class="tab-group" id="modal-tabs">
+      <div class="tab expense active" id="tab-expense" onclick="setTxType('expense')">Pengeluaran</div>
+      <div class="tab income" id="tab-income" onclick="setTxType('income')">Pemasukan</div>
+      <div class="tab transfer" id="tab-transfer" onclick="setTxType('transfer')">Pindah Saldo</div>
+    </div>
+
+    <!-- WRAPPER UNTUK PENGELUARAN & PEMASUKAN STANDAR -->
+    <div id="tx-standard-fields">
+      <div class="form-group"><label class="form-label" id="lbl-wallet">Sumber Dana</label><select class="form-input" id="inp-wallet" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
+      <div class="form-group"><label class="form-label">Kategori</label><div class="cat-picker" id="catPicker"></div></div>
+    </div>
+
+    <!-- WRAPPER UNTUK TRANSFER / PINDAH SALDO -->
+    <div id="tx-transfer-fields" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Dari Dompet Asal</label><select class="form-input" id="inp-wallet-from" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
+        <div class="form-group"><label class="form-label">Ke Dompet Tujuan</label><select class="form-input" id="inp-wallet-to" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Biaya Admin (Opsional)</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="inp-admin" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
+    </div>
+
+    <!-- FIELD UMUM / BERSAMA -->
+    <div class="form-group"><label class="form-label" id="lbl-amount">Jumlah Uang</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="inp-amount" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Keterangan Singkat</label><input type="text" class="form-input" id="inp-desc" placeholder="Contoh: Makan siang"></div>
       <div class="form-group"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="inp-date"></div>
@@ -627,7 +645,7 @@ ke server Anda, lalu aktifkan kode di bawah ini:
     <div class="modal-title"><span id="walletModalTitle">Kelola Dompet</span><button class="close-modal" onclick="closeWalletModal()"><i class="ph-bold ph-x"></i></button></div>
     <input type="hidden" id="wal-id">
     <div class="form-group"><label class="form-label">Nama Rekening / Dompet</label><input type="text" class="form-input" id="wal-name" placeholder="Misal: BCA, Tunai"></div>
-    <div class="form-group"><label class="form-label">Saldo Awal</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="number" class="form-input" id="wal-balance" placeholder="0" min="0"></div><small style="color:var(--text3); font-size:12px; margin-top:4px; display:block;">Saldo ini akan ditambahkan dengan pemasukan dan dikurangi pengeluaran Anda.</small></div>
+    <div class="form-group"><label class="form-label">Saldo Awal</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="wal-balance" placeholder="0" oninput="formatInputRibuan(event)"></div><small style="color:var(--text3); font-size:12px; margin-top:4px; display:block;">Saldo ini akan ditambahkan dengan pemasukan dan dikurangi pengeluaran Anda.</small></div>
     <div class="form-group"><label class="form-label">Pilih Ikon</label><div class="cat-picker" id="walIconPicker" style="grid-template-columns: repeat(5, 1fr);"></div></div>
     <div class="modal-actions" id="wal-actions"></div>
   </div>
@@ -638,7 +656,7 @@ ke server Anda, lalu aktifkan kode di bawah ini:
   <div class="modal">
     <div class="modal-title"><span>Atur Budget Pengeluaran</span><button class="close-modal" onclick="closeBudgetModal()"><i class="ph-bold ph-x"></i></button></div>
     <div class="form-group"><label class="form-label">Pilih Kategori</label><select class="form-input" id="bud-cat" style="height: 50px; font-size:15px; font-weight:500;"></select></div>
-    <div class="form-group"><label class="form-label">Batas Maksimal Anggaran</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="number" class="form-input" id="bud-amount" placeholder="0" min="0"></div></div>
+    <div class="form-group"><label class="form-label">Batas Maksimal Anggaran</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="bud-amount" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeBudgetModal()">Batal</button><button class="btn btn-primary" onclick="saveBudget()"><i class="ph-bold ph-check"></i> Terapkan Budget</button></div>
   </div>
 </div>
@@ -735,6 +753,22 @@ function updateThemeUI(theme) {
   }
 }
 
+// ─── FORMAT INPUT ANGKA RIBUAN ──────────────────────────────────
+function formatInputRibuan(e) {
+  let val = e.target.value.replace(/[^0-9]/g, '');
+  if (val) {
+    e.target.value = parseInt(val, 10).toLocaleString('id-ID');
+  } else {
+    e.target.value = '';
+  }
+}
+
+function unformatRibuan(str) {
+  if (!str) return 0;
+  return parseFloat(str.toString().replace(/\./g, ''));
+}
+
+
 // ─── PENCEGAHAN XSS ─────────────────────────────────────────────
 function escapeHTML(str) {
   if (!str) return '';
@@ -795,6 +829,10 @@ let isAddingCatFromTx = false;
 let trendChart = null, donutChart = null, reportBarChart = null;
 
 // ─── UTILITIES & CYCLE LOGIC ────────────────────────────────────
+function save() {
+  localStorage.setItem('dompet_tx', JSON.stringify(transactions));
+}
+
 function fmt(n) { if (n === 0) return 'Rp 0'; return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); }
 function fmtDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
@@ -1015,26 +1053,37 @@ function openModal(editId = null) {
   const title = document.getElementById('modalTitleText');
   const walletSelect = document.getElementById('inp-wallet');
   
-  walletSelect.innerHTML = wallets.map(w => `<option value="${w.id}">${w.name} (Sisa: ${fmt(getWalletCurrentBalance(w.id))})</option>`).join('');
+  const walletOpts = wallets.map(w => `<option value="${w.id}">${w.name} (Sisa: ${fmt(getWalletCurrentBalance(w.id))})</option>`).join('');
+  walletSelect.innerHTML = walletOpts;
+  document.getElementById('inp-wallet-from').innerHTML = walletOpts;
+  document.getElementById('inp-wallet-to').innerHTML = walletOpts;
 
   if (editId) {
     const tx = transactions.find(t => t.id === editId);
     if(!tx) return;
     title.textContent = "Edit Transaksi";
     document.getElementById('inp-id').value = tx.id;
-    document.getElementById('inp-amount').value = tx.amount;
+    document.getElementById('inp-amount').value = tx.amount.toLocaleString('id-ID'); // Format Titik
     document.getElementById('inp-desc').value = tx.desc;
     document.getElementById('inp-date').value = tx.date;
     walletSelect.value = tx.walletId || wallets[0].id;
     txType = tx.type;
     selectedCat = tx.category;
+    
+    // Sembunyikan tab transfer saat sedang mengedit riwayat spesifik
+    document.getElementById('tab-transfer').style.display = 'none';
     setTxType(txType, false);
   } else {
     title.textContent = "Catat Transaksi";
     document.getElementById('inp-id').value = '';
     document.getElementById('inp-amount').value = '';
     document.getElementById('inp-desc').value = '';
+    document.getElementById('inp-admin').value = '';
     document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+    
+    // Kembalikan tab transfer
+    document.getElementById('tab-transfer').style.display = 'block';
+    
     txType = 'expense';
     selectedCat = '';
     setTxType('expense', false);
@@ -1043,48 +1092,104 @@ function openModal(editId = null) {
   modal.classList.add('open');
 }
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
 function setTxType(type, resetCat = true) {
   txType = type;
   document.getElementById('tab-expense').classList.toggle('active', type === 'expense');
   document.getElementById('tab-income').classList.toggle('active', type === 'income');
-  if(resetCat) selectedCat = '';
+  document.getElementById('tab-transfer').classList.toggle('active', type === 'transfer');
   
-  const cats = customCats[type];
-  const el = document.getElementById('catPicker');
-  el.innerHTML = cats.map(c => `
-    <button class="cat-pick${selectedCat === c.id ? ' selected' : ''}" onclick="selectCat('${c.id}')">
-      <i class="${c.icon}"></i><span class="cat-pick-label">${escapeHTML(c.label)}</span>
-    </button>
-  `).join('') + `
-    <button class="cat-pick" style="border: 1px dashed var(--text3); background: transparent;" onclick="openCatEditModalFromTx()">
-      <i class="ph-bold ph-plus" style="color: var(--text3);"></i><span class="cat-pick-label" style="color: var(--text3);">Tambah</span>
-    </button>
-  `;
+  if (type === 'transfer') {
+    document.getElementById('tx-standard-fields').style.display = 'none';
+    document.getElementById('tx-transfer-fields').style.display = 'block';
+    document.getElementById('lbl-amount').textContent = 'Nominal Transfer';
+  } else {
+    document.getElementById('tx-standard-fields').style.display = 'block';
+    document.getElementById('tx-transfer-fields').style.display = 'none';
+    document.getElementById('lbl-amount').textContent = 'Jumlah Uang';
+    document.getElementById('lbl-wallet').textContent = type === 'income' ? 'Tujuan Simpanan' : 'Sumber Dana';
+    
+    if(resetCat) selectedCat = '';
+    const cats = customCats[type];
+    const el = document.getElementById('catPicker');
+    el.innerHTML = cats.map(c => `
+      <button class="cat-pick${selectedCat === c.id ? ' selected' : ''}" onclick="selectCat('${c.id}')">
+        <i class="${c.icon}"></i><span class="cat-pick-label">${escapeHTML(c.label)}</span>
+      </button>
+    `).join('') + `
+      <button class="cat-pick" style="border: 1px dashed var(--text3); background: transparent;" onclick="openCatEditModalFromTx()">
+        <i class="ph-bold ph-plus" style="color: var(--text3);"></i><span class="cat-pick-label" style="color: var(--text3);">Tambah</span>
+      </button>
+    `;
+  }
 }
+
 function selectCat(id) { selectedCat = id; setTxType(txType, false); }
+
 function saveTransaction() {
   const editId = document.getElementById('inp-id').value;
-  const amount = parseFloat(document.getElementById('inp-amount').value);
+  const amount = unformatRibuan(document.getElementById('inp-amount').value);
   const desc = document.getElementById('inp-desc').value.trim();
   const date = document.getElementById('inp-date').value;
-  const walletId = document.getElementById('inp-wallet').value;
   
   if (!amount || amount <= 0) return alert('Peringatan: Masukkan jumlah uang yang valid.');
-  if (!selectedCat) return alert('Peringatan: Kategori belum dipilih.');
   if (!date) return alert('Peringatan: Tanggal tidak boleh kosong.');
   
-  const txData = {
-    id: editId ? parseInt(editId) : Date.now(),
-    type: txType, amount, category: selectedCat, walletId: walletId,
-    desc: desc || (getCat(txType, selectedCat).label), date,
-  };
+  // LOGIKA TRANSFER (Dicatat sebagai 2-3 transaksi terpisah agar akurasi chart 100% aman)
+  if (txType === 'transfer') {
+    const fromWallet = document.getElementById('inp-wallet-from').value;
+    const toWallet = document.getElementById('inp-wallet-to').value;
+    const adminFee = unformatRibuan(document.getElementById('inp-admin').value);
+    
+    if (fromWallet === toWallet) return alert('Peringatan: Dompet asal dan tujuan tidak boleh sama.');
+    
+    const wFromName = getWallet(fromWallet).name;
+    const wToName = getWallet(toWallet).name;
+    const timestamp = Date.now();
+    
+    // 1. Catat Pengeluaran dari Dompet Asal
+    transactions.unshift({
+      id: timestamp, type: 'expense', amount: amount, category: 'lainnya_exp', walletId: fromWallet,
+      desc: desc || `Transfer ke ${wToName}`, date: date
+    });
+    
+    // 2. Catat Pemasukan ke Dompet Tujuan
+    transactions.unshift({
+      id: timestamp + 1, type: 'income', amount: amount, category: 'lainnya_inc', walletId: toWallet,
+      desc: desc ? `(Terima) ${desc}` : `Transfer dari ${wFromName}`, date: date
+    });
+    
+    // 3. Catat Biaya Admin (Jika Ada)
+    if (adminFee > 0) {
+      transactions.unshift({
+        id: timestamp + 2, type: 'expense', amount: adminFee, category: 'tagihan', walletId: fromWallet,
+        desc: 'Biaya Admin Transfer', date: date
+      });
+    }
+  } 
+  // LOGIKA STANDAR (Pengeluaran/Pemasukan biasa)
+  else {
+    if (!selectedCat) return alert('Peringatan: Kategori belum dipilih.');
+    const walletId = document.getElementById('inp-wallet').value;
+    
+    const txData = {
+      id: editId ? parseInt(editId) : Date.now(),
+      type: txType, amount, category: selectedCat, walletId: walletId,
+      desc: desc || (getCat(txType, selectedCat).label), date,
+    };
 
-  if (editId) { const idx = transactions.findIndex(t => t.id === txData.id); if(idx !== -1) transactions[idx] = txData; } 
-  else { transactions.unshift(txData); }
-  
+    if (editId) { 
+      const idx = transactions.findIndex(t => t.id === txData.id); 
+      if(idx !== -1) transactions[idx] = txData; 
+    } else { 
+      transactions.unshift(txData); 
+    }
+  }
+
   transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
   save(); closeModal(); renderPage();
 }
+
 function deleteTransaction(id) {
   if (!confirm('Hapus transaksi ini secara permanen?')) return;
   transactions = transactions.filter(t => t.id !== id);
@@ -1103,7 +1208,7 @@ function openWalletModal(editId = null) {
     title.textContent = "Edit Dompet";
     document.getElementById('wal-id').value = w.id;
     document.getElementById('wal-name').value = w.name;
-    document.getElementById('wal-balance').value = w.initialBalance;
+    document.getElementById('wal-balance').value = w.initialBalance.toLocaleString('id-ID'); // Format Titik
     selectedWalletIcon = WALLET_ICONS.find(i => i.id === w.icon) || WALLET_ICONS[0];
     
     actContainer.innerHTML = `
@@ -1137,7 +1242,7 @@ function selectWalletIcon(id) { selectedWalletIcon = WALLET_ICONS.find(i => i.id
 function saveWallet() {
   const editId = document.getElementById('wal-id').value;
   const name = document.getElementById('wal-name').value.trim();
-  const initBal = parseFloat(document.getElementById('wal-balance').value) || 0;
+  const initBal = unformatRibuan(document.getElementById('wal-balance').value) || 0;
   if (!name) return alert('Nama dompet wajib diisi.');
   
   const walData = { id: editId ? editId : 'w' + Date.now(), name: name, initialBalance: initBal, icon: selectedWalletIcon.id, color: selectedWalletIcon.color };
@@ -1164,7 +1269,7 @@ function openBudgetModal() {
 function closeBudgetModal() { document.getElementById('budgetModal').classList.remove('open'); }
 function saveBudget() {
   const cat = document.getElementById('bud-cat').value;
-  const amount = parseFloat(document.getElementById('bud-amount').value);
+  const amount = unformatRibuan(document.getElementById('bud-amount').value);
   if (!amount || amount <= 0) return alert('Peringatan: Masukkan jumlah budget yang valid.');
   budgets[cat] = amount; localStorage.setItem('dompet_bud', JSON.stringify(budgets)); closeBudgetModal(); renderBudget();
 }
