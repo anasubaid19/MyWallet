@@ -7,9 +7,15 @@
 <meta name="theme-color" content="#0d0f14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Dompet - Aplikasi pencatatan keuangan pribadi offline. Pantau pengeluaran, pemasukan, dan budget Anda dengan mudah.">
+<meta name="apple-mobile-web-app-title" content="DompetKu">
+<meta name="application-name" content="DompetKu">
+<meta name="description" content="DompetKu - Aplikasi pencatatan keuangan pribadi offline. Pantau pengeluaran, pemasukan, dan budget Anda dengan mudah.">
 
-<title>Dompet — Pencatatan Keuangan</title>
+<title>DompetKu — Pencatatan Keuangan</title>
+
+<!-- App Icons (Homescreen PWA) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,9 +78,9 @@
   body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; overscroll-behavior-y: none; transition: background-color 0.3s ease, color 0.3s ease; }
 
 /* LAYOUT */
-.app { display: flex; height: 100vh; overflow: hidden; }
-.sidebar { width: 250px; min-width: 250px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; transition: background-color 0.3s ease, border-color 0.3s ease; }
-.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth; }
+.app { display: flex; height: 100vh; overflow: hidden; width: 100vw; max-width: 100%; }
+.sidebar { width: 250px; min-width: 250px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: calc(24px + env(safe-area-inset-top)) 0 24px; transition: background-color 0.3s ease, border-color 0.3s ease; }
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; position: relative; scroll-behavior: smooth; }
 
 /* BOTTOM NAV (MOBILE) */
 .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--border); z-index: 90; padding: 8px 16px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); justify-content: space-between; transition: background-color 0.3s ease, border-color 0.3s ease; }
@@ -102,7 +108,7 @@
 .theme-toggle-btn:hover { color: var(--text); border-color: var(--border2); }
 
 /* TOPBAR */
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; background: var(--bg2); transition: background-color 0.3s ease, border-color 0.3s ease; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(20px + env(safe-area-inset-top)) 32px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; background: var(--bg2); transition: background-color 0.3s ease, border-color 0.3s ease; }
 .page-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
 .topbar-right { display: flex; align-items: center; gap: 16px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; outline: none; white-space: nowrap; }
@@ -120,7 +126,7 @@
 .month-label { font-size: 13px; font-weight: 600; min-width: 140px; text-align: center; color: var(--text); padding: 0 8px; }
 
 /* PAGE CONTENT & GRIDS */
-.page-content { padding: 32px; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; }
+.page-content { padding: 32px; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
 .page { display: none; animation: fadeInPage 0.2s ease; }
 .page.active { display: block; }
 @keyframes fadeInPage { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
@@ -188,7 +194,7 @@
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
 .modal-overlay.open { display: flex; animation: fadeOverlay 0.2s; }
 @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
-.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; animation: slideModal 0.3s cubic-bezier(0.34,1.2,0.64,1); box-shadow: 0 24px 64px rgba(0,0,0,0.3); }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 32px; width: 480px; max-width: 95vw; max-height: 90vh; overflow-y: auto; overflow-x: hidden; animation: slideModal 0.3s cubic-bezier(0.34,1.2,0.64,1); box-shadow: 0 24px 64px rgba(0,0,0,0.3); }
 @keyframes slideModal { from { transform: scale(0.95) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1;} }
 .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
 .close-modal { background: var(--bg3); border: none; color: var(--text); border-radius:50%; width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; cursor: pointer; transition:0.2s; }
@@ -199,9 +205,9 @@
 .tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .tab.income.active { color: var(--green); } .tab.expense.active { color: var(--red); }
 
-.form-group { margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; width: 100%; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
-.form-input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.form-input { width: 100%; max-width: 100%; box-sizing: border-box; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; display: block; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
 .amount-input-wrap { position: relative; }
 .amount-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 18px; color: var(--text2); }
@@ -226,7 +232,7 @@
 .icon-option.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--text); }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.modal-actions { display: flex; gap: 12px; margin-top: 32px; }
+.modal-actions { display: flex; gap: 12px; margin-top: 32px; width: 100%; }
 .modal-actions .btn { flex: 1; padding: 14px; font-size: 15px; }
 
 /* MISC (BUDGET, FILTERS, SETTINGS) */
@@ -252,7 +258,7 @@
 .empty-text { font-size: 15px; font-weight: 500; }
 
 .settings-list { display: flex; flex-direction: column; gap: 12px; }
-.settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; color: var(--text); font-weight: 500; text-decoration: none; }
+.settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: 0.2s; color: var(--text); font-weight: 500; text-decoration: none;}
 .settings-item:hover { border-color: var(--border2); }
 .settings-item .icon { font-size: 20px; background: var(--bg2); padding: 8px; border-radius: 10px; margin-right: 12px; color: var(--text); }
 .settings-item.danger { color: var(--red); background: var(--red-dim); border-color: transparent;}
@@ -271,7 +277,7 @@
   .bottom-nav { display: flex; }
   .app { flex-direction: column; }
   .main { padding-bottom: 100px; } 
-  .topbar { padding: 16px 20px; flex-wrap: wrap; gap: 12px; }
+  .topbar { padding: calc(16px + env(safe-area-inset-top)) 20px 16px; flex-wrap: wrap; gap: 12px; }
   .page-title { font-size: 22px; width: 100%; line-height: 1.2; }
   .topbar-right { width: 100%; justify-content: flex-start; }
   .topbar .btn-primary { display: none; } 
@@ -281,7 +287,7 @@
   .cat-picker { grid-template-columns: repeat(4, 1fr); gap:8px;}
   .color-grid { grid-template-columns: repeat(5, 1fr); }
   .icon-grid { grid-template-columns: repeat(4, 1fr); }
-  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-row { grid-template-columns: 1fr; gap: 16px; } /* Resetting gap for mobile row */
   .month-label { min-width: 120px; font-size: 13px; }
   .tx-controls { flex-direction: column; align-items: stretch; gap: 16px; }
   .search-wrap { width: 100%; }
@@ -292,7 +298,9 @@
   .tx-right { width: 100%; display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
   .tx-amount { font-size: 18px; font-weight: 700; text-align: left; margin: 0; }
   .tx-actions { display: flex; gap: 8px; margin: 0; } 
-  .modal { padding: 24px; width: 100%; border-radius: 24px 24px 0 0; align-self: flex-end; animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1); }
+  
+  /* Fix untuk Overflow Layar dan Scroll Goyang Horizontal */
+  .modal { padding: 24px; width: 100%; max-width: 100vw; box-sizing: border-box; border-radius: 24px 24px 0 0; align-self: flex-end; animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1); margin: 0; overflow-x: hidden; touch-action: pan-y; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .modal-overlay { align-items: flex-end; padding: 0; }
 }
@@ -310,7 +318,7 @@
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-icon"><i class="ph-bold ph-wallet"></i></div>
-      <div class="logo-text">Dom<span>pet</span></div>
+      <div class="logo-text">Dompet<span>Ku</span></div>
     </div>
     <div class="nav-section">
       <div class="nav-label">Menu Utama</div>
@@ -455,16 +463,13 @@
             <div class="card-header"><div class="card-title">Manajemen Data & File</div></div>
             <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Aplikasi berjalan 100% offline. Download backup sebelum pindah perangkat agar data tidak hilang.</p>
             <div class="settings-list">
-              <div class="settings-item" onclick="exportJSON()">
-                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-floppy-disk"></i></span> <div>Simpan Backup Lokal (JSON)</div></div><i class="ph-bold ph-arrow-right"></i>
+              <div class="settings-item" onclick="openExportModal()">
+                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-export"></i></span> <div>Export Data Laporan<br><small style="color:var(--text3);font-weight:400;">Pilih format (JSON / CSV)</small></div></div><i class="ph-bold ph-arrow-right"></i>
               </div>
               <label class="settings-item" style="margin:0;">
-                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-folder-open"></i></span> <div>Muat Backup Lokal (JSON)</div></div><i class="ph-bold ph-arrow-right"></i>
-                <input type="file" accept=".json" style="display: none;" onchange="importJSON(event)">
+                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-import"></i></span> <div>Import / Restore Data<br><small style="color:var(--text3);font-weight:400;">Pulihkan dari JSON / CSV</small></div></div><i class="ph-bold ph-arrow-right"></i>
+                <input type="file" accept=".json, .csv" style="display: none;" onchange="importData(event)">
               </label>
-              <div class="settings-item" onclick="exportCSV()">
-                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-file-csv"></i></span> <div>Export Laporan (CSV / Excel)</div></div><i class="ph-bold ph-arrow-right"></i>
-              </div>
             </div>
             
             <div class="settings-list" style="margin-top:24px;">
@@ -505,6 +510,21 @@
     <div class="bottom-nav-item" onclick="navigate('budget')"><i class="ph-fill ph-target"></i> Budget</div>
     <div class="bottom-nav-item" onclick="navigate('settings')"><i class="ph-fill ph-gear"></i> Sistem</div>
   </nav>
+</div>
+
+<!-- MODAL: EXPORT OPTIONS -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal" style="align-self: center; border-radius: 24px; max-width: 360px; margin: 0 auto;">
+    <div class="modal-title"><span>Pilih Format Export</span><button class="close-modal" onclick="closeExportModal()"><i class="ph-bold ph-x"></i></button></div>
+    <div class="settings-list">
+      <div class="settings-item" onclick="exportJSON()" style="background: var(--bg2);">
+        <div style="display:flex;align-items:center;"><span class="icon" style="color: var(--accent); background: var(--accent-dim);"><i class="ph-bold ph-file-code"></i></span> <div>File JSON<br><small style="color:var(--text3);font-weight:400;">Backup Penuh (Sangat Disarankan)</small></div></div>
+      </div>
+      <div class="settings-item" onclick="exportCSV()" style="background: var(--bg2);">
+        <div style="display:flex;align-items:center;"><span class="icon" style="color: var(--green); background: var(--green-dim);"><i class="ph-bold ph-file-csv"></i></span> <div>File CSV<br><small style="color:var(--text3);font-weight:400;">Format Tabel (Hanya Transaksi)</small></div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL: ADD/EDIT TRANSACTION -->
@@ -578,7 +598,6 @@ function initTheme() {
   updateThemeUI(savedTheme);
   if(window.innerWidth <= 768) document.getElementById('mobileThemeToggleCard').style.display = 'block';
   
-  // Popuplate Cycle Selectors
   let daySelect = document.getElementById('set-cycle-start');
   for(let i=1; i<=31; i++) daySelect.innerHTML += `<option value="${i}">Tanggal ${i}</option>`;
   daySelect.value = userSettings.cycleStartDay;
@@ -590,7 +609,6 @@ function saveSettings() {
   userSettings.cycleLength = parseInt(document.getElementById('set-cycle-length').value) || 1;
   localStorage.setItem('dompet_settings', JSON.stringify(userSettings));
   
-  // Reset anchor date to current date so it re-calculates correctly
   currentMonth = new Date();
   document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
   renderPage();
@@ -658,7 +676,6 @@ if (!wallets) {
   wallets = [{ id: 'w1', name: 'Dompet Tunai', icon: 'ph-fill ph-wallet', color: '#2ecc87', initialBalance: 0 }];
   localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
 }
-// Backward compatibility 
 let needsSave = false;
 transactions.forEach(t => { if (!t.walletId) { t.walletId = 'w1'; needsSave = true; } });
 if(needsSave) localStorage.setItem('dompet_tx', JSON.stringify(transactions));
@@ -670,7 +687,6 @@ let selectedCat = '';
 let selectedWalletIcon = WALLET_ICONS[0];
 let txFilter = 'all';
 
-// Cat Manager State
 let catManagerType = 'expense';
 let editCatColor = PRESET_COLORS[0];
 let editCatIcon = PRESET_ICONS[0];
@@ -682,21 +698,18 @@ let trendChart = null, donutChart = null, reportBarChart = null;
 function fmt(n) { if (n === 0) return 'Rp 0'; return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); }
 function fmtDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-// Fungsi sakti penentu siklus (Bisa per tanggal 25, dll)
 function getCycleRange(anchorDate) {
   const year = anchorDate.getFullYear();
   const month = anchorDate.getMonth();
   const startDay = userSettings.cycleStartDay;
   const length = userSettings.cycleLength;
 
-  // Jika start day bukan 1, siklus sebenarnya dimulai dari bulan sebelumnya.
-  // Contoh: Gajian tgl 25. Anchor April (Bulan 3). Siklus: 25 Mar - 24 Apr.
   const sdOffset = startDay > 1 ? 1 : 0; 
   const startDate = new Date(year, month - length + 1 - sdOffset, startDay);
   
   let endDate;
   if (startDay === 1) {
-    endDate = new Date(year, month + 1, 0); // Hari terakhir bulan ini
+    endDate = new Date(year, month + 1, 0); 
   } else {
     endDate = new Date(year, month + 1 - sdOffset, startDay - 1);
   }
@@ -710,7 +723,6 @@ function getCycleRange(anchorDate) {
   }
   
   let shortLabel = (length === 1 && startDay === 1) ? mNames[month] : mNames[endDate.getMonth()];
-
   return { start: fmtDateStr(startDate), end: fmtDateStr(endDate), label: label, shortLabel: shortLabel };
 }
 
@@ -752,17 +764,13 @@ function navigate(page) {
 }
 
 function changeMonth(dir) {
-  // Lompat sesuai panjang siklus (misal jika 3 bulan, lompat 3 bulan)
   currentMonth.setMonth(currentMonth.getMonth() + (dir * userSettings.cycleLength));
   document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
   renderPage();
 }
 
 // ─── KATEGORI CUSTOM (MANAGER) ──────────────────────────────────
-function openCatManagerModal() {
-  document.getElementById('catManagerModal').classList.add('open');
-  setCatManagerType('expense');
-}
+function openCatManagerModal() { document.getElementById('catManagerModal').classList.add('open'); setCatManagerType('expense'); }
 function closeCatManagerModal() { document.getElementById('catManagerModal').classList.remove('open'); renderPage(); }
 function setCatManagerType(type) {
   catManagerType = type;
@@ -823,9 +831,9 @@ function openCatEditModal(editId = null) {
 
 function openCatEditModalFromTx() {
   isAddingCatFromTx = true;
-  document.getElementById('modal').classList.remove('open'); // Sembunyikan form transaksi
+  document.getElementById('modal').classList.remove('open');
   
-  catManagerType = txType; // Sesuaikan tipe dengan form transaksi saat ini
+  catManagerType = txType;
   document.getElementById('editcat-type').value = txType;
   
   document.getElementById('catEditTitle').textContent = "Kategori Baru";
@@ -882,8 +890,8 @@ function saveCustomCat() {
   
   if (isAddingCatFromTx) {
     selectedCat = newCatId;
-    setTxType(txType, false); // Perbarui picker di modal transaksi & langsung ter-select
-    closeCatEditModal(); // Akan mengembalikan otomatis ke form transaksi
+    setTxType(txType, false);
+    closeCatEditModal();
   } else {
     closeCatEditModal(); 
     setCatManagerType(type);
@@ -1061,38 +1069,92 @@ function saveBudget() {
   budgets[cat] = amount; localStorage.setItem('dompet_bud', JSON.stringify(budgets)); closeBudgetModal(); renderBudget();
 }
 
-// ─── PERSISTENCE (LOCAL STORAGE & JSON) ─────────────────────────
-function save() { localStorage.setItem('dompet_tx', JSON.stringify(transactions)); }
+// ─── EXPORT & IMPORT DATA ─────────────────────────────────────────
+function openExportModal() { document.getElementById('exportModal').classList.add('open'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('open'); }
 
 function exportJSON() {
   const data = { settings: userSettings, wallets, customCats, transactions, budgets };
   const str = JSON.stringify(data, null, 2); const blob = new Blob([str], { type: 'application/json' });
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `dompet-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url);
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `DompetKu-Backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url);
+  closeExportModal();
 }
 
-function importJSON(event) {
+function exportCSV() {
+  const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
+  transactions.forEach(t => {
+    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
+    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
+  });
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `DompetKu-Laporan-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  closeExportModal();
+}
+
+function importData(event) {
   const file = event.target.files[0]; if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
   const reader = new FileReader();
+  
   reader.onload = function(e) {
     try {
-      const data = JSON.parse(e.target.result);
-      if (Array.isArray(data.transactions) && typeof data.budgets === 'object') {
-        transactions = data.transactions; budgets = data.budgets;
-        if(Array.isArray(data.wallets)) wallets = data.wallets;
-        if(data.customCats) customCats = data.customCats;
-        if(data.settings) userSettings = data.settings;
+      if (ext === 'json') {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data.transactions) && typeof data.budgets === 'object') {
+          transactions = data.transactions; budgets = data.budgets;
+          if(Array.isArray(data.wallets)) wallets = data.wallets;
+          if(data.customCats) customCats = data.customCats;
+          if(data.settings) userSettings = data.settings;
+          
+          save();
+          localStorage.setItem('dompet_bud', JSON.stringify(budgets));
+          localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
+          localStorage.setItem('dompet_cats', JSON.stringify(customCats));
+          localStorage.setItem('dompet_settings', JSON.stringify(userSettings));
+          alert('Backup JSON berhasil dipulihkan!'); 
+          initTheme(); renderPage();
+        } else {
+          alert('Format file JSON tidak kompatibel dengan DompetKu.');
+        }
+      } 
+      else if (ext === 'csv') {
+        const text = e.target.result;
+        const rows = text.split('\n').filter(r => r.trim());
+        if (rows.length <= 1) { alert('File CSV kosong.'); return; }
         
-        save();
-        localStorage.setItem('dompet_bud', JSON.stringify(budgets));
-        localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
-        localStorage.setItem('dompet_cats', JSON.stringify(customCats));
-        localStorage.setItem('dompet_settings', JSON.stringify(userSettings));
-        alert('Data berhasil dipulihkan!'); 
-        initTheme(); // Re-sync inputs
-        renderPage();
-      } else alert('Format file tidak kompatibel.');
-    } catch (err) { alert('Gagal membaca file.'); }
+        let importedCount = 0;
+        rows.slice(1).forEach(row => {
+          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+          if(cols.length >= 6) {
+            const dateStr = cols[1];
+            const typeStr = cols[2] === 'Pemasukan' ? 'income' : 'expense';
+            const amountVal = parseFloat(cols[5]) || 0;
+            const descStr = cols[6] || cols[3];
+            
+            if(amountVal > 0 && dateStr) {
+              transactions.push({
+                id: Date.now() + Math.random(),
+                type: typeStr, amount: amountVal, category: 'lainnya', walletId: wallets[0].id, desc: descStr, date: dateStr
+              });
+              importedCount++;
+            }
+          }
+        });
+        
+        if(importedCount > 0) {
+          transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
+          save();
+          alert(`Berhasil mengimpor ${importedCount} transaksi dari CSV! (Catatan: Kategori diset ke Default).`);
+          renderPage();
+        } else {
+          alert('Tidak ada transaksi valid yang ditemukan di file CSV.');
+        }
+      } 
+      else { alert('Format file tidak didukung. Harap gunakan .json atau .csv'); }
+    } catch (err) { alert('Terjadi kesalahan saat membaca file.'); console.error(err); }
   };
+  
   reader.readAsText(file); event.target.value = '';
 }
 
@@ -1192,8 +1254,7 @@ function drawTrendChart() {
   
   for (let i = 5; i >= 0; i--) {
     let m = new Date(currentMonth.getFullYear(), currentMonth.getMonth());
-    m.setMonth(m.getMonth() - (i * cycleLen)); // Mundur berdasarkan siklus (bukan 1 bulan flat)
-    
+    m.setMonth(m.getMonth() - (i * cycleLen));
     const cycle = getCycleRange(m);
     labels.push(cycle.shortLabel);
     
@@ -1378,24 +1439,13 @@ function renderReport() {
   }).join('');
 }
 
-// ─── EXPORT CSV ───────────────────────────────────────────────────
-function exportCSV() {
-  const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
-  transactions.forEach(t => {
-    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
-    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
-  });
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `Dompet-Export-${new Date().toISOString().split('T')[0]}.csv`; a.click();
-}
-
 // ─── INITIALIZATION & LISTENERS ──────────────────────────────────
 document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 document.getElementById('budgetModal').addEventListener('click', function(e) { if (e.target === this) closeBudgetModal(); });
 document.getElementById('walletModal').addEventListener('click', function(e) { if (e.target === this) closeWalletModal(); });
 document.getElementById('catManagerModal').addEventListener('click', function(e) { if (e.target === this) closeCatManagerModal(); });
 document.getElementById('catEditModal').addEventListener('click', function(e) { if (e.target === this) closeCatEditModal(); });
+document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
 
 initTheme();
 document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
