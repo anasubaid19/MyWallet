@@ -242,6 +242,19 @@
 .form-input[type="date"] { -webkit-appearance: none; appearance: none; min-height: 48px; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
 
+/* WALLET PICKER BUTTON (PENGGANTI SELECT) */
+.wallet-pick-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; background: var(--bg3); color: var(--text); }
+.wallet-pick-btn:hover { border-color: var(--border2); }
+.wallet-pick-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.wallet-pick-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; margin-bottom: 2px; }
+.wallet-pick-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wallet-pick-btn.red { background: var(--red-dim); color: var(--red); border-color: transparent; }
+.wallet-pick-btn.red:hover { background: rgba(255,95,109,0.25); border-color: var(--red); }
+.wallet-pick-btn.green { background: var(--green-dim); color: var(--green); border-color: transparent; }
+.wallet-pick-btn.green:hover { background: rgba(46,204,135,0.25); border-color: var(--green); }
+.wallet-pick-btn.blue { background: var(--blue-dim); color: var(--blue); border-color: transparent; }
+.wallet-pick-btn.blue:hover { background: rgba(91,141,238,0.25); border-color: var(--blue); }
+
 .amount-input-wrap { position: relative; }
 .amount-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 18px; color: var(--text2); }
 .amount-input-wrap .form-input { padding-left: 54px; font-size: 24px; font-weight: 700; height: 60px; }
@@ -428,7 +441,12 @@
       <div class="page" id="page-transactions">
         <div class="tx-controls">
           <div class="search-wrap"><i class="ph-bold ph-magnifying-glass search-icon"></i><input class="form-input" placeholder="Cari catatan transaksi..." id="searchInput" oninput="renderTransactions()"></div>
-          <div class="filter-bar" style="margin:0;"><button class="filter-chip active" onclick="setFilter('all',this)">Semua</button><button class="filter-chip" onclick="setFilter('income',this)">Pemasukan</button><button class="filter-chip" onclick="setFilter('expense',this)">Pengeluaran</button></div>
+          <div class="filter-bar" style="margin:0;">
+            <button class="filter-chip active" onclick="setFilter('all',this)">Semua</button>
+            <button class="filter-chip" onclick="setFilter('income',this)">Pemasukan</button>
+            <button class="filter-chip" onclick="setFilter('expense',this)">Pengeluaran</button>
+            <button class="filter-chip" onclick="setFilter('transfer',this)">Transfer</button>
+          </div>
         </div>
         <div class="card">
           <div class="tx-list" id="fullTxList"></div>
@@ -632,28 +650,68 @@
       <div class="tab transfer" id="tab-transfer" onclick="setTxType('transfer')">Pindah Saldo</div>
     </div>
 
+    <!-- FIELD UMUM: NOMINAL UANG (Di Atas) -->
+    <div class="form-group"><label class="form-label" id="lbl-amount">Jumlah Uang</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="inp-amount" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
+
     <!-- WRAPPER UNTUK PENGELUARAN & PEMASUKAN STANDAR -->
     <div id="tx-standard-fields">
-      <div class="form-group"><label class="form-label" id="lbl-wallet">Sumber Dana</label><select class="form-input" id="inp-wallet" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
+      <div class="form-group">
+        <input type="hidden" id="inp-wallet-id">
+        <button type="button" class="wallet-pick-btn" id="btn-wallet-pick" onclick="openWalletPicker('standard')">
+          <i class="ph-bold ph-wallet wallet-pick-icon" style="font-size:24px;"></i> 
+          <div class="wallet-pick-info">
+            <span class="wallet-pick-label" id="lbl-wallet-inner">Sumber Dana</span>
+            <span class="wallet-pick-name">Pilih Dompet</span>
+          </div>
+          <i class="ph-bold ph-caret-down" style="margin-left:auto; opacity:0.5;"></i>
+        </button>
+      </div>
       <div class="form-group"><label class="form-label">Kategori</label><div class="cat-picker" id="catPicker"></div></div>
     </div>
 
     <!-- WRAPPER UNTUK TRANSFER / PINDAH SALDO -->
     <div id="tx-transfer-fields" style="display:none;">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Dari Dompet Asal</label><select class="form-input" id="inp-wallet-from" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
-        <div class="form-group"><label class="form-label">Ke Dompet Tujuan</label><select class="form-input" id="inp-wallet-to" style="height: 50px; font-weight:600; font-size:15px;"></select></div>
+        <div class="form-group">
+          <input type="hidden" id="inp-wallet-from-id">
+          <button type="button" class="wallet-pick-btn blue" id="btn-wallet-from" onclick="openWalletPicker('from')">
+            <i class="ph-bold ph-wallet wallet-pick-icon" style="font-size:24px;"></i> 
+            <div class="wallet-pick-info">
+              <span class="wallet-pick-label">Dompet Asal</span>
+              <span class="wallet-pick-name">Pilih Dompet</span>
+            </div>
+            <i class="ph-bold ph-caret-down" style="margin-left:auto; opacity:0.5;"></i>
+          </button>
+        </div>
+        <div class="form-group">
+          <input type="hidden" id="inp-wallet-to-id">
+          <button type="button" class="wallet-pick-btn blue" id="btn-wallet-to" onclick="openWalletPicker('to')">
+            <i class="ph-bold ph-wallet wallet-pick-icon" style="font-size:24px;"></i> 
+            <div class="wallet-pick-info">
+              <span class="wallet-pick-label">Dompet Tujuan</span>
+              <span class="wallet-pick-name">Pilih Dompet</span>
+            </div>
+            <i class="ph-bold ph-caret-down" style="margin-left:auto; opacity:0.5;"></i>
+          </button>
+        </div>
       </div>
       <div class="form-group"><label class="form-label">Biaya Admin (Opsional)</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="inp-admin" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
     </div>
 
-    <!-- FIELD UMUM / BERSAMA -->
-    <div class="form-group"><label class="form-label" id="lbl-amount">Jumlah Uang</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="inp-amount" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
+    <!-- FIELD UMUM: TANGGAL & KETERANGAN -->
     <div class="form-row">
       <div class="form-group"><label class="form-label">Keterangan Singkat</label><input type="text" class="form-input" id="inp-desc" placeholder="Contoh: Makan siang"></div>
       <div class="form-group"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="inp-date"></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveTransaction()"><i class="ph-bold ph-check"></i> Simpan Catatan</button></div>
+  </div>
+</div>
+
+<!-- MODAL: WALLET PICKER (DAFTAR DOMPET UNTUK TRANSAKSI) -->
+<div class="modal-overlay" id="walletPickerModal" style="z-index: 1010;">
+  <div class="modal" style="max-width: 400px; padding: 24px;">
+    <div class="modal-title" style="margin-bottom: 16px;"><span>Pilih Dompet</span><button class="close-modal" onclick="closeWalletPicker()"><i class="ph-bold ph-x"></i></button></div>
+    <div class="settings-list" id="walletPickerList" style="max-height: 60vh; overflow-y: auto; padding-right: 4px;"></div>
   </div>
 </div>
 
@@ -843,6 +901,7 @@ let catManagerType = 'expense';
 let editCatColor = PRESET_COLORS[0];
 let editCatIcon = PRESET_ICONS[0];
 let isAddingCatFromTx = false;
+let pickingWalletFor = 'standard'; // 'standard', 'from', 'to'
 
 let trendChart = null, donutChart = null, reportBarChart = null;
 
@@ -886,16 +945,22 @@ function getMonthTx(m = currentMonth) {
   const cycle = getCycleRange(m);
   return transactions.filter(t => t.date >= cycle.start && t.date <= cycle.end);
 }
+
 function getCat(type, id) {
-  const list = customCats[type] || [];
+  // Aman jika kategori dicari dari type transfer_in / transfer_out
+  const searchType = (type === 'transfer_in') ? 'income' : (type === 'transfer_out') ? 'expense' : type;
+  const list = customCats[searchType] || [];
   return list.find(c => c.id === id) || { label: 'Dihapus', icon: 'ph-fill ph-warning-circle', color: '#6b708d' };
 }
+
 function getWallet(id) { return wallets.find(w => w.id === id) || wallets[0]; }
+
 function getWalletCurrentBalance(walletId) {
   const w = wallets.find(w => w.id === walletId); if(!w) return 0;
   const wTx = transactions.filter(t => t.walletId === walletId);
-  const inc = wTx.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-  const exp = wTx.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  // Hitung termasuk jenis data transfer in & out
+  const inc = wTx.filter(t => t.type === 'income' || t.type === 'transfer_in').reduce((s, t) => s + t.amount, 0);
+  const exp = wTx.filter(t => t.type === 'expense' || t.type === 'transfer_out').reduce((s, t) => s + t.amount, 0);
   return w.initialBalance + inc - exp;
 }
 
@@ -917,6 +982,54 @@ function navigate(page) {
   document.getElementById('pageTitle').textContent = titles[page];
   
   window.scrollTo(0, 0); renderPage();
+}
+
+// ─── WALLET PICKER LOGIC ────────────────────────────────────────
+function updateWalletBtnUI(btnId, walletId) {
+  const w = getWallet(walletId);
+  const btn = document.getElementById(btnId);
+  if(!btn || !w) return;
+  const iconEl = btn.querySelector('.wallet-pick-icon');
+  const nameEl = btn.querySelector('.wallet-pick-name');
+  if (iconEl) iconEl.className = w.icon + ' wallet-pick-icon';
+  if (nameEl) nameEl.textContent = w.name;
+}
+
+function openWalletPicker(target) {
+  pickingWalletFor = target;
+  const list = document.getElementById('walletPickerList');
+  list.innerHTML = wallets.map(w => {
+    const bal = getWalletCurrentBalance(w.id);
+    return `<div class="settings-item" onclick="selectWalletPick('${w.id}')" style="background:var(--bg2); padding: 12px 16px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="background:${w.color}22; color:${w.color}; width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:24px; flex-shrink:0;"><i class="${w.icon}"></i></div>
+        <div style="min-width:0;">
+          <div style="font-weight:600; color:var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(w.name)}</div>
+          <div style="font-size:13px; color:var(--text3); margin-top:2px;">Sisa: ${fmt(bal)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  
+  document.getElementById('walletPickerModal').classList.add('open');
+}
+
+function closeWalletPicker() {
+  document.getElementById('walletPickerModal').classList.remove('open');
+}
+
+function selectWalletPick(id) {
+  if (pickingWalletFor === 'standard') {
+    document.getElementById('inp-wallet-id').value = id;
+    updateWalletBtnUI('btn-wallet-pick', id);
+  } else if (pickingWalletFor === 'from') {
+    document.getElementById('inp-wallet-from-id').value = id;
+    updateWalletBtnUI('btn-wallet-from', id);
+  } else if (pickingWalletFor === 'to') {
+    document.getElementById('inp-wallet-to-id').value = id;
+    updateWalletBtnUI('btn-wallet-to', id);
+  }
+  closeWalletPicker();
 }
 
 function changeMonth(dir) {
@@ -1069,22 +1182,28 @@ function deleteCustomCat(id) {
 function openModal(editId = null) {
   const modal = document.getElementById('modal');
   const title = document.getElementById('modalTitleText');
-  const walletSelect = document.getElementById('inp-wallet');
   
-  const walletOpts = wallets.map(w => `<option value="${w.id}">${w.name} (Sisa: ${fmt(getWalletCurrentBalance(w.id))})</option>`).join('');
-  walletSelect.innerHTML = walletOpts;
-  document.getElementById('inp-wallet-from').innerHTML = walletOpts;
-  document.getElementById('inp-wallet-to').innerHTML = walletOpts;
+  const defaultWalletId = wallets[0].id;
 
   if (editId) {
     const tx = transactions.find(t => t.id === editId);
     if(!tx) return;
+    
+    // Blokir pengeditan mutasi transfer agar datanya tidak pincang
+    if (tx.type === 'transfer_in' || tx.type === 'transfer_out') {
+      alert('Peringatan: Catatan pindah saldo (Transfer) tidak dapat diedit secara langsung untuk menjaga keseimbangan. Silakan hapus transaksi ini dan buat yang baru jika ada kesalahan.');
+      return;
+    }
+
     title.textContent = "Edit Transaksi";
     document.getElementById('inp-id').value = tx.id;
     document.getElementById('inp-amount').value = tx.amount.toLocaleString('id-ID'); // Format Titik
     document.getElementById('inp-desc').value = tx.desc;
     document.getElementById('inp-date').value = tx.date;
-    walletSelect.value = tx.walletId || wallets[0].id;
+    
+    document.getElementById('inp-wallet-id').value = tx.walletId || defaultWalletId;
+    updateWalletBtnUI('btn-wallet-pick', tx.walletId || defaultWalletId);
+
     txType = tx.type;
     selectedCat = tx.category;
     
@@ -1099,6 +1218,16 @@ function openModal(editId = null) {
     document.getElementById('inp-admin').value = '';
     document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
     
+    document.getElementById('inp-wallet-id').value = defaultWalletId;
+    updateWalletBtnUI('btn-wallet-pick', defaultWalletId);
+    
+    document.getElementById('inp-wallet-from-id').value = defaultWalletId;
+    updateWalletBtnUI('btn-wallet-from', defaultWalletId);
+    
+    const toWalletId = wallets.length > 1 ? wallets[1].id : defaultWalletId;
+    document.getElementById('inp-wallet-to-id').value = toWalletId;
+    updateWalletBtnUI('btn-wallet-to', toWalletId);
+
     // Kembalikan tab transfer
     document.getElementById('tab-transfer').style.display = 'block';
     
@@ -1120,12 +1249,17 @@ function setTxType(type, resetCat = true) {
   if (type === 'transfer') {
     document.getElementById('tx-standard-fields').style.display = 'none';
     document.getElementById('tx-transfer-fields').style.display = 'block';
-    document.getElementById('lbl-amount').textContent = 'Nominal Transfer';
+    document.getElementById('lbl-amount').textContent = 'Nominal Pindah Saldo';
   } else {
     document.getElementById('tx-standard-fields').style.display = 'block';
     document.getElementById('tx-transfer-fields').style.display = 'none';
-    document.getElementById('lbl-amount').textContent = 'Jumlah Uang';
-    document.getElementById('lbl-wallet').textContent = type === 'income' ? 'Tujuan Simpanan' : 'Sumber Dana';
+    document.getElementById('lbl-amount').textContent = type === 'income' ? 'Jumlah Pemasukan' : 'Jumlah Pengeluaran';
+    
+    const lblInner = document.getElementById('lbl-wallet-inner');
+    if (lblInner) lblInner.textContent = type === 'income' ? 'Tujuan Simpanan' : 'Sumber Dana';
+    
+    const btnPick = document.getElementById('btn-wallet-pick');
+    btnPick.className = 'wallet-pick-btn ' + (type === 'income' ? 'green' : 'red');
     
     if(resetCat) selectedCat = '';
     const cats = customCats[type];
@@ -1150,13 +1284,13 @@ function saveTransaction() {
   const desc = document.getElementById('inp-desc').value.trim();
   const date = document.getElementById('inp-date').value;
   
-  if (!amount || amount <= 0) return alert('Peringatan: Masukkan jumlah uang yang valid.');
+  if (!amount || amount <= 0) return alert('Peringatan: Masukkan nominal uang yang valid.');
   if (!date) return alert('Peringatan: Tanggal tidak boleh kosong.');
   
-  // LOGIKA TRANSFER (Dicatat sebagai 2-3 transaksi terpisah agar akurasi chart 100% aman)
+  // LOGIKA TRANSFER KHUSUS (Dicatat menggunakan tipe transfer_in & transfer_out)
   if (txType === 'transfer') {
-    const fromWallet = document.getElementById('inp-wallet-from').value;
-    const toWallet = document.getElementById('inp-wallet-to').value;
+    const fromWallet = document.getElementById('inp-wallet-from-id').value;
+    const toWallet = document.getElementById('inp-wallet-to-id').value;
     const adminFee = unformatRibuan(document.getElementById('inp-admin').value);
     
     if (fromWallet === toWallet) return alert('Peringatan: Dompet asal dan tujuan tidak boleh sama.');
@@ -1165,30 +1299,30 @@ function saveTransaction() {
     const wToName = getWallet(toWallet).name;
     const timestamp = Date.now();
     
-    // 1. Catat Pengeluaran dari Dompet Asal
+    // 1. Catat Transfer Keluar dari Dompet Asal (Pindah Saldo)
     transactions.unshift({
-      id: timestamp, type: 'expense', amount: amount, category: 'lainnya_exp', walletId: fromWallet,
-      desc: desc || `Transfer ke ${wToName}`, date: date
+      id: timestamp, type: 'transfer_out', amount: amount, category: 'lainnya_exp', walletId: fromWallet,
+      desc: desc || `Pindah ke ${wToName}`, date: date
     });
     
-    // 2. Catat Pemasukan ke Dompet Tujuan
+    // 2. Catat Transfer Masuk ke Dompet Tujuan (Pindah Saldo)
     transactions.unshift({
-      id: timestamp + 1, type: 'income', amount: amount, category: 'lainnya_inc', walletId: toWallet,
-      desc: desc ? `(Terima) ${desc}` : `Transfer dari ${wFromName}`, date: date
+      id: timestamp + 1, type: 'transfer_in', amount: amount, category: 'lainnya_inc', walletId: toWallet,
+      desc: desc ? `(Terima) ${desc}` : `Terima dari ${wFromName}`, date: date
     });
     
-    // 3. Catat Biaya Admin (Jika Ada)
+    // 3. Catat Biaya Admin (Hanya jika diisi, dicatat sebagai Pengeluaran Riil)
     if (adminFee > 0) {
       transactions.unshift({
-        id: timestamp + 2, type: 'expense', amount: adminFee, category: 'tagihan', walletId: fromWallet,
+        id: timestamp + 2, type: 'expense', amount: adminFee, category: 'lainnya_exp', walletId: fromWallet,
         desc: 'Biaya Admin Transfer', date: date
       });
     }
   } 
-  // LOGIKA STANDAR (Pengeluaran/Pemasukan biasa)
+  // LOGIKA PENGELUARAN/PEMASUKAN STANDAR
   else {
     if (!selectedCat) return alert('Peringatan: Kategori belum dipilih.');
-    const walletId = document.getElementById('inp-wallet').value;
+    const walletId = document.getElementById('inp-wallet-id').value;
     
     const txData = {
       id: editId ? parseInt(editId) : Date.now(),
@@ -1209,7 +1343,7 @@ function saveTransaction() {
 }
 
 function deleteTransaction(id) {
-  if (!confirm('Hapus transaksi ini secara permanen?')) return;
+  if (!confirm('Hapus riwayat transaksi ini secara permanen?')) return;
   transactions = transactions.filter(t => t.id !== id);
   save(); renderPage();
 }
@@ -1306,8 +1440,18 @@ function exportJSON() {
 function exportCSV() {
   const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
   transactions.forEach(t => {
-    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
-    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
+    let typeLabel = 'Pengeluaran';
+    if (t.type === 'income') typeLabel = 'Pemasukan';
+    if (t.type === 'transfer_in') typeLabel = 'Transfer Masuk';
+    if (t.type === 'transfer_out') typeLabel = 'Transfer Keluar';
+    
+    let catLabel = 'Transfer Saldo';
+    if (t.type === 'income' || t.type === 'expense') {
+      catLabel = getCat(t.type, t.category).label;
+    }
+
+    const wal = getWallet(t.walletId);
+    rows.push([t.id, t.date, typeLabel, catLabel, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
   });
   const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
@@ -1351,7 +1495,7 @@ function importData(event) {
           const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
           if(cols.length >= 6) {
             const dateStr = cols[1];
-            const typeStr = cols[2] === 'Pemasukan' ? 'income' : 'expense';
+            const typeStr = cols[2] === 'Pemasukan' ? 'income' : 'expense'; // Fallback aman
             const amountVal = parseFloat(cols[5]) || 0;
             const descStr = cols[6] || cols[3];
             
@@ -1410,10 +1554,25 @@ function renderPage() {
 // ─── REUSABLE UI BUILDERS ───────────────────────────────────────
 function buildTxList(txs) {
   return txs.map(t => {
-    const cat = getCat(t.type, t.category);
+    let cat;
+    if (t.type === 'transfer_out') {
+      cat = { label: 'Transfer Keluar', icon: 'ph-bold ph-arrow-up-right', color: '#6b708d' };
+    } else if (t.type === 'transfer_in') {
+      cat = { label: 'Transfer Masuk', icon: 'ph-bold ph-arrow-down-left', color: '#6b708d' };
+    } else {
+      cat = getCat(t.type, t.category);
+    }
+    
     const wal = getWallet(t.walletId);
     const dateStr = new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     const safeDesc = escapeHTML(t.desc);
+    
+    // Penentuan styling nominal berdasarkan tipe transaksi
+    const isInc = t.type === 'income' || t.type === 'transfer_in';
+    const sign = isInc ? '+' : '-';
+    // Style income (hijau) untuk pemasukan murni dan transfer masuk, sisanya abu-abu
+    const colorClass = (t.type === 'income' || t.type === 'transfer_in') ? 'income' : 'expense';
+
     return `<div class="tx-item">
       <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}"><i class="${cat.icon}"></i></div>
       <div class="tx-info">
@@ -1421,7 +1580,7 @@ function buildTxList(txs) {
         <div class="tx-cat">${escapeHTML(cat.label)} • <span style="color:${wal.color};font-weight:600;">${escapeHTML(wal.name)}</span> • <span style="opacity:0.6">${dateStr}</span></div>
       </div>
       <div class="tx-right">
-        <div class="tx-amount ${t.type}">${t.type === 'income' ? '+' : '-'}${fmt(t.amount)}</div>
+        <div class="tx-amount ${colorClass}">${sign}${fmt(t.amount)}</div>
         <div class="tx-actions">
           <button class="tx-btn edit" onclick="openModal(${t.id})" title="Edit Transaksi"><i class="ph-bold ph-pencil-simple"></i></button>
           <button class="tx-btn del" onclick="deleteTransaction(${t.id})" title="Hapus Transaksi"><i class="ph-bold ph-trash"></i></button>
@@ -1451,6 +1610,7 @@ function renderDashboard() {
   const grandTotalBalance = totalInitialAll + totalIncomeAll - totalExpenseAll;
 
   const txs = getMonthTx();
+  // Transfer dikecualikan sepenuhnya dari metrik ini (karena type nya transfer_in/out)
   const mIncome = txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const mExpense = txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   
@@ -1482,6 +1642,7 @@ function drawTrendChart() {
     labels.push(cycle.shortLabel);
     
     const txs = transactions.filter(t => t.date >= cycle.start && t.date <= cycle.end);
+    // Transfer otomatis diabaikan di sini
     incomes.push(txs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0));
     expenses.push(txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0));
   }
@@ -1579,7 +1740,12 @@ function setFilter(f, el) {
 function renderTransactions() {
   const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
   let txs = getMonthTx();
-  if (txFilter === 'income') txs = txs.filter(t => t.type === 'income'); else if (txFilter === 'expense') txs = txs.filter(t => t.type === 'expense');
+  
+  // Filter dioptimalkan agar tidak membingungkan
+  if (txFilter === 'income') txs = txs.filter(t => t.type === 'income'); 
+  else if (txFilter === 'expense') txs = txs.filter(t => t.type === 'expense');
+  else if (txFilter === 'transfer') txs = txs.filter(t => t.type === 'transfer_in' || t.type === 'transfer_out');
+  
   if (q) txs = txs.filter(t => t.desc.toLowerCase().includes(q) || getCat(t.type, t.category).label.toLowerCase().includes(q));
 
   const listEl = document.getElementById('fullTxList'); const emptyEl = document.getElementById('txEmpty');
@@ -1623,6 +1789,7 @@ function openBudgetModalFor(catId) { openBudgetModal(); setTimeout(() => { docum
 
 // ─── REPORT PAGE ──────────────────────────────────────────────────
 function renderReport() {
+  // Transfer diabaikan di statistik keseluruhan ini
   const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   document.getElementById('rep-income').textContent = fmt(income); document.getElementById('rep-expense').textContent = fmt(expense);
@@ -1662,21 +1829,9 @@ function renderReport() {
   }).join('');
 }
 
-// ─── EXPORT CSV ───────────────────────────────────────────────────
-function exportCSV() {
-  const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
-  transactions.forEach(t => {
-    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
-    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
-  });
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `DompetKu-Laporan-${new Date().toISOString().split('T')[0]}.csv`; a.click();
-  closeExportModal();
-}
-
 // ─── INITIALIZATION & LISTENERS ──────────────────────────────────
 document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.getElementById('walletPickerModal').addEventListener('click', function(e) { if (e.target === this) closeWalletPicker(); });
 document.getElementById('budgetModal').addEventListener('click', function(e) { if (e.target === this) closeBudgetModal(); });
 document.getElementById('walletModal').addEventListener('click', function(e) { if (e.target === this) closeWalletModal(); });
 document.getElementById('catManagerModal').addEventListener('click', function(e) { if (e.target === this) closeCatManagerModal(); });
