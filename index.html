@@ -13,9 +13,22 @@
 
 <title>DompetKu — Pencatatan Keuangan</title>
 
-<!-- App Icons (Homescreen PWA) -->
+<!-- Web App Manifest untuk memanggil nama dan icon PWA di Android -->
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"DompetKu","short_name":"DompetKu","start_url":"/","display":"standalone","background_color":"#0d0f14","theme_color":"#0d0f14","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+
+<!-- Ikon SVG untuk Android & Web Tab -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
+
+<!-- 
+=========================================================
+PENTING UNTUK IPHONE (iOS): 
+iOS tidak bisa membaca Ikon SVG. Jika ikon masih hitam/huruf D,
+Anda wajib men-deploy file gambar "logo.png" (resolusi 512x512px ungu) 
+ke server Anda, lalu aktifkan kode di bawah ini:
+
+<link rel="apple-touch-icon" href="/logo.png">
+=========================================================
+-->
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -155,7 +168,7 @@
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); transition: 0.3s;}
 .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.card-title { font-size: 16px; font-weight: 700; }
+.card-title { font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:8px;}
 .card-action { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:4px; }
 .card-action:hover { text-decoration: underline; }
 
@@ -207,8 +220,12 @@
 
 .form-group { margin-bottom: 20px; width: 100%; }
 .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* FIX UNTUK INPUT TANGGAL IOS OVERFLOW */
 .form-input { width: 100%; max-width: 100%; box-sizing: border-box; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; display: block; }
+.form-input[type="date"] { -webkit-appearance: none; appearance: none; min-height: 48px; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+
 .amount-input-wrap { position: relative; }
 .amount-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 18px; color: var(--text2); }
 .amount-input-wrap .form-input { padding-left: 54px; font-size: 24px; font-weight: 700; height: 60px; }
@@ -278,7 +295,7 @@
   .app { flex-direction: column; }
   .main { padding-bottom: 100px; } 
   .topbar { padding: calc(16px + env(safe-area-inset-top)) 20px 16px; flex-wrap: wrap; gap: 12px; }
-  .page-title { font-size: 22px; width: 100%; line-height: 1.2; }
+  .page-title { font-size: 22px; width: auto; line-height: 1.2; }
   .topbar-right { width: 100%; justify-content: flex-start; }
   .topbar .btn-primary { display: none; } 
   .page-content { padding: 20px 16px; }
@@ -287,7 +304,7 @@
   .cat-picker { grid-template-columns: repeat(4, 1fr); gap:8px;}
   .color-grid { grid-template-columns: repeat(5, 1fr); }
   .icon-grid { grid-template-columns: repeat(4, 1fr); }
-  .form-row { grid-template-columns: 1fr; gap: 16px; } /* Resetting gap for mobile row */
+  .form-row { grid-template-columns: 1fr; gap: 16px; } 
   .month-label { min-width: 120px; font-size: 13px; }
   .tx-controls { flex-direction: column; align-items: stretch; gap: 16px; }
   .search-wrap { width: 100%; }
@@ -299,11 +316,14 @@
   .tx-amount { font-size: 18px; font-weight: 700; text-align: left; margin: 0; }
   .tx-actions { display: flex; gap: 8px; margin: 0; } 
   
-  /* Fix untuk Overflow Layar dan Scroll Goyang Horizontal */
   .modal { padding: 24px; width: 100%; max-width: 100vw; box-sizing: border-box; border-radius: 24px 24px 0 0; align-self: flex-end; animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1); margin: 0; overflow-x: hidden; touch-action: pan-y; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .modal-overlay { align-items: flex-end; padding: 0; }
 }
+
+/* GUIDE TEXT */
+.guide-list { margin-left: 20px; color: var(--text2); font-size: 14px; line-height: 1.6; margin-bottom: 24px; margin-top: 8px;}
+.guide-list li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -339,7 +359,13 @@
   <div class="main">
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="openGuideModal()" title="Petunjuk Pemakaian">
+          <i class="ph-bold ph-question" style="font-size: 22px;"></i>
+        </button>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+      </div>
+      
       <div class="topbar-right">
         <div class="month-nav">
           <div class="month-nav-btn" onclick="changeMonth(-1)"><i class="ph-bold ph-caret-left"></i></div>
@@ -366,11 +392,11 @@
 
         <div class="grid2">
           <div class="card">
-            <div class="card-header"><div class="card-title">Tren Periode Sebelumnya</div></div>
+            <div class="card-header"><div class="card-title"><i class="ph-fill ph-chart-bar" style="color:var(--accent);"></i> Tren Periode Sebelumnya</div></div>
             <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title">Pengeluaran Terbesar</div></div>
+            <div class="card-header"><div class="card-title"><i class="ph-fill ph-chart-pie-slice" style="color:var(--accent);"></i> Pengeluaran Terbesar</div></div>
             <div class="donut-wrap"><canvas id="donutChart"></canvas><div class="donut-center"><div class="donut-val" id="donut-val">—</div><div class="donut-lbl">Siklus Ini</div></div></div>
             <div class="cat-list" id="catList"></div>
           </div>
@@ -512,6 +538,57 @@
   </nav>
 </div>
 
+<!-- MODAL: WELCOME (FIRST TIME) -->
+<div class="modal-overlay" id="welcomeModal">
+  <div class="modal" style="align-self: center; text-align: center; border-radius: 24px; max-width: 400px; margin: 0 auto; padding: 40px 32px;">
+    <div style="font-size: 56px; color: var(--accent); margin-bottom: 16px;"><i class="ph-fill ph-hand-waving"></i></div>
+    <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 12px;">Selamat Datang di DompetKu!</h2>
+    <p style="color: var(--text2); font-size: 14px; line-height: 1.6; margin-bottom: 32px;">Aplikasi pencatatan keuangan pribadi offline yang aman, cepat, dan tanpa iklan. Data Anda 100% tersimpan di dalam perangkat Anda.</p>
+    
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <button class="btn btn-primary" style="padding: 14px; width: 100%; justify-content: center; font-size: 15px;" onclick="closeWelcomeModal()">Mulai Gunakan</button>
+      <button class="btn btn-ghost" style="padding: 14px; width: 100%; justify-content: center; font-size: 15px;" onclick="openGuideModalFromWelcome()"><i class="ph-bold ph-book-open"></i> Baca Petunjuk Pemakaian</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: GUIDE / PETUNJUK -->
+<div class="modal-overlay" id="guideModal">
+  <div class="modal" style="border-radius: 20px;">
+    <div class="modal-title"><span><i class="ph-fill ph-book-open" style="color:var(--accent);"></i> Petunjuk Pemakaian</span><button class="close-modal" onclick="closeGuideModal()"><i class="ph-bold ph-x"></i></button></div>
+    
+    <div style="margin-bottom: 24px;">
+      <h3 style="font-size: 15px; color: var(--text); display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-apple-logo"></i> Cara Install (iPhone / iOS)</h3>
+      <ol class="guide-list">
+        <li>Buka aplikasi <b>Safari</b>.</li>
+        <li>Ketuk ikon <b>Share (Bagikan)</b> di tengah bawah layar.</li>
+        <li>Pilih <b>"Add to Home Screen"</b> (Tambah ke Layar Utama).</li>
+        <li>Ketuk <b>"Add"</b> di pojok kanan atas.</li>
+      </ol>
+    </div>
+    
+    <div style="margin-bottom: 24px;">
+      <h3 style="font-size: 15px; color: var(--text); display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-android-logo" style="color:#2ecc87;"></i> Cara Install (Android)</h3>
+      <ol class="guide-list">
+        <li>Buka browser <b>Chrome</b>.</li>
+        <li>Ketuk ikon <b>Tiga Titik</b> di pojok kanan atas.</li>
+        <li>Pilih <b>"Tambahkan ke Layar Utama"</b> atau <b>"Install App"</b>.</li>
+      </ol>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <h3 style="font-size: 15px; color: var(--text); display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-database" style="color:var(--blue);"></i> Backup & Restore Data</h3>
+      <ul class="guide-list">
+        <li><b>Data Tersimpan di HP:</b> Aplikasi ini offline. Data Anda aman tapi bisa hilang jika Anda menghapus cache browser secara ekstrem.</li>
+        <li><b>Backup:</b> Pergi ke <b>Pengaturan > Export Data > File JSON</b>. Simpan file ini baik-baik.</li>
+        <li><b>Restore:</b> Saat ganti HP, buka Pengaturan > Import Data > Pilih file JSON tadi.</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" style="width: 100%; justify-content:center; padding: 14px;" onclick="closeGuideModal()">Tutup Petunjuk</button>
+  </div>
+</div>
+
 <!-- MODAL: EXPORT OPTIONS -->
 <div class="modal-overlay" id="exportModal">
   <div class="modal" style="align-self: center; border-radius: 24px; max-width: 360px; margin: 0 auto;">
@@ -590,8 +667,31 @@
 </div>
 
 <script>
-// ─── INIT SETTINGS & THEME ──────────────────────────────────────
+// ─── INIT SETTINGS, THEME & WELCOME POPUP ────────────────────────
 let userSettings = JSON.parse(localStorage.getItem('dompet_settings')) || { cycleStartDay: 1, cycleLength: 1 };
+
+function checkWelcome() {
+  const welcomed = localStorage.getItem('dompet_welcomed');
+  if (!welcomed) {
+    document.getElementById('welcomeModal').classList.add('open');
+  }
+}
+
+function closeWelcomeModal() {
+  localStorage.setItem('dompet_welcomed', 'true');
+  document.getElementById('welcomeModal').classList.remove('open');
+}
+
+function openGuideModalFromWelcome() {
+  localStorage.setItem('dompet_welcomed', 'true');
+  document.getElementById('welcomeModal').classList.remove('open');
+  document.getElementById('guideModal').classList.add('open');
+}
+
+function openGuideModal() { document.getElementById('guideModal').classList.add('open'); }
+function closeGuideModal() { document.getElementById('guideModal').classList.remove('open'); }
+
+
 function initTheme() {
   const savedTheme = localStorage.getItem('dompet_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -1135,7 +1235,7 @@ function importData(event) {
             if(amountVal > 0 && dateStr) {
               transactions.push({
                 id: Date.now() + Math.random(),
-                type: typeStr, amount: amountVal, category: 'lainnya', walletId: wallets[0].id, desc: descStr, date: dateStr
+                type: typeStr, amount: amountVal, category: 'lainnya_exp', walletId: wallets[0].id, desc: descStr, date: dateStr
               });
               importedCount++;
             }
@@ -1343,7 +1443,7 @@ function drawDonut(txs) {
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId); const pct = Math.round((val / total) * 100);
     return `<div class="cat-item">
-      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div>
+      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div>
       <div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div>
     </div>`;
   }).join('');
@@ -1439,6 +1539,19 @@ function renderReport() {
   }).join('');
 }
 
+// ─── EXPORT CSV ───────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
+  transactions.forEach(t => {
+    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
+    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
+  });
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `DompetKu-Laporan-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  closeExportModal();
+}
+
 // ─── INITIALIZATION & LISTENERS ──────────────────────────────────
 document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 document.getElementById('budgetModal').addEventListener('click', function(e) { if (e.target === this) closeBudgetModal(); });
@@ -1446,10 +1559,13 @@ document.getElementById('walletModal').addEventListener('click', function(e) { i
 document.getElementById('catManagerModal').addEventListener('click', function(e) { if (e.target === this) closeCatManagerModal(); });
 document.getElementById('catEditModal').addEventListener('click', function(e) { if (e.target === this) closeCatEditModal(); });
 document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
+document.getElementById('welcomeModal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
+document.getElementById('guideModal').addEventListener('click', function(e) { if (e.target === this) closeGuideModal(); });
 
 initTheme();
 document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
 renderDashboard();
+checkWelcome();
 
 let resizeTimeout; window.addEventListener('resize', () => { 
   clearTimeout(resizeTimeout); resizeTimeout = setTimeout(() => {
