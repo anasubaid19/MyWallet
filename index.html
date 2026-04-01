@@ -13,8 +13,8 @@
 
 <title>DompetKu — Pencatatan Keuangan</title>
 
-<!-- Ikon SVG untuk Web Tab -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
+<!-- Ikon Default untuk Web Tab (Akan di-update dinamis oleh JS sesuai tema) -->
+<link rel="icon" type="image/svg+xml" id="dynamic-favicon" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,27 +25,6 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <script>
-  // PWA Injector — Blob URL method (compatible with Android Chrome)
-  const manifestJSON = {
-    name: "DompetKu",
-    short_name: "DompetKu",
-    start_url: window.location.pathname,
-    display: "standalone",
-    background_color: "#0d0f14",
-    theme_color: "#0d0f14",
-    icons: [{
-      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' rx='56' fill='%237c6ff7'/%3E%3Cpath d='M208,88H48A16,16,0,0,0,32,104V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V104A16,16,0,0,0,208,88Zm-24,64a12,12,0,1,1,12-12A12,12,0,0,1,184,152Z' fill='%23ffffff'/%3E%3C/svg%3E",
-      sizes: "512x512",
-      type: "image/svg+xml",
-      purpose: "any maskable"
-    }]
-  };
-  const manifestBlob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/manifest+json'});
-  const manifestLink = document.createElement('link');
-  manifestLink.rel = 'manifest';
-  manifestLink.href = URL.createObjectURL(manifestBlob);
-  document.head.appendChild(manifestLink);
-
   // Service Worker dari Blob — agar Android mengenali app sebagai installable PWA
   if ('serviceWorker' in navigator) {
     const swCode = `self.addEventListener('fetch', function(e) {});`;
@@ -69,7 +48,10 @@
     --chart-text: rgba(155,160,188,0.9);
     --donut-inner: #161821;
     
-    /* BRAND & ACCENTS */
+    /* BRAND & ACCENTS (Akan ditimpa oleh JS saat fitur ganti warna aktif) */
+    --accent: #7c6ff7;
+    --accent-dim: rgba(124,111,247,0.15);
+    
     --green: #2ecc87;
     --green-dim: rgba(46,204,135,0.15);
     --red: #ff5f6d;
@@ -78,8 +60,6 @@
     --blue-dim: rgba(91,141,238,0.15);
     --yellow: #f5c518;
     --yellow-dim: rgba(245,197,24,0.15);
-    --accent: #7c6ff7;
-    --accent-dim: rgba(124,111,247,0.15);
     
     /* SPACING & SIZING */
     --radius: 16px;
@@ -142,7 +122,7 @@
 .topbar-right { display: flex; align-items: center; gap: 16px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; outline: none; white-space: nowrap; }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-dim); }
-.btn-primary:hover { background: #6a5ee8; transform: translateY(-1px); box-shadow: 0 6px 16px var(--accent-dim); }
+.btn-primary:hover { background: var(--accent); opacity:0.9; transform: translateY(-1px); box-shadow: 0 6px 16px var(--accent-dim); }
 .btn-ghost { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
 .btn-ghost:hover { border-color: var(--border2); background: var(--border); }
 .btn-danger { background: var(--red-dim); color: var(--red); }
@@ -486,15 +466,25 @@
 
       <!-- PAGE: SETTINGS -->
       <div class="page" id="page-settings">
-        <!-- MOBILE ONLY THEME TOGGLE -->
-        <div class="card" id="mobileThemeToggleCard" style="margin-bottom: 24px; display: none;">
-           <div class="settings-item" onclick="toggleTheme()" style="border:none; padding:0; background:transparent;">
-             <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-fill ph-moon" id="mobileThemeIcon"></i></span> <div>Tema Aplikasi<br><small style="color:var(--text3);font-weight:400;" id="mobileThemeText">Ubah ke Light Mode</small></div></div>
-           </div>
-        </div>
-
         <div class="grid2">
           
+          <div class="card">
+            <div class="card-header"><div class="card-title">Tampilan Aplikasi</div></div>
+            <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan mode gelap/terang dan warna dasar aplikasi dengan selera Anda.</p>
+            
+            <div class="settings-list" style="margin-bottom: 24px;">
+              <div class="settings-item" onclick="toggleTheme()">
+                <div style="display:flex;align-items:center;">
+                  <span class="icon"><i class="ph-fill ph-moon" id="pageThemeIcon"></i></span> 
+                  <div>Mode Gelap / Terang<br><small style="color:var(--text3);font-weight:400;" id="pageThemeText">Ubah ke Light Mode</small></div>
+                </div>
+              </div>
+            </div>
+            
+            <label class="form-label">Warna Aksen Utama</label>
+            <div class="color-grid" id="appThemeColorGrid" style="grid-template-columns: repeat(7, 1fr); gap: 12px; margin-top: 12px; padding-bottom: 8px;"></div>
+          </div>
+
           <div class="card">
             <div class="card-header"><div class="card-title">Pengaturan Siklus & Kategori</div></div>
             <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan perhitungan laporan dengan tanggal gajian Anda dan kelola daftar kategori.</p>
@@ -540,11 +530,11 @@
           </div>
 
           <!-- KARTU SUPPORT DEVELOPER -->
-          <div class="card" style="border-color: rgba(91,141,238,0.3); grid-column: 1 / -1;">
+          <div class="card" style="border-color: rgba(91,141,238,0.3);">
             <div class="card-header"><div class="card-title" style="color: var(--blue); display:flex; align-items:center; gap:8px;"><i class="ph-fill ph-heart"></i> Dukung Developer</div></div>
             <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Suka dengan aplikasi ini? Berikan dukungan agar aplikasi ini terus berkembang dan gratis selamanya tanpa iklan.</p>
             
-            <div class="settings-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+            <div class="settings-list">
               <a href="https://www.instagram.com/_anasubaid/" target="_blank" class="settings-item">
                 <div style="display:flex;align-items:center;"><span class="icon" style="color: #E1306C; background: rgba(225,48,108,0.15);"><i class="ph-bold ph-instagram-logo"></i></span> <div>Follow Instagram<br><small style="color:var(--text3);font-weight:400;">@_anasubaid</small></div></div>
                 <i class="ph-bold ph-arrow-right"></i>
@@ -761,6 +751,86 @@
 </div>
 
 <script>
+// ─── TEMA WARNA APLIKASI (APP COLOR THEME) ──────────────────────
+const APP_THEMES = [
+  { hex: '#7c6ff7', dim: 'rgba(124,111,247,0.15)' }, // Ungu (Default)
+  { hex: '#5b8dee', dim: 'rgba(91,141,238,0.15)' }, // Biru
+  { hex: '#2ecc87', dim: 'rgba(46,204,135,0.15)' }, // Hijau
+  { hex: '#e879f9', dim: 'rgba(232,121,249,0.15)' }, // Merah Muda
+  { hex: '#f5c518', dim: 'rgba(245,197,24,0.15)' }, // Kuning
+  { hex: '#ff5f6d', dim: 'rgba(255,95,109,0.15)' }, // Merah
+  { hex: '#8b8fa8', dim: 'rgba(139,143,168,0.15)' }  // Abu-abu / Monokrom
+];
+
+function setAppThemeColor(hex, save = true) {
+  const themeObj = APP_THEMES.find(t => t.hex === hex) || APP_THEMES[0];
+  
+  // Timpa warna utama (accent) di seluruh elemen CSS
+  document.documentElement.style.setProperty('--accent', themeObj.hex);
+  document.documentElement.style.setProperty('--accent-dim', themeObj.dim);
+  
+  // Render ulang UI agar kursor/lingkaran aktif berpindah
+  renderAppThemeColorGrid(hex);
+  
+  // Suntikkan manifest dan favicon dinamis agar logo PWA dan tab sesuai tema
+  updateManifestColor(themeObj.hex);
+  
+  if (save) {
+    localStorage.setItem('dompet_app_color', themeObj.hex);
+  }
+}
+
+function renderAppThemeColorGrid(activeHex) {
+  const grid = document.getElementById('appThemeColorGrid');
+  if(!grid) return;
+  grid.innerHTML = APP_THEMES.map(t => `
+    <div class="color-circle ${t.hex === activeHex ? 'selected' : ''}" 
+         style="background:${t.hex};" 
+         onclick="setAppThemeColor('${t.hex}')">
+    </div>
+  `).join('');
+}
+
+function updateManifestColor(hex) {
+  const encodedHex = encodeURIComponent(hex);
+  const svgIcon = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' rx='56' fill='${encodedHex}'/%3E%3Cpath d='M208,88H48A16,16,0,0,0,32,104V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V104A16,16,0,0,0,208,88Zm-24,64a12,12,0,1,1,12-12A12,12,0,0,1,184,152Z' fill='%23ffffff'/%3E%3Cpath d='M48,88H208a0,0,0,0,1,0,0V72a16,16,0,0,0-16-16H64A16,16,0,0,0,48,72V88A0,0,0,0,1,48,88Z' fill='%23ffffff' opacity='0.7'/%3E%3C/svg%3E`;
+  
+  // Update Favicon Tab
+  let favIcon = document.getElementById('dynamic-favicon');
+  if(favIcon) {
+     favIcon.href = svgIcon;
+  }
+
+  // Update PWA Manifest Blob secara aman
+  const manifestJSON = {
+    name: "DompetKu",
+    short_name: "DompetKu",
+    start_url: window.location.pathname,
+    display: "standalone",
+    background_color: "#0d0f14",
+    theme_color: "#0d0f14",
+    icons: [{
+      src: svgIcon,
+      sizes: "512x512",
+      type: "image/svg+xml",
+      purpose: "any maskable"
+    }]
+  };
+  
+  const manifestBlob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/manifest+json'});
+  let manifestLink = document.getElementById('dynamic-manifest');
+  if (!manifestLink) {
+    manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.id = 'dynamic-manifest';
+    document.head.appendChild(manifestLink);
+  }
+  // Cegah kebocoran memori dengan menghapus Blob URL yang lama jika ada
+  if (manifestLink.href) URL.revokeObjectURL(manifestLink.href);
+  manifestLink.href = URL.createObjectURL(manifestBlob);
+}
+
+
 // ─── INIT SETTINGS, THEME & WELCOME POPUP ────────────────────────
 let userSettings = JSON.parse(localStorage.getItem('dompet_settings')) || { cycleStartDay: 1, cycleLength: 1 };
 
@@ -787,10 +857,14 @@ function closeGuideModal() { document.getElementById('guideModal').classList.rem
 
 
 function initTheme() {
+  // Mode Gelap / Terang
   const savedTheme = localStorage.getItem('dompet_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeUI(savedTheme);
-  if(window.innerWidth <= 768) document.getElementById('mobileThemeToggleCard').style.display = 'block';
+  
+  // Tema Warna Aplikasi Utama
+  let savedAppColor = localStorage.getItem('dompet_app_color') || '#7c6ff7';
+  setAppThemeColor(savedAppColor, false);
   
   let daySelect = document.getElementById('set-cycle-start');
   for(let i=1; i<=31; i++) daySelect.innerHTML += `<option value="${i}">Tanggal ${i}</option>`;
@@ -819,13 +893,14 @@ function toggleTheme() {
 
 function updateThemeUI(theme) {
   const themeIcon = document.getElementById('themeIcon'), themeText = document.getElementById('themeText');
-  const mThemeIcon = document.getElementById('mobileThemeIcon'), mThemeText = document.getElementById('mobileThemeText');
+  const pageThemeIcon = document.getElementById('pageThemeIcon'), pageThemeText = document.getElementById('pageThemeText');
+  
   if (theme === 'light') {
-    themeIcon.className = 'ph-fill ph-sun'; themeText.textContent = 'Light Mode';
-    mThemeIcon.className = 'ph-fill ph-sun'; mThemeText.textContent = 'Ubah ke Dark Mode';
+    if(themeIcon) { themeIcon.className = 'ph-fill ph-sun'; themeText.textContent = 'Light Mode'; }
+    if(pageThemeIcon) { pageThemeIcon.className = 'ph-fill ph-sun'; pageThemeText.textContent = 'Ubah ke Dark Mode'; }
   } else {
-    themeIcon.className = 'ph-fill ph-moon'; themeText.textContent = 'Dark Mode';
-    mThemeIcon.className = 'ph-fill ph-moon'; mThemeText.textContent = 'Ubah ke Light Mode';
+    if(themeIcon) { themeIcon.className = 'ph-fill ph-moon'; themeText.textContent = 'Dark Mode'; }
+    if(pageThemeIcon) { pageThemeIcon.className = 'ph-fill ph-moon'; pageThemeText.textContent = 'Ubah ke Light Mode'; }
   }
 }
 
@@ -1827,6 +1902,19 @@ function renderReport() {
       <div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div>
     </div>`;
   }).join('');
+}
+
+// ─── EXPORT CSV ───────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['ID', 'Tanggal', 'Tipe', 'Kategori', 'Sumber Dana', 'Jumlah', 'Deskripsi']];
+  transactions.forEach(t => {
+    const cat = getCat(t.type, t.category); const wal = getWallet(t.walletId);
+    rows.push([t.id, t.date, t.type === 'income' ? 'Pemasukan' : 'Pengeluaran', cat.label, wal.name, t.amount, t.desc.replace(/"/g, '""')]);
+  });
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `DompetKu-Laporan-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  closeExportModal();
 }
 
 // ─── INITIALIZATION & LISTENERS ──────────────────────────────────
