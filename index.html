@@ -13,20 +13,14 @@
 
 <title>DompetKu — Pencatatan Keuangan</title>
 
-<!-- Web App Manifest (DIPERBARUI: Start URL menggunakan "/" agar lebih kompatibel sebagai standalone di Android) -->
-<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"DompetKu","short_name":"DompetKu","start_url":"/","display":"standalone","background_color":"#0d0f14","theme_color":"#0d0f14","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+<!-- Web App Manifest (DIPERBARUI: Menggunakan file terpisah untuk Android PWA) -->
+<link rel="manifest" href="/manifest.json">
 
 <!-- Ikon SVG untuk Android & Web Tab -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Crect%20width%3D%22256%22%20height%3D%22256%22%20rx%3D%2256%22%20fill%3D%22%237c6ff7%22%2F%3E%3Cpath%20d%3D%22M208%2C88H48A16%2C16%2C0%2C0%2C0%2C32%2C104V208a16%2C16%2C0%2C0%2C0%2C16%2C16H208a16%2C16%2C0%2C0%2C0%2C16-16V104A16%2C16%2C0%2C0%2C0%2C208%2C88Zm-24%2C64a12%2C12%2C0%2C1%2C1%2C12-12A12%2C12%2C0%2C0%2C1%2C184%2C152Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Cpath%20d%3D%22M48%2C88H208a0%2C0%2C0%2C0%2C1%2C0%2C0V72a16%2C16%2C0%2C0%2C0-16-16H64A16%2C16%2C0%2C0%2C0%2C48%2C72V88A0%2C0%2C0%2C0%2C1%2C48%2C88Z%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E">
 
-<!-- 
-=========================================================
-PENTING UNTUK IPHONE & ANDROID STANDALONE: 
-Jika Android Anda *masih* membaca sebagai browser saat diinstal, 
-Anda disarankan membuat file `manifest.json` asli di server Anda dan 
-melakukan link ulang seperti ini: <link rel="manifest" href="manifest.json">
-=========================================================
--->
+<!-- PENTING: Tambahkan link ini agar iOS dan PWA bisa mendeteksi icon PNG -->
+<link rel="apple-touch-icon" href="/icon-192.png">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1677,6 +1671,16 @@ let resizeTimeout; window.addEventListener('resize', () => {
     if (currentPage === 'dashboard') renderDashboard(); if (currentPage === 'report') renderReport();
   }, 100);
 });
+
+// --- PWA SERVICE WORKER REGISTRATION ---
+// Wajib untuk Android agar bisa install standalone
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker terdaftar!', reg.scope))
+      .catch(err => console.error('Service Worker gagal terdaftar', err));
+  });
+}
 </script>
 </body>
 </html>
