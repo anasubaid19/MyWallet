@@ -405,7 +405,11 @@
             <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
           </div>
           <div class="card">
-            <div class="card-header"><div class="card-title"><i class="ph-fill ph-chart-pie-slice" style="color:var(--accent);"></i> Pengeluaran Terbesar</div></div>
+            <div class="card-header">
+              <div class="card-title"><i class="ph-fill ph-chart-pie-slice" style="color:var(--accent);"></i> Pengeluaran Terbesar</div>
+              <!-- TOMBOL BARU UNTUK FITUR LAPORAN PER DOMPET -->
+              <div class="card-action" onclick="openWalletReportModal()"><i class="ph-bold ph-chart-bar" style="font-size:16px;"></i> Laporan Dompet</div>
+            </div>
             <div class="donut-wrap"><canvas id="donutChart"></canvas><div class="donut-center"><div class="donut-val" id="donut-val">—</div><div class="donut-lbl">Siklus Ini</div></div></div>
             <div class="cat-list" id="catList"></div>
           </div>
@@ -747,6 +751,16 @@
     <div class="form-group"><label class="form-label">Pilih Warna</label><div class="color-grid" id="editcat-colors"></div></div>
     <div class="form-group"><label class="form-label">Pilih Ikon</label><div class="icon-grid" id="editcat-icons"></div></div>
     <div class="modal-actions" id="editcat-actions"></div>
+  </div>
+</div>
+
+<!-- MODAL: WALLET REPORT (STATISTIK PER DOMPET) -->
+<div class="modal-overlay" id="walletReportModal">
+  <div class="modal" style="max-width: 500px;">
+    <div class="modal-title"><span><i class="ph-fill ph-chart-bar" style="color:var(--accent);"></i> Laporan Per Dompet</span><button class="close-modal" onclick="closeWalletReportModal()"><i class="ph-bold ph-x"></i></button></div>
+    <p style="color:var(--text3); font-size:13px; margin-top:-16px; margin-bottom:20px;">Siklus ini: <span id="walletReportCycleLabel" style="font-weight:600; color:var(--text2);"></span></p>
+    <div id="walletReportList" style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow-y:auto; padding-right:4px;"></div>
+    <div class="modal-actions"><button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="closeWalletReportModal()">Tutup</button></div>
   </div>
 </div>
 
@@ -1501,6 +1515,66 @@ function saveBudget() {
   budgets[cat] = amount; localStorage.setItem('dompet_bud', JSON.stringify(budgets)); closeBudgetModal(); renderBudget();
 }
 
+// ─── WALLET REPORT MODAL ──────────────────────────────────────────
+function openWalletReportModal() {
+  const txs = getMonthTx();
+  const listEl = document.getElementById('walletReportList');
+  document.getElementById('walletReportCycleLabel').textContent = getCycleRange(currentMonth).label;
+
+  let html = '';
+  
+  wallets.forEach(w => {
+    const wTx = txs.filter(t => t.walletId === w.id);
+    const inc = wTx.filter(t => t.type === 'income' || t.type === 'transfer_in').reduce((s, t) => s + t.amount, 0);
+    const exp = wTx.filter(t => t.type === 'expense' || t.type === 'transfer_out').reduce((s, t) => s + t.amount, 0);
+    const net = inc - exp;
+    const total = inc + exp;
+    
+    let incPct = 0, expPct = 0;
+    if (total > 0) {
+      incPct = (inc / total) * 100;
+      expPct = (exp / total) * 100;
+    }
+    
+    html += `
+      <div class="budget-card" style="margin-bottom:0; padding:16px;">
+        <div class="budget-top" style="margin-bottom:12px; align-items:center;">
+          <div>
+            <div class="budget-name"><div style="background:${w.color}22; padding:8px; border-radius:10px; color:${w.color}; display:flex;"><i class="${w.icon}" style="font-size:18px;"></i></div> ${escapeHTML(w.name)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:16px; font-weight:700; color:${net > 0 ? 'var(--green)' : net < 0 ? 'var(--red)' : 'var(--text)'}">${net > 0 ? '+' : ''}${fmt(net)}</div>
+            <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Bersih</div>
+          </div>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc)}</span>
+          <span style="color:var(--red); font-weight:600;">${fmt(exp)} <i class="ph-bold ph-arrow-up-right"></i></span>
+        </div>
+        
+        <div style="height:6px; background:var(--bg3); border-radius:999px; overflow:hidden; display:flex;">
+          ${total > 0 ? `
+            <div style="width:${incPct}%; background:var(--green); height:100%;"></div>
+            <div style="width:${expPct}%; background:var(--red); height:100%;"></div>
+          ` : '<div style="width:100%; background:var(--border); height:100%;"></div>'}
+        </div>
+      </div>
+    `;
+  });
+
+  if(wallets.length === 0) {
+    html = '<div class="empty"><div class="empty-text">Belum ada dompet.</div></div>';
+  }
+
+  listEl.innerHTML = html;
+  document.getElementById('walletReportModal').classList.add('open');
+}
+
+function closeWalletReportModal() {
+  document.getElementById('walletReportModal').classList.remove('open');
+}
+
 // ─── EXPORT & IMPORT DATA ─────────────────────────────────────────
 function openExportModal() { document.getElementById('exportModal').classList.add('open'); }
 function closeExportModal() { document.getElementById('exportModal').classList.remove('open'); }
@@ -1927,6 +2001,7 @@ document.getElementById('catEditModal').addEventListener('click', function(e) { 
 document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
 document.getElementById('welcomeModal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
 document.getElementById('guideModal').addEventListener('click', function(e) { if (e.target === this) closeGuideModal(); });
+document.getElementById('walletReportModal').addEventListener('click', function(e) { if (e.target === this) closeWalletReportModal(); });
 
 initTheme();
 document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
