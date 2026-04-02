@@ -268,6 +268,13 @@
 .modal-actions { display: flex; gap: 12px; margin-top: 32px; width: 100%; }
 .modal-actions .btn { flex: 1; padding: 14px; font-size: 15px; }
 
+/* UNDO TOAST NOTIFICATION */
+.undo-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(150px); background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: var(--shadow); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1); z-index: 9999; pointer-events: none; min-width: 300px; }
+.undo-toast.show { transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.undo-toast span { font-size: 14px; font-weight: 500; }
+.undo-toast button { background: transparent; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 14px; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+.undo-toast button:hover { background: var(--bg3); }
+
 /* MISC (BUDGET, FILTERS, SETTINGS) */
 .budget-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; transition: 0.2s; box-shadow: var(--shadow);}
 .budget-card:hover { border-color: var(--border2); }
@@ -343,6 +350,14 @@
   .modal { padding: 24px; width: 100%; max-width: 100vw; box-sizing: border-box; border-radius: 24px 24px 0 0; align-self: flex-end; animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1); margin: 0; overflow-x: hidden; touch-action: pan-y; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .modal-overlay { align-items: flex-end; padding: 0; }
+  
+  #walletViewToggle { display: flex; }
+  
+  .undo-toast { bottom: calc(80px + env(safe-area-inset-bottom)); width: 90%; min-width: unset; }
+}
+
+@media (min-width: 769px) {
+  #walletViewToggle { display: none !important; }
 }
 
 /* GUIDE TEXT */
@@ -748,6 +763,17 @@
     <div class="form-group"><label class="form-label">Nama Rekening / Dompet</label><input type="text" class="form-input" id="wal-name" placeholder="Misal: BCA, Tunai"></div>
     <div class="form-group"><label class="form-label">Saldo Awal</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="wal-balance" placeholder="0" oninput="formatInputRibuan(event)"></div><small style="color:var(--text3); font-size:12px; margin-top:4px; display:block;">Saldo ini akan ditambahkan dengan pemasukan dan dikurangi pengeluaran Anda.</small></div>
     <div class="form-group"><label class="form-label">Pilih Ikon</label><div class="cat-picker" id="walIconPicker" style="grid-template-columns: repeat(5, 1fr);"></div></div>
+    
+    <!-- TRANSAKSI CEPAT DOMPET SHORTCUTS -->
+    <div id="wal-shortcuts-wrap" style="display:none; margin-bottom: 24px;">
+      <label class="form-label">Transaksi Cepat</label>
+      <div style="display:flex; gap:8px;">
+         <button type="button" class="btn" style="flex:1; background:var(--green-dim); color:var(--green); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('income')"><i class="ph-bold ph-download-simple"></i> Pemasukan</button>
+         <button type="button" class="btn" style="flex:1; background:var(--red-dim); color:var(--red); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('expense')"><i class="ph-bold ph-upload-simple"></i> Pengeluaran</button>
+         <button type="button" class="btn" style="flex:1; background:var(--blue-dim); color:var(--blue); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('transfer')"><i class="ph-bold ph-arrows-left-right"></i> Pindah Saldo</button>
+      </div>
+    </div>
+
     <div class="modal-actions" id="wal-actions"></div>
   </div>
 </div>
@@ -819,6 +845,12 @@
       <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="closeWalletDetailModal()"><i class="ph-bold ph-arrow-left"></i> Kembali ke Laporan</button>
     </div>
   </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="undoToast" class="undo-toast">
+  <span>Transaksi dihapus.</span>
+  <button onclick="undoDeleteTx()">Batalkan</button>
 </div>
 
 <script>
@@ -1357,6 +1389,26 @@ function deleteCustomCat(id) {
   }
 }
 
+// ─── TRANSAKSI CEPAT (SHORTCUT DARI DOMPET) ─────────────────────
+function quickTxFromWallet(type) {
+  const walletId = document.getElementById('wal-id').value;
+  closeWalletModal();
+  
+  openModal(); 
+  
+  // Set tipe transaksi setelah terbuka
+  setTxType(type, true);
+  
+  // Timpa nilai dompet default dengan dompet yang aktif dibuka
+  if (type === 'transfer') {
+    document.getElementById('inp-wallet-from-id').value = walletId;
+    updateWalletBtnUI('btn-wallet-from', walletId);
+  } else {
+    document.getElementById('inp-wallet-id').value = walletId;
+    updateWalletBtnUI('btn-wallet-pick', walletId);
+  }
+}
+
 // ─── MODAL TRANSAKSI ────────────────────────────────────────────
 function openModal(editId = null) {
   const modal = document.getElementById('modal');
@@ -1549,17 +1601,86 @@ function saveTransaction() {
   save(); closeModal(); renderPage();
 }
 
+// ─── UNDO DELETE TRANSACTION LOGIC ────────────────────────────────
+let pendingDeleteTx = null;
+let undoTimeout = null;
+
 function deleteTransaction(id) {
-  if (!confirm('Hapus riwayat transaksi ini secara permanen?')) return;
-  transactions = transactions.filter(t => t.id !== id);
-  save(); renderPage();
+  // Pastikan eksekusi transaksi terhapus sebelumnya (jika ada yang masih tertahan)
+  if (pendingDeleteTx) commitDeleteTx();
+
+  const txIndex = transactions.findIndex(t => t.id === id);
+  if (txIndex === -1) return;
+
+  // Simpan sementera ke variabel, lalu hapus dari UI/Array (belum permanen ke localStorage)
+  pendingDeleteTx = transactions[txIndex];
+  transactions.splice(txIndex, 1);
+  
+  renderPage();
+
+  // Re-render modal laporan jika terbuka
+  if (document.getElementById('walletDetailModal').classList.contains('open')) {
+      openWalletDetailModal(pendingDeleteTx.walletId);
+  }
+  
+  showUndoToast();
 }
+
+function showUndoToast() {
+  const toast = document.getElementById('undoToast');
+  toast.classList.add('show');
+  
+  clearTimeout(undoTimeout);
+  undoTimeout = setTimeout(() => {
+    commitDeleteTx();
+  }, 5000);
+}
+
+function hideUndoToast() {
+  const toast = document.getElementById('undoToast');
+  toast.classList.remove('show');
+}
+
+function commitDeleteTx() {
+  if (pendingDeleteTx) {
+    pendingDeleteTx = null;
+    save(); // Simpan array yang sudah kosong ke localStorage (Hapus Permanen)
+    hideUndoToast();
+  }
+}
+
+function undoDeleteTx() {
+  if (pendingDeleteTx) {
+    // Kembalikan ke array
+    transactions.push(pendingDeleteTx);
+    transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
+    
+    const restoredWalletId = pendingDeleteTx.walletId;
+    pendingDeleteTx = null;
+    clearTimeout(undoTimeout);
+    hideUndoToast();
+    
+    save(); // Simpan ulang agar konsisten
+    renderPage();
+
+    if (document.getElementById('walletDetailModal').classList.contains('open')) {
+        openWalletDetailModal(restoredWalletId);
+    }
+  }
+}
+
+// Eksekusi hapus yang tersisa sebelum menutup web
+window.addEventListener('beforeunload', () => {
+    if (pendingDeleteTx) commitDeleteTx();
+});
+
 
 // ─── MODAL DOMPET (WALLET MANAGEMENT) ───────────────────────────
 function openWalletModal(editId = null) {
   const modal = document.getElementById('walletModal');
   const title = document.getElementById('walletModalTitle');
   const actContainer = document.getElementById('wal-actions');
+  const shortcutsWrap = document.getElementById('wal-shortcuts-wrap');
   
   if (editId) {
     const w = wallets.find(w => w.id === editId);
@@ -1570,6 +1691,8 @@ function openWalletModal(editId = null) {
     document.getElementById('wal-balance').value = w.initialBalance.toLocaleString('id-ID'); // Format Titik
     selectedWalletIcon = WALLET_ICONS.find(i => i.id === w.icon) || WALLET_ICONS[0];
     
+    if (shortcutsWrap) shortcutsWrap.style.display = 'block';
+
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
       <button class="btn btn-danger" onclick="deleteWallet('${w.id}')"><i class="ph-bold ph-trash"></i></button>
@@ -1582,6 +1705,8 @@ function openWalletModal(editId = null) {
     document.getElementById('wal-balance').value = '';
     selectedWalletIcon = WALLET_ICONS[0];
     
+    if (shortcutsWrap) shortcutsWrap.style.display = 'none';
+
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
       <button class="btn btn-primary" onclick="saveWallet()"><i class="ph-bold ph-check"></i> Tambahkan</button>
@@ -1667,8 +1792,8 @@ function openWalletReportModal() {
         </div>
         
         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc)}</span>
-          <span style="color:var(--red); font-weight:600;">${fmt(exp)} <i class="ph-bold ph-arrow-up-right"></i></span>
+          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc, true)}</span>
+          <span style="color:var(--red); font-weight:600;">${fmt(exp, true)} <i class="ph-bold ph-arrow-up-right"></i></span>
         </div>
         
         <div style="height:6px; background:var(--bg3); border-radius:999px; overflow:hidden; display:flex;">
@@ -1720,11 +1845,11 @@ function openWalletDetailModal(walletId) {
     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
       <div>
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pemasukan</div>
-        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc)}</div>
+        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc, true)}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pengeluaran</div>
-        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp)}</div>
+        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp, true)}</div>
       </div>
     </div>
     <div style="border-top:1px dashed var(--border); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
