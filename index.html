@@ -405,7 +405,7 @@
       <!-- PAGE: DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <!-- WALLETS SECTION -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap: nowrap;">
           <h3 style="font-size:16px; color:var(--text2); display:flex; align-items:center; gap:8px; margin:0;"><i class="ph-bold ph-wallet"></i> Dompet & Rekening Anda</h3>
           <div class="wallet-view-toggle" id="walletViewToggle">
             <button class="view-btn active" id="btnViewGrid" onclick="setWalletView('grid')"><i class="ph-bold ph-squares-four"></i></button>
@@ -1056,10 +1056,11 @@ function save() {
   localStorage.setItem('dompet_tx', JSON.stringify(transactions));
 }
 
-function fmt(n, forcePlus = false) { 
+// Murni memformat angka menjadi Rp X.XXX, tanpa asumsi + atau double signs
+function fmt(n) { 
   if (n === 0) return 'Rp 0'; 
   if (n < 0) return '-Rp ' + Math.abs(n).toLocaleString('id-ID');
-  return (forcePlus ? '+Rp ' : 'Rp ') + Math.abs(n).toLocaleString('id-ID'); 
+  return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); 
 }
 
 function fmtDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1479,7 +1480,7 @@ function saveTransaction() {
     
     if (totalRequired > currentBalFrom) {
       const wFrom = getWallet(fromWallet);
-      return alert(`Peringatan: Saldo ${wFrom.name} tidak mencukupi.\n\nSaldo tersedia: ${fmt(currentBalFrom, true)}\nDibutuhkan: ${fmt(totalRequired, true)}`);
+      return alert(`Peringatan: Saldo ${wFrom.name} tidak mencukupi.\n\nSaldo tersedia: ${fmt(currentBalFrom)}\nDibutuhkan: ${fmt(totalRequired)}`);
     }
 
     const wFromName = getWallet(fromWallet).name;
@@ -1526,7 +1527,7 @@ function saveTransaction() {
 
       if (amount > availableBal) {
         const w = getWallet(walletId);
-        return alert(`Peringatan: Saldo ${w.name} tidak mencukupi.\n\nSaldo tersedia: ${fmt(availableBal, true)}\nDibutuhkan: ${fmt(amount, true)}`);
+        return alert(`Peringatan: Saldo ${w.name} tidak mencukupi.\n\nSaldo tersedia: ${fmt(availableBal)}\nDibutuhkan: ${fmt(amount)}`);
       }
     }
 
@@ -1666,8 +1667,8 @@ function openWalletReportModal() {
         </div>
         
         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc, true)}</span>
-          <span style="color:var(--red); font-weight:600;">${fmt(exp, true)} <i class="ph-bold ph-arrow-up-right"></i></span>
+          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc)}</span>
+          <span style="color:var(--red); font-weight:600;">${fmt(exp)} <i class="ph-bold ph-arrow-up-right"></i></span>
         </div>
         
         <div style="height:6px; background:var(--bg3); border-radius:999px; overflow:hidden; display:flex;">
@@ -1719,11 +1720,11 @@ function openWalletDetailModal(walletId) {
     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
       <div>
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pemasukan</div>
-        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc, true)}</div>
+        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc)}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pengeluaran</div>
-        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp, true)}</div>
+        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp)}</div>
       </div>
     </div>
     <div style="border-top:1px dashed var(--border); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
@@ -1754,8 +1755,8 @@ function openWalletDetailModal(walletId) {
       const safeDesc = escapeHTML(t.desc);
 
       const isInc = t.type === 'income' || t.type === 'transfer_in';
-      const sign = isInc ? '+' : '-';
       const colorClass = isInc ? 'income' : 'expense';
+      const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
 
       return `
         <div style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--border);">
@@ -1767,7 +1768,7 @@ function openWalletDetailModal(walletId) {
             <div style="font-size: 12px; color: var(--text3);">${escapeHTML(cat.label)} • <span style="opacity: 0.7;">${dateStr}</span></div>
           </div>
           <div style="text-align: right;">
-            <div class="tx-amount ${colorClass}" style="font-size: 15px;">${sign}${fmt(t.amount, true)}</div>
+            <div class="tx-amount ${colorClass}" style="font-size: 15px;">${amountStr}</div>
           </div>
         </div>
       `;
@@ -1927,9 +1928,8 @@ function buildTxList(txs) {
     
     // Penentuan styling nominal berdasarkan tipe transaksi
     const isInc = t.type === 'income' || t.type === 'transfer_in';
-    const sign = isInc ? '+' : '-';
-    // Style income (hijau) untuk pemasukan murni dan transfer masuk, sisanya abu-abu
-    const colorClass = (t.type === 'income' || t.type === 'transfer_in') ? 'income' : 'expense';
+    const colorClass = isInc ? 'income' : 'expense';
+    const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
 
     return `<div class="tx-item">
       <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}"><i class="${cat.icon}"></i></div>
@@ -1938,7 +1938,7 @@ function buildTxList(txs) {
         <div class="tx-cat">${escapeHTML(cat.label)} • <span style="color:${wal.color};font-weight:600;">${escapeHTML(wal.name)}</span> • <span style="opacity:0.6">${dateStr}</span></div>
       </div>
       <div class="tx-right">
-        <div class="tx-amount ${colorClass}">${sign}${fmt(t.amount, true)}</div>
+        <div class="tx-amount ${colorClass}">${amountStr}</div>
         <div class="tx-actions">
           <button class="tx-btn edit" onclick="openModal(${t.id})" title="Edit Transaksi"><i class="ph-bold ph-pencil-simple"></i></button>
           <button class="tx-btn del" onclick="deleteTransaction(${t.id})" title="Hapus Transaksi"><i class="ph-bold ph-trash"></i></button>
@@ -2018,8 +2018,8 @@ function renderDashboard() {
   const mExpense = txs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   
   document.getElementById('stat-balance').textContent = fmt(grandTotalBalance);
-  document.getElementById('stat-income').textContent = fmt(mIncome, true);
-  document.getElementById('stat-expense').textContent = fmt(mExpense, true);
+  document.getElementById('stat-income').textContent = fmt(mIncome);
+  document.getElementById('stat-expense').textContent = fmt(mExpense);
   document.getElementById('stat-income-count').textContent = txs.filter(t=>t.type==='income').length + ' data masuk';
   document.getElementById('stat-expense-count').textContent = txs.filter(t=>t.type==='expense').length + ' data keluar';
 
@@ -2094,7 +2094,7 @@ function drawDonut(txs) {
   const expenses = txs.filter(t => t.type === 'expense');
   const total = expenses.reduce((s, t) => s + t.amount, 0);
   
-  const valText = total > 0 ? fmt(total, true) : '—'; const valEl = document.getElementById('donut-val'); valEl.textContent = valText;
+  const valText = total > 0 ? fmt(total) : '—'; const valEl = document.getElementById('donut-val'); valEl.textContent = valText;
   if(valText.length > 15) valEl.style.fontSize = '12px'; else if(valText.length > 12) valEl.style.fontSize = '14px'; else valEl.style.fontSize = '18px';
 
   const agg = {}; expenses.forEach(t => { agg[t.category] = (agg[t.category] || 0) + t.amount; });
@@ -2130,7 +2130,7 @@ function drawDonut(txs) {
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId); const pct = Math.round((val / total) * 100);
     return `<div class="cat-item">
-      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val, true)}</div></div>
+      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div>
       <div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div>
     </div>`;
   }).join('');
@@ -2173,14 +2173,14 @@ function renderBudget() {
       <div class="budget-top">
         <div>
           <div class="budget-name"><div style="background:${e.cat.color}22; padding:8px; border-radius:10px; color:${e.cat.color}; display:flex;"><i class="${e.cat.icon}"></i></div> ${escapeHTML(e.cat.label)}</div>
-          <div class="budget-amounts">Terpakai ${fmt(e.spent, true)} dari ${e.budget > 0 ? fmt(e.budget, true) : 'Tanpa Batas'}</div>
+          <div class="budget-amounts">Terpakai ${fmt(e.spent)} dari ${e.budget > 0 ? fmt(e.budget) : 'Tanpa Batas'}</div>
         </div>
         <div class="budget-pct-big" style="color:${barColor}">${e.budget > 0 ? Math.round(pct) + '%' : '—'}</div>
       </div>
       ${e.budget > 0 ? `
         <div class="budget-bar-bg"><div class="budget-bar" style="width:${pct}%;background:${barColor}; box-shadow: 0 0 10px ${barColor}"></div></div>
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text3); align-items:center;">
-          <span style="color:${over ? 'var(--red)' : 'var(--text2)'}; font-weight:600;">${over ? '⚠️ Defisit ' + fmt(Math.abs(sisa), true) : 'Sisa ' + fmt(sisa, true)}</span>
+          <span style="color:${over ? 'var(--red)' : 'var(--text2)'}; font-weight:600;">${over ? '⚠️ Defisit ' + fmt(Math.abs(sisa)) : 'Sisa ' + fmt(sisa)}</span>
           <span class="card-action" onclick="deleteBudget('${e.cat.id}')">Hapus Aturan</span>
         </div>
       ` : `<div style="font-size:13px;color:var(--text3); border-top:1px dashed var(--border); padding-top:12px; margin-top:8px;">Hanya ada pengeluaran, budget belum ditentukan. <span class="card-action" style="margin-left:8px;" onclick="openBudgetModalFor('${e.cat.id}')">Set Budget</span></div>`}
@@ -2195,7 +2195,7 @@ function renderReport() {
   // Transfer diabaikan di statistik keseluruhan ini
   const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-  document.getElementById('rep-income').textContent = fmt(income, true); document.getElementById('rep-expense').textContent = fmt(expense, true);
+  document.getElementById('rep-income').textContent = fmt(income); document.getElementById('rep-expense').textContent = fmt(expense);
   const net = income - expense; document.getElementById('rep-net').textContent = fmt(net);
 
   const rows = [];
@@ -2226,7 +2226,7 @@ function renderReport() {
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId); const pct = totalExp > 0 ? Math.round((val / totalExp) * 100) : 0;
     return `<div class="cat-item">
-      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val, true)}</div></div>
+      <div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div>
       <div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div>
     </div>`;
   }).join('');
