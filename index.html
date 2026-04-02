@@ -140,44 +140,39 @@
 .page.active { display: block; }
 @keyframes fadeInPage { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 
-/* WALLET VIEW TOGGLE & MOBILE GRID */
-.wallet-view-toggle { display: none; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; border: 1px solid var(--border); gap: 4px; }
+/* WALLET VIEW TOGGLE & GRID VIEW */
+.wallet-view-toggle { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; border: 1px solid var(--border); gap: 4px; }
 .view-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; color: var(--text3); display: grid; place-items: center; font-size: 16px; cursor: pointer; transition: 0.2s; }
 .view-btn.active { background: var(--accent); color: white; box-shadow: 0 4px 12px var(--accent-dim); }
 
-.wallets-scroll { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 16px; margin-bottom: 12px; scroll-snap-type: x mandatory; }
-.wallets-grid-mobile { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
-.wallets-grid-mobile .wallet-card { padding: 16px; min-width: 0; scroll-snap-align: none; }
-.wallets-grid-mobile .wallet-icon { width: 32px; height: 32px; font-size: 18px; margin-bottom: 12px; border-radius: 8px; }
-.wallets-grid-mobile .wallet-name { font-size: 13px; margin-bottom: 2px; }
-.wallets-grid-mobile .wallet-bal { font-size: 16px; }
-.wallets-grid-mobile .wallet-add { min-width: 0; padding: 16px; font-size: 13px; scroll-snap-align: none; }
+.wallets-grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 12px; }
+.wallets-grid-view .wallet-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; position: relative; transition: 0.2s; cursor: pointer; box-shadow: var(--shadow); min-width: 0; }
+.wallets-grid-view .wallet-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.wallets-grid-view .wallet-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; margin-bottom: 12px; color: white; }
+.wallets-grid-view .wallet-name { font-size: 14px; color: var(--text2); font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wallets-grid-view .wallet-bal { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wallets-grid-view .wallet-add { min-width: 0; border: 2px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; color: var(--text2); cursor: pointer; transition: 0.2s; background: transparent; font-weight: 600; font-size: 13px; padding: 16px; }
+.wallets-grid-view .wallet-add:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
 
-.wallet-card { scroll-snap-align: start; min-width: 220px; flex: 0 0 auto; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; transition: 0.2s; cursor: pointer; box-shadow: var(--shadow); }
-.wallet-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-.wallet-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 24px; margin-bottom: 16px; color: white;}
-.wallet-name { font-size: 14px; color: var(--text2); font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wallet-bal { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wallet-add { scroll-snap-align: start; min-width: 140px; flex: 0 0 auto; border: 2px dashed var(--border); border-radius: var(--radius); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; color: var(--text2); cursor: pointer; transition: 0.2s; background: transparent; font-weight: 600; font-size: 13px; }
-.wallet-add:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
-
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
-.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; transition: 0.2s; box-shadow: var(--shadow); }
+/* STATS GRID (DIPERBARUI UNTUK 2 KOLOM UNIVERSAL) */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; position: relative; overflow: hidden; transition: 0.2s; box-shadow: var(--shadow); }
+.stat-card.blue { grid-column: 1 / -1; }
 .stat-card:hover { transform: translateY(-2px); border-color: var(--border2); }
 .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
 .stat-card.green::before { background: var(--green); } .stat-card.red::before { background: var(--red); } .stat-card.blue::before { background: var(--blue); }
-.stat-label { font-size: 12px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-.stat-value { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+.stat-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
 .stat-value.green { color: var(--green); } .stat-value.red { color: var(--red); } .stat-value.blue { color: var(--blue); }
-.stat-sub { font-size: 13px; color: var(--text2); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
-.stat-icon { position: absolute; right: 24px; top: 24px; font-size: 40px; color: var(--border2); transition: color 0.3s; z-index: 0; }
+.stat-sub { font-size: 12px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.stat-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; color: var(--border2); transition: color 0.3s; z-index: 0; }
 .stat-card:hover .stat-icon { color: var(--border); }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); transition: 0.3s;}
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.card-title { font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:8px;}
-.card-action { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:4px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: nowrap; gap: 12px; }
+.card-title { font-size: 16px; font-weight: 700; display:flex; align-items:center; gap:8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.card-action { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; display:flex; align-items:center; gap:4px; white-space: nowrap; flex-shrink: 0; }
 .card-action:hover { text-decoration: underline; }
 
 /* TRANSACTIONS */
@@ -320,7 +315,15 @@
   .topbar-right { width: 100%; justify-content: flex-start; }
   .topbar .btn-primary { display: none; } 
   .page-content { padding: 20px 16px; }
-  .stats-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
+  
+  .wallets-grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .wallets-grid-view .wallet-icon { width: 32px; height: 32px; font-size: 18px; }
+  .wallets-grid-view .wallet-name { font-size: 13px; }
+  .wallets-grid-view .wallet-bal { font-size: 16px; }
+
+  .stats-grid { gap: 12px; }
+  .stat-value { font-size: 24px; }
+  
   .grid2 { grid-template-columns: 1fr; gap: 16px; }
   .cat-picker { grid-template-columns: repeat(4, 1fr); gap:8px;}
   .color-grid { grid-template-columns: repeat(5, 1fr); }
@@ -340,12 +343,6 @@
   .modal { padding: 24px; width: 100%; max-width: 100vw; box-sizing: border-box; border-radius: 24px 24px 0 0; align-self: flex-end; animation: slideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1); margin: 0; overflow-x: hidden; touch-action: pan-y; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .modal-overlay { align-items: flex-end; padding: 0; }
-  
-  #walletViewToggle { display: flex; }
-}
-
-@media (min-width: 769px) {
-  #walletViewToggle { display: none !important; }
 }
 
 /* GUIDE TEXT */
@@ -416,7 +413,7 @@
           </div>
         </div>
         
-        <div class="wallets-scroll" id="walletList"></div>
+        <div id="walletList"></div>
         <div id="walletMobileExtras"></div>
 
         <div class="stats-grid">
@@ -495,7 +492,8 @@
 
       <!-- PAGE: SETTINGS -->
       <div class="page" id="page-settings">
-        <div class="grid2">
+        <!-- WRAPPER BARU: Simetris untuk Pengaturan Sistem -->
+        <div style="max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
           
           <div class="card">
             <div class="card-header"><div class="card-title">Tampilan Aplikasi</div></div>
@@ -1058,9 +1056,10 @@ function save() {
   localStorage.setItem('dompet_tx', JSON.stringify(transactions));
 }
 
-function fmt(n) { 
+function fmt(n, forcePlus = false) { 
   if (n === 0) return 'Rp 0'; 
-  return (n < 0 ? '-Rp ' : 'Rp ') + Math.abs(n).toLocaleString('id-ID'); 
+  if (n < 0) return '-Rp ' + Math.abs(n).toLocaleString('id-ID');
+  return (forcePlus ? '+Rp ' : 'Rp ') + Math.abs(n).toLocaleString('id-ID'); 
 }
 
 function fmtDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1136,7 +1135,7 @@ function navigate(page) {
   window.scrollTo(0, 0); renderPage();
 }
 
-// ─── TOGGLE WALLET VIEW (MOBILE) ────────────────────────────────
+// ─── TOGGLE WALLET VIEW (MOBILE & DESKTOP) ──────────────────────
 function setWalletView(view) {
   localStorage.setItem('dompet_wallet_view', view);
   renderDashboard();
@@ -1951,10 +1950,7 @@ function buildTxList(txs) {
 
 // ─── DASHBOARD ───────────────────────────────────────────────────
 function renderDashboard() {
-  let viewMode = 'desktop';
-  if (window.innerWidth <= 768) {
-    viewMode = localStorage.getItem('dompet_wallet_view') || 'grid';
-  }
+  let viewMode = localStorage.getItem('dompet_wallet_view') || 'grid';
 
   const toggleEl = document.getElementById('walletViewToggle');
   if (toggleEl) {
@@ -1966,22 +1962,9 @@ function renderDashboard() {
   const extrasEl = document.getElementById('walletMobileExtras');
   extrasEl.innerHTML = ''; // Reset extras
 
-  if (viewMode === 'desktop') {
-    walListEl.className = 'wallets-scroll';
-    walListEl.innerHTML = wallets.map(w => {
-      const bal = getWalletCurrentBalance(w.id);
-      return `
-        <div class="wallet-card" onclick="openWalletModal('${w.id}')">
-          <div class="wallet-icon" style="background: ${w.color};"><i class="${w.icon}"></i></div>
-          <div class="wallet-name">${escapeHTML(w.name)}</div>
-          <div class="wallet-bal">${fmt(bal)}</div>
-        </div>
-      `;
-    }).join('') + `<button class="wallet-add" onclick="openWalletModal()"><i class="ph-bold ph-plus"></i> Tambah Dompet</button>`;
-  } 
-  else if (viewMode === 'grid') {
-    walListEl.className = 'wallets-grid-mobile';
-    const maxShow = 4;
+  if (viewMode === 'grid') {
+    walListEl.className = 'wallets-grid-view';
+    const maxShow = window.innerWidth > 768 ? 6 : 4;
     const visibleWallets = wallets.slice(0, maxShow);
     
     let html = visibleWallets.map(w => {
@@ -1995,7 +1978,7 @@ function renderDashboard() {
       `;
     }).join('');
     
-    html += `<button class="wallet-add" onclick="openWalletModal()"><i class="ph-bold ph-plus"></i> Tambah</button>`;
+    html += `<div class="wallet-add" onclick="openWalletModal()"><i class="ph-bold ph-plus"></i> Tambah Dompet</div>`;
     walListEl.innerHTML = html;
 
     if (wallets.length > maxShow) {
@@ -2004,7 +1987,7 @@ function renderDashboard() {
   }
   else if (viewMode === 'list') {
     walListEl.className = '';
-    let html = `<div style="display:flex; flex-direction:column; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:0 16px; margin-bottom:12px; box-shadow:var(--shadow);">`;
+    let html = `<div style="width: 100%; display:flex; flex-direction:column; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:0 16px; margin-bottom:12px; box-shadow:var(--shadow);">`;
     html += wallets.map((w, i) => {
       const bal = getWalletCurrentBalance(w.id);
       const border = i < wallets.length - 1 ? 'border-bottom:1px solid var(--border);' : '';
