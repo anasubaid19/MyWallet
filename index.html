@@ -161,10 +161,10 @@
 .stat-card:hover { transform: translateY(-2px); border-color: var(--border2); }
 .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
 .stat-card.green::before { background: var(--green); } .stat-card.red::before { background: var(--red); } .stat-card.blue::before { background: var(--blue); }
-.stat-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-.stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+.stat-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; position: relative; z-index: 1;}
+.stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; position: relative; z-index: 1;}
 .stat-value.green { color: var(--green); } .stat-value.red { color: var(--red); } .stat-value.blue { color: var(--blue); }
-.stat-sub { font-size: 12px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.stat-sub { font-size: 12px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 6px; position: relative; z-index: 1;}
 .stat-icon { position: absolute; right: 16px; top: 16px; font-size: 28px; color: var(--border2); transition: color 0.3s; z-index: 0; }
 .stat-card:hover .stat-icon { color: var(--border); }
 
@@ -268,6 +268,14 @@
 .modal-actions { display: flex; gap: 12px; margin-top: 32px; width: 100%; }
 .modal-actions .btn { flex: 1; padding: 14px; font-size: 15px; }
 
+/* TOGGLE SWITCH COMPONENT */
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 24px; }
+.toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+input:checked + .toggle-slider { background-color: var(--accent); }
+input:checked + .toggle-slider:before { transform: translateX(20px); }
+
 /* UNDO TOAST NOTIFICATION */
 .undo-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(150px); background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: var(--shadow); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1); z-index: 9999; pointer-events: none; min-width: 300px; }
 .undo-toast.show { transform: translateX(-50%) translateY(0); pointer-events: auto; }
@@ -330,6 +338,8 @@
 
   .stats-grid { gap: 12px; }
   .stat-value { font-size: 24px; }
+  .stat-label { font-size: 9px; line-height: 1.2; }
+  .stat-card:not(.blue) .stat-icon { display: none; }
   
   .grid2 { grid-template-columns: 1fr; gap: 16px; }
   .cat-picker { grid-template-columns: repeat(4, 1fr); gap:8px;}
@@ -354,10 +364,14 @@
   #walletViewToggle { display: flex; }
   
   .undo-toast { bottom: calc(80px + env(safe-area-inset-bottom)); width: 90%; min-width: unset; }
+  
+  .desktop-hide-icon { display: none !important; }
+  .mobile-hide-icon { display: grid !important; }
 }
 
 @media (min-width: 769px) {
-  #walletViewToggle { display: none !important; }
+  .mobile-hide-icon { display: none !important; }
+  .desktop-hide-icon { display: flex !important; }
 }
 
 /* GUIDE TEXT */
@@ -411,6 +425,9 @@
           <div class="month-label" id="monthLabel"></div>
           <div class="month-nav-btn" onclick="changeMonth(1)"><i class="ph-bold ph-caret-right"></i></div>
         </div>
+        <button class="btn-ghost mobile-hide-icon" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="toggleHideBalance()" title="Sembunyikan Saldo">
+          <i id="dashHideIconMobile" class="ph-bold ph-eye" style="font-size: 22px;"></i>
+        </button>
         <button class="btn btn-primary" onclick="openModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
       </div>
     </div>
@@ -422,9 +439,14 @@
         <!-- WALLETS SECTION -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap: nowrap;">
           <h3 style="font-size:16px; color:var(--text2); display:flex; align-items:center; gap:8px; margin:0;"><i class="ph-bold ph-wallet"></i> Dompet & Rekening Anda</h3>
-          <div class="wallet-view-toggle" id="walletViewToggle">
-            <button class="view-btn active" id="btnViewGrid" onclick="setWalletView('grid')"><i class="ph-bold ph-squares-four"></i></button>
-            <button class="view-btn" id="btnViewList" onclick="setWalletView('list')"><i class="ph-bold ph-list"></i></button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="desktop-hide-icon" onclick="toggleHideBalance()" style="background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center; width:34px; height:34px; transition:0.2s;" title="Sembunyikan Saldo">
+              <i id="dashHideIconDesktop" class="ph-bold ph-eye" style="font-size:18px;"></i>
+            </button>
+            <div class="wallet-view-toggle" id="walletViewToggle" style="margin:0;">
+              <button class="view-btn active" id="btnViewGrid" onclick="setWalletView('grid')"><i class="ph-bold ph-squares-four"></i></button>
+              <button class="view-btn" id="btnViewList" onclick="setWalletView('list')"><i class="ph-bold ph-list"></i></button>
+            </div>
           </div>
         </div>
         
@@ -432,9 +454,13 @@
         <div id="walletMobileExtras"></div>
 
         <div class="stats-grid">
-          <div class="stat-card blue"><div class="stat-label">Total Semua Saldo (Keseluruhan)</div><div class="stat-value blue" id="stat-balance">Rp 0</div><div class="stat-icon"><i class="ph-fill ph-wallet"></i></div></div>
-          <div class="stat-card green"><div class="stat-label">Pemasukan (Siklus Ini)</div><div class="stat-value green" id="stat-income">Rp 0</div><div class="stat-sub"><i class="ph-bold ph-trend-up"></i> <span id="stat-income-count">0 transaksi</span></div><div class="stat-icon"><i class="ph-fill ph-download-simple"></i></div></div>
-          <div class="stat-card red"><div class="stat-label">Pengeluaran (Siklus Ini)</div><div class="stat-value red" id="stat-expense">Rp 0</div><div class="stat-sub"><i class="ph-bold ph-trend-down"></i> <span id="stat-expense-count">0 transaksi</span></div><div class="stat-icon"><i class="ph-fill ph-upload-simple"></i></div></div>
+          <div class="stat-card blue">
+            <div class="stat-label">Total Semua Saldo (Keseluruhan)</div>
+            <div class="stat-value blue" id="stat-balance">0</div>
+            <div class="stat-icon"><i class="ph-fill ph-wallet"></i></div>
+          </div>
+          <div class="stat-card green"><div class="stat-label">Pemasukan (Siklus Ini)</div><div class="stat-value green" id="stat-income">0</div><div class="stat-sub"><i class="ph-bold ph-trend-up"></i> <span id="stat-income-count">0 transaksi</span></div><div class="stat-icon"><i class="ph-fill ph-download-simple"></i></div></div>
+          <div class="stat-card red"><div class="stat-label">Pengeluaran (Siklus Ini)</div><div class="stat-value red" id="stat-expense">0</div><div class="stat-sub"><i class="ph-bold ph-trend-down"></i> <span id="stat-expense-count">0 transaksi</span></div><div class="stat-icon"><i class="ph-fill ph-upload-simple"></i></div></div>
         </div>
 
         <div class="grid2">
@@ -489,9 +515,9 @@
       <!-- PAGE: REPORT -->
       <div class="page" id="page-report">
         <div class="stats-grid" style="margin-bottom:24px;">
-          <div class="stat-card green"><div class="stat-label">Total Semua Pemasukan</div><div class="stat-value green" id="rep-income">Rp 0</div><div class="stat-icon"><i class="ph-fill ph-trend-up"></i></div></div>
-          <div class="stat-card red"><div class="stat-label">Total Semua Pengeluaran</div><div class="stat-value red" id="rep-expense">Rp 0</div><div class="stat-icon"><i class="ph-fill ph-trend-down"></i></div></div>
-          <div class="stat-card blue"><div class="stat-label">Total Kekayaan Bersih</div><div class="stat-value blue" id="rep-net">Rp 0</div><div class="stat-icon"><i class="ph-fill ph-scales"></i></div></div>
+          <div class="stat-card green"><div class="stat-label">Total Semua Pemasukan</div><div class="stat-value green" id="rep-income">0</div><div class="stat-icon"><i class="ph-fill ph-trend-up"></i></div></div>
+          <div class="stat-card red"><div class="stat-label">Total Semua Pengeluaran</div><div class="stat-value red" id="rep-expense">0</div><div class="stat-icon"><i class="ph-fill ph-trend-down"></i></div></div>
+          <div class="stat-card blue"><div class="stat-label">Total Kekayaan Bersih</div><div class="stat-value blue" id="rep-net">0</div><div class="stat-icon"><i class="ph-fill ph-scales"></i></div></div>
         </div>
         <div class="grid2">
           <div class="card">
@@ -512,7 +538,7 @@
           
           <div class="card">
             <div class="card-header"><div class="card-title">Tampilan Aplikasi</div></div>
-            <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan mode gelap/terang dan warna dasar aplikasi dengan selera Anda.</p>
+            <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan mode gelap/terang, warna dasar aplikasi, dan opsi privasi.</p>
             
             <div class="settings-list" style="margin-bottom: 24px;">
               <div class="settings-item" onclick="toggleTheme()">
@@ -521,6 +547,17 @@
                   <div>Mode Gelap / Terang<br><small style="color:var(--text3);font-weight:400;" id="pageThemeText">Ubah ke Light Mode</small></div>
                 </div>
               </div>
+              
+              <div class="settings-item" style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex;align-items:center;">
+                  <span class="icon"><i class="ph-bold ph-eye-slash"></i></span> 
+                  <div>Sembunyikan Saldo<br><small style="color:var(--text3);font-weight:400;">Sembunyikan semua angka nominal di seluruh aplikasi</small></div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="settingHideToggle" onchange="toggleHideBalance()">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
             </div>
             
             <label class="form-label">Warna Aksen Utama</label>
@@ -528,15 +565,23 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><div class="card-title">Pengaturan Siklus & Kategori</div></div>
-            <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan perhitungan laporan dengan tanggal gajian Anda dan kelola daftar kategori.</p>
+            <div class="card-header"><div class="card-title">Pengaturan Regional & Siklus</div></div>
+            <p style="color: var(--text3); font-size: 14px; margin-bottom: 24px; line-height: 1.6;">Sesuaikan simbol mata uang, tanggal gajian, dan kelola kategori pencatatan.</p>
             
             <div class="settings-list">
-              <div class="settings-item" onclick="openCatManagerModal()">
-                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-squares-four"></i></span> <div>Kelola Kategori Kustom<br><small style="color:var(--text3);font-weight:400;">Tambah, edit ikon dan warna kategori.</small></div></div>
-                <i class="ph-bold ph-arrow-right"></i>
-              </div>
-              <div class="settings-item" style="display:block; padding: 20px;">
+              <div class="settings-item" style="margin-bottom: 0; padding: 20px; display:block;">
+                <label class="form-label">Mata Uang</label>
+                <select class="form-input" id="settingCurrency" onchange="changeCurrency(this.value)">
+                  <option value="IDR">Rupiah (Rp)</option>
+                  <option value="USD">US Dollar ($)</option>
+                  <option value="MYR">Malaysian Ringgit (RM)</option>
+                  <option value="JPY">Japanese Yen (¥)</option>
+                  <option value="EUR">Euro (€)</option>
+                  <option value="GBP">British Pound (£)</option>
+                  <option value="SAR">Saudi Riyal (ر.س)</option>
+                </select>
+                <small style="color:var(--text3);font-weight:400; display:block; margin-top:8px; margin-bottom: 24px;">Sesuaikan simbol mata uang yang ditampilkan.</small>
+                
                 <label class="form-label">Tanggal Mulai Siklus (Gajian)</label>
                 <select class="form-input" id="set-cycle-start" onchange="saveSettings()" style="margin-bottom:12px;">
                   <!-- Diisi lewat JS -->
@@ -547,6 +592,11 @@
                   <option value="3">Per 3 Bulan (Kuartal)</option>
                   <option value="6">Per 6 Bulan (Semester)</option>
                 </select>
+              </div>
+
+              <div class="settings-item" onclick="openCatManagerModal()">
+                <div style="display:flex;align-items:center;"><span class="icon"><i class="ph-bold ph-squares-four"></i></span> <div>Kelola Kategori Kustom<br><small style="color:var(--text3);font-weight:400;">Tambah, edit ikon dan warna kategori.</small></div></div>
+                <i class="ph-bold ph-arrow-right"></i>
               </div>
             </div>
           </div>
@@ -854,6 +904,20 @@
 </div>
 
 <script>
+// ─── INIT VARIABEL SETTINGS (MATA UANG & HIDE BALANCE) ──────────
+const CURRENCY_MAP = {
+  'IDR': { locale: 'id-ID', symbol: 'Rp' },
+  'USD': { locale: 'en-US', symbol: '$' },
+  'MYR': { locale: 'ms-MY', symbol: 'RM' },
+  'JPY': { locale: 'ja-JP', symbol: '¥' },
+  'EUR': { locale: 'de-DE', symbol: '€' },
+  'GBP': { locale: 'en-GB', symbol: '£' },
+  'SAR': { locale: 'ar-SA', symbol: 'ر.س' }
+};
+
+let currentCurrency = localStorage.getItem('dompet_currency') || 'IDR';
+let hideBalance = localStorage.getItem('dompet_hide_balance') === 'true';
+
 // ─── TEMA WARNA APLIKASI (APP COLOR THEME) ──────────────────────
 const APP_THEMES = [
   { hex: '#7c6ff7', dim: 'rgba(124,111,247,0.15)' }, // Ungu (Default)
@@ -969,10 +1033,17 @@ function initTheme() {
   let savedAppColor = localStorage.getItem('dompet_app_color') || '#7c6ff7';
   setAppThemeColor(savedAppColor, false);
   
+  // Setup Cycle Selectors
   let daySelect = document.getElementById('set-cycle-start');
   for(let i=1; i<=31; i++) daySelect.innerHTML += `<option value="${i}">Tanggal ${i}</option>`;
   daySelect.value = userSettings.cycleStartDay;
   document.getElementById('set-cycle-length').value = userSettings.cycleLength;
+  
+  // Setup Init Currency & Hide Balance UI
+  const selCurrency = document.getElementById('settingCurrency');
+  if (selCurrency) selCurrency.value = currentCurrency;
+  updateCurrencyPrefixes();
+  updateHideBalanceUI();
 }
 
 function saveSettings() {
@@ -1005,6 +1076,41 @@ function updateThemeUI(theme) {
     if(themeIcon) { themeIcon.className = 'ph-fill ph-moon'; themeText.textContent = 'Dark Mode'; }
     if(pageThemeIcon) { pageThemeIcon.className = 'ph-fill ph-moon'; pageThemeText.textContent = 'Ubah ke Light Mode'; }
   }
+}
+
+// ─── FUNGSI HIDE BALANCE & MATA UANG ────────────────────────────
+function toggleHideBalance() {
+  hideBalance = !hideBalance;
+  localStorage.setItem('dompet_hide_balance', hideBalance.toString());
+  updateHideBalanceUI();
+  renderPage();
+}
+
+function updateHideBalanceUI() {
+  const iconClass = hideBalance ? 'ph-bold ph-eye-slash' : 'ph-bold ph-eye';
+  
+  const dashIconDesktop = document.getElementById('dashHideIconDesktop');
+  if (dashIconDesktop) dashIconDesktop.className = iconClass;
+  
+  const dashIconMobile = document.getElementById('dashHideIconMobile');
+  if (dashIconMobile) dashIconMobile.className = iconClass;
+
+  const settingToggle = document.getElementById('settingHideToggle');
+  if (settingToggle) {
+    settingToggle.checked = hideBalance;
+  }
+}
+
+function changeCurrency(val) {
+  currentCurrency = val;
+  localStorage.setItem('dompet_currency', val);
+  updateCurrencyPrefixes();
+  renderPage();
+}
+
+function updateCurrencyPrefixes() {
+  const sym = CURRENCY_MAP[currentCurrency].symbol;
+  document.querySelectorAll('.amount-prefix').forEach(el => el.textContent = sym);
 }
 
 // ─── FORMAT INPUT ANGKA RIBUAN ──────────────────────────────────
@@ -1088,11 +1194,25 @@ function save() {
   localStorage.setItem('dompet_tx', JSON.stringify(transactions));
 }
 
-// Murni memformat angka menjadi Rp X.XXX, tanpa asumsi + atau double signs
+// Murni memformat angka sesuai konfigurasi, menangani hide balance
 function fmt(n) { 
-  if (n === 0) return 'Rp 0'; 
-  if (n < 0) return '-Rp ' + Math.abs(n).toLocaleString('id-ID');
-  return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); 
+  if (hideBalance) {
+    if (n === 0) return '••••••';
+    if (n < 0) return '- ••••••';
+    return '••••••';
+  }
+  
+  const formatOptions = CURRENCY_MAP[currentCurrency] || CURRENCY_MAP['IDR'];
+  let formatted = new Intl.NumberFormat(formatOptions.locale, {
+    style: 'currency',
+    currency: currentCurrency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(Math.abs(n));
+
+  if (n === 0) return formatted;
+  if (n < 0) return '-' + formatted;
+  return formatted;
 }
 
 function fmtDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
@@ -1723,6 +1843,7 @@ function renderWalletIcons() {
   `).join('');
 }
 function selectWalletIcon(id) { selectedWalletIcon = WALLET_ICONS.find(i => i.id === id); renderWalletIcons(); }
+
 function saveWallet() {
   const editId = document.getElementById('wal-id').value;
   const name = document.getElementById('wal-name').value.trim();
@@ -1735,11 +1856,28 @@ function saveWallet() {
   
   localStorage.setItem('dompet_wallets', JSON.stringify(wallets)); closeWalletModal(); renderDashboard();
 }
+
 function deleteWallet(id) {
   if(wallets.length <= 1) return alert('Peringatan: Anda tidak bisa menghapus dompet satu-satunya.');
-  if(transactions.some(t => t.walletId === id)) return alert('Gagal: Dompet masih digunakan pada transaksi.');
-  if(confirm('Hapus dompet ini secara permanen?')) {
-    wallets = wallets.filter(w => w.id !== id); localStorage.setItem('dompet_wallets', JSON.stringify(wallets)); closeWalletModal(); renderDashboard();
+  
+  const hasTx = transactions.some(t => t.walletId === id);
+  let msg = 'Hapus dompet ini secara permanen?';
+  
+  if (hasTx) {
+    msg = 'Hapus dompet ini secara permanen?\\n\\nPERINGATAN: Terdapat transaksi yang menggunakan dompet ini. Semua transaksi terkait juga akan ikut TERHAPUS!';
+  }
+  
+  if(confirm(msg)) {
+    wallets = wallets.filter(w => w.id !== id);
+    localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
+    
+    if (hasTx) {
+      transactions = transactions.filter(t => t.walletId !== id);
+      save();
+    }
+    
+    closeWalletModal(); 
+    renderPage();
   }
 }
 
@@ -1792,8 +1930,8 @@ function openWalletReportModal() {
         </div>
         
         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc, true)}</span>
-          <span style="color:var(--red); font-weight:600;">${fmt(exp, true)} <i class="ph-bold ph-arrow-up-right"></i></span>
+          <span style="color:var(--green); font-weight:600;"><i class="ph-bold ph-arrow-down-left"></i> ${fmt(inc)}</span>
+          <span style="color:var(--red); font-weight:600;">${fmt(exp)} <i class="ph-bold ph-arrow-up-right"></i></span>
         </div>
         
         <div style="height:6px; background:var(--bg3); border-radius:999px; overflow:hidden; display:flex;">
@@ -1845,11 +1983,11 @@ function openWalletDetailModal(walletId) {
     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
       <div>
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pemasukan</div>
-        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc, true)}</div>
+        <div style="color:var(--green); font-weight:800; font-size:16px;">+${fmt(inc)}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:11px; color:var(--text3); text-transform:uppercase; margin-bottom:2px; font-weight:700;">Total Pengeluaran</div>
-        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp, true)}</div>
+        <div style="color:var(--red); font-weight:800; font-size:16px;">-${fmt(exp)}</div>
       </div>
     </div>
     <div style="border-top:1px dashed var(--border); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
