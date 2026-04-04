@@ -328,8 +328,8 @@
           <div class="month-label" id="monthLabel"></div>
           <div class="month-nav-btn" onclick="changeMonth(1)"><i class="ph-bold ph-caret-right"></i></div>
         </div>
-        <button class="btn-ghost mobile-hide-icon" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="toggleHideBalance()" title="Sembunyikan Saldo">
-          <i id="dashHideIconMobile" class="ph-bold ph-eye" style="font-size: 22px;"></i>
+        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="toggleTheme()" title="Ganti Tema">
+          <i id="topbarThemeIcon" class="ph-bold ph-moon" style="font-size: 22px;"></i>
         </button>
         <button class="btn btn-primary" onclick="openModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
       </div>
@@ -341,8 +341,8 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap: nowrap;">
           <h3 style="font-size:16px; color:var(--text2); display:flex; align-items:center; gap:8px; margin:0;"><i class="ph-bold ph-wallet"></i> Dompet & Rekening Anda</h3>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button class="desktop-hide-icon" onclick="toggleHideBalance()" style="background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center; width:34px; height:34px; transition:0.2s;" title="Sembunyikan Saldo">
-              <i id="dashHideIconDesktop" class="ph-bold ph-eye" style="font-size:18px;"></i>
+            <button onclick="toggleHideBalance()" style="background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); color:var(--text3); cursor:pointer; display:flex; align-items:center; justify-content:center; width:34px; height:34px; transition:0.2s;" title="Sembunyikan Saldo">
+              <i id="dashHideIcon" class="ph-bold ph-eye" style="font-size:18px;"></i>
             </button>
             <div class="wallet-view-toggle" id="walletViewToggle" style="margin:0;">
               <button class="view-btn active" id="btnViewGrid" onclick="setWalletView('grid')"><i class="ph-bold ph-squares-four"></i></button>
@@ -802,12 +802,15 @@ function toggleTheme() {
 function updateThemeUI(theme) {
   const themeIcon = document.getElementById('themeIcon'), themeText = document.getElementById('themeText');
   const pageThemeIcon = document.getElementById('pageThemeIcon'), pageThemeText = document.getElementById('pageThemeText');
+  const topbarThemeIcon = document.getElementById('topbarThemeIcon');
   if (theme === 'light') {
     if(themeIcon) { themeIcon.className = 'ph-fill ph-sun'; themeText.textContent = 'Light Mode'; }
     if(pageThemeIcon) { pageThemeIcon.className = 'ph-fill ph-sun'; pageThemeText.textContent = 'Ubah ke Dark Mode'; }
+    if(topbarThemeIcon) topbarThemeIcon.className = 'ph-bold ph-sun';
   } else {
     if(themeIcon) { themeIcon.className = 'ph-fill ph-moon'; themeText.textContent = 'Dark Mode'; }
     if(pageThemeIcon) { pageThemeIcon.className = 'ph-fill ph-moon'; pageThemeText.textContent = 'Ubah ke Light Mode'; }
+    if(topbarThemeIcon) topbarThemeIcon.className = 'ph-bold ph-moon';
   }
 }
 
@@ -820,10 +823,8 @@ function toggleHideBalance() {
 
 function updateHideBalanceUI() {
   const iconClass = hideBalance ? 'ph-bold ph-eye-slash' : 'ph-bold ph-eye';
-  const dashIconDesktop = document.getElementById('dashHideIconDesktop');
-  if (dashIconDesktop) dashIconDesktop.className = iconClass;
-  const dashIconMobile = document.getElementById('dashHideIconMobile');
-  if (dashIconMobile) dashIconMobile.className = iconClass;
+  const dashIcon = document.getElementById('dashHideIcon');
+  if (dashIcon) dashIcon.className = iconClass;
   const settingToggle = document.getElementById('settingHideToggle');
   if (settingToggle) settingToggle.checked = hideBalance;
 }
