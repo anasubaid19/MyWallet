@@ -83,6 +83,8 @@
   .month-nav-btn { width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; cursor: pointer; color: var(--text2); font-size: 16px; transition: all 0.2s; }
   .month-nav-btn:hover { background: var(--border); color: var(--text); }
   .month-label { font-size: 13px; font-weight: 600; min-width: 140px; text-align: center; color: var(--text); padding: 0 8px; }
+  .topbar-icon-btn { width: 36px; height: 36px; border-radius: 50%; border: none; display: grid; place-items: center; color: var(--text3); cursor: pointer; transition: all 0.2s; background: transparent; }
+  .topbar-icon-btn:hover { background: var(--bg3); color: var(--text); }
   .page-content { padding: 32px; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
   .page { display: none; animation: fadeInPage 0.2s ease; }
   .page.active { display: block; }
@@ -173,18 +175,18 @@
   .amount-input-wrap { position: relative; }
   .amount-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 18px; color: var(--text2); }
   .amount-input-wrap .form-input { padding-left: 54px; font-size: 24px; font-weight: 700; height: 60px; }
-  .cat-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
-  .cat-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); background: var(--bg3); transition: all 0.2s; color: var(--text2); }
+  .cat-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 8px; }
+  .cat-pick { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 6px; min-height: 64px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); background: var(--bg3); transition: all 0.2s; color: var(--text2); }
   .cat-pick:hover { border-color: var(--border2); color: var(--text); }
   .cat-pick.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
-  .cat-pick i { font-size: 22px; transition: transform 0.2s; }
+  .cat-pick i { font-size: 20px; transition: transform 0.2s; flex-shrink: 0; }
   .cat-pick.selected i { transform: scale(1.1); color: var(--accent); }
-  .cat-pick-label { font-size: 10px; font-weight: 600; text-align: center; }
+  .cat-pick-label { font-size: 10px; font-weight: 600; text-align: center; line-height: 1.2; }
   .color-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
   .color-circle { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; display: grid; place-items: center; border: 2px solid transparent; }
   .color-circle:hover { transform: scale(1.1); }
   .color-circle.selected { border-color: var(--text); transform: scale(1.1); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-  .icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 4px;}
+  .icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-height: 240px; overflow-y: auto; padding-right: 4px;}
   .icon-option { font-size: 24px; padding: 10px; text-align: center; border-radius: var(--radius-sm); cursor: pointer; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); transition: 0.2s; }
   .icon-option:hover { color: var(--text); border-color: var(--border2); }
   .icon-option.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--text); }
@@ -257,11 +259,12 @@
     .stat-label { font-size: 9px; line-height: 1.2; }
     .stat-card:not(.blue) .stat-icon { display: none; }
     .grid2 { grid-template-columns: 1fr; gap: 16px; }
-    .cat-picker { grid-template-columns: repeat(4, 1fr); gap:8px;}
+    .cat-picker { grid-template-columns: repeat(4, 1fr); gap:4px;}
     .color-grid { grid-template-columns: repeat(5, 1fr); }
     .icon-grid { grid-template-columns: repeat(4, 1fr); }
     .form-row { grid-template-columns: 1fr; gap: 16px; }
-    .month-label { min-width: 120px; font-size: 13px; }
+    .month-label { min-width: 180px; font-size: 13px; }
+    .topbar-right { width: 100%; justify-content: space-between; }
     .tx-controls { flex-direction: column; align-items: stretch; gap: 16px; }
     .search-wrap { width: 100%; }
     .tx-item { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 16px; }
@@ -320,7 +323,7 @@
         <div class="page-title" id="pageTitle">Dashboard</div>
       </div>
       <div class="topbar-right">
-        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="openGuideModal()" title="Petunjuk">
+        <button class="topbar-icon-btn" onclick="openGuideModal()" title="Petunjuk">
           <i class="ph-bold ph-question" style="font-size: 22px;"></i>
         </button>
         <div class="month-nav">
@@ -328,7 +331,7 @@
           <div class="month-label" id="monthLabel"></div>
           <div class="month-nav-btn" onclick="changeMonth(1)"><i class="ph-bold ph-caret-right"></i></div>
         </div>
-        <button class="btn-ghost" style="padding:6px; border-radius:50%; border:none; display:grid; place-items:center; color:var(--text3);" onclick="toggleTheme()" title="Ganti Tema">
+        <button class="topbar-icon-btn" onclick="toggleTheme()" title="Ganti Tema">
           <i id="topbarThemeIcon" class="ph-bold ph-moon" style="font-size: 22px;"></i>
         </button>
         <button class="btn btn-primary" onclick="openModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
@@ -609,18 +612,33 @@
 <!-- MODAL: WALLET MANAGEMENT -->
 <div class="modal-overlay" id="walletModal">
   <div class="modal">
-    <div class="modal-title"><span id="walletModalTitle">Kelola Dompet</span><button class="close-modal" onclick="closeWalletModal()"><i class="ph-bold ph-x"></i></button></div>
-    <input type="hidden" id="wal-id">
-    <div class="form-group"><label class="form-label">Nama Rekening / Dompet</label><input type="text" class="form-input" id="wal-name" placeholder="Misal: BCA, Tunai"></div>
-    <div class="form-group"><label class="form-label">Saldo Awal</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="wal-balance" placeholder="0" oninput="formatInputRibuan(event)"></div><small style="color:var(--text3); font-size:12px; margin-top:4px; display:block;">Saldo ini akan ditambahkan dengan pemasukan dan dikurangi pengeluaran Anda.</small></div>
-    <div class="form-group"><label class="form-label">Pilih Ikon</label><div class="cat-picker" id="walIconPicker" style="grid-template-columns: repeat(5, 1fr);"></div></div>
-    <div id="wal-shortcuts-wrap" style="display:none; margin-bottom: 24px;">
-      <label class="form-label">Transaksi Cepat</label>
-      <div style="display:flex; gap:8px;">
-        <button type="button" class="btn" style="flex:1; background:var(--green-dim); color:var(--green); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('income')"><i class="ph-bold ph-download-simple"></i> Pemasukan</button>
-        <button type="button" class="btn" style="flex:1; background:var(--red-dim); color:var(--red); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('expense')"><i class="ph-bold ph-upload-simple"></i> Pengeluaran</button>
-        <button type="button" class="btn" style="flex:1; background:var(--blue-dim); color:var(--blue); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('transfer')"><i class="ph-bold ph-arrows-left-right"></i> Pindah Saldo</button>
+    <div class="modal-title">
+      <span id="walletModalTitle">Kelola Dompet</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button id="wal-mode-btn" class="close-modal" style="display:none;" onclick="toggleWalletEditMode()" title="Edit">
+          <i id="wal-mode-icon" class="ph-bold ph-pencil"></i>
+        </button>
+        <button class="close-modal" onclick="closeWalletModal()"><i class="ph-bold ph-x"></i></button>
       </div>
+    </div>
+    <input type="hidden" id="wal-id">
+    <!-- MODE INFO: tampil saat klik card dompet yang sudah ada -->
+    <div id="wal-info-mode" style="display:none;">
+      <div id="wal-info-content"></div>
+      <div id="wal-shortcuts-wrap">
+        <label class="form-label" style="display:block; margin-bottom:8px;">Transaksi Cepat</label>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn" style="flex:1; background:var(--green-dim); color:var(--green); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('income')"><i class="ph-bold ph-download-simple"></i> Pemasukan</button>
+          <button type="button" class="btn" style="flex:1; background:var(--red-dim); color:var(--red); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('expense')"><i class="ph-bold ph-upload-simple"></i> Pengeluaran</button>
+          <button type="button" class="btn" style="flex:1; background:var(--blue-dim); color:var(--blue); font-size:12px; padding:10px 4px;" onclick="quickTxFromWallet('transfer')"><i class="ph-bold ph-arrows-left-right"></i> Pindah Saldo</button>
+        </div>
+      </div>
+    </div>
+    <!-- MODE EDIT: form input dompet -->
+    <div id="wal-edit-mode" style="display:none;">
+      <div class="form-group"><label class="form-label">Nama Rekening / Dompet</label><input type="text" class="form-input" id="wal-name" placeholder="Misal: BCA, Tunai"></div>
+      <div class="form-group"><label class="form-label">Saldo Awal</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="wal-balance" placeholder="0" oninput="formatInputRibuan(event)"></div><small style="color:var(--text3); font-size:12px; margin-top:4px; display:block;">Saldo ini akan ditambahkan dengan pemasukan dan dikurangi pengeluaran Anda.</small></div>
+      <div class="form-group"><label class="form-label">Pilih Ikon</label><div class="cat-picker" id="walIconPicker" style="grid-template-columns: repeat(5, 1fr);"></div></div>
     </div>
     <div class="modal-actions" id="wal-actions"></div>
   </div>
@@ -879,7 +897,7 @@ const DEFAULT_CATS = {
 };
 
 const PRESET_COLORS = ['#ff8c42','#5b8dee','#e879f9','#f5c518','#2ecc87','#ff5f6d','#7c6ff7','#8b8fa8','#ef4444','#3b82f6','#10b981','#f59e0b','#ec4899','#14b8a6','#8b5cf6'];
-const PRESET_ICONS = ['ph-fill ph-fork-knife','ph-fill ph-car-profile','ph-fill ph-shopping-bag','ph-fill ph-lightbulb','ph-fill ph-first-aid-kit','ph-fill ph-film-strip','ph-fill ph-books','ph-fill ph-package','ph-fill ph-briefcase','ph-fill ph-storefront','ph-fill ph-laptop','ph-fill ph-chart-line-up','ph-fill ph-gift','ph-fill ph-coins','ph-fill ph-house','ph-fill ph-airplane-tilt','ph-fill ph-baby','ph-fill ph-paw-print','ph-fill ph-game-controller','ph-fill ph-heart'];
+const PRESET_ICONS = ['ph-fill ph-fork-knife','ph-fill ph-car-profile','ph-fill ph-shopping-bag','ph-fill ph-lightbulb','ph-fill ph-first-aid-kit','ph-fill ph-film-strip','ph-fill ph-books','ph-fill ph-package','ph-fill ph-briefcase','ph-fill ph-storefront','ph-fill ph-laptop','ph-fill ph-chart-line-up','ph-fill ph-gift','ph-fill ph-coins','ph-fill ph-house','ph-fill ph-airplane-tilt','ph-fill ph-baby','ph-fill ph-paw-print','ph-fill ph-game-controller','ph-fill ph-heart','ph-fill ph-wifi','ph-fill ph-globe','ph-fill ph-device-tablet','ph-fill ph-monitor','ph-fill ph-printer','ph-fill ph-plugs','ph-fill ph-gas-pump','ph-fill ph-toilet','ph-fill ph-broom','ph-fill ph-scissors','ph-fill ph-hammer','ph-fill ph-wrench','ph-fill ph-paint-brush','ph-fill ph-t-shirt','ph-fill ph-sneaker','ph-fill ph-sun','ph-fill ph-moon','ph-fill ph-umbrella','ph-fill ph-tree','ph-fill ph-flower','ph-fill ph-mosque','ph-fill ph-church','ph-fill ph-hands-praying','ph-fill ph-piggy-bank','ph-fill ph-bank','ph-fill ph-receipt','ph-fill ph-currency-circle-dollar','ph-fill ph-barbell','ph-fill ph-person-simple-run','ph-fill ph-soccer-ball','ph-fill ph-music-note','ph-fill ph-microphone','ph-fill ph-camera','ph-fill ph-video-camera'];
 const WALLET_ICONS = [
   { id: 'ph-fill ph-wallet', color: '#2ecc87', label: 'Dompet' },
   { id: 'ph-fill ph-bank', color: '#5b8dee', label: 'Bank' },
@@ -1371,37 +1389,81 @@ function walletIconHTML(w, size = 20) {
   return `<i class="${escapeHTML(w.icon)}" style="font-size:${size}px;"></i>`;
 }
 
+let _walCurrentEditId = null;
+
 function openWalletModal(editId = null) {
-  const modal = document.getElementById('walletModal');
-  const title = document.getElementById('walletModalTitle');
-  const actContainer = document.getElementById('wal-actions');
-  const shortcutsWrap = document.getElementById('wal-shortcuts-wrap');
+  _walCurrentEditId = editId;
   if (editId) {
-    const w = wallets.find(w => w.id === editId); if(!w) return;
-    title.textContent = "Edit Dompet";
+    _showWalletInfoMode(editId);
+  } else {
+    _showWalletEditMode(null);
+  }
+  document.getElementById('walletModal').classList.add('open');
+}
+
+function _showWalletInfoMode(walletId) {
+  const w = wallets.find(w => w.id === walletId); if (!w) return;
+  const bal = getWalletCurrentBalance(walletId);
+  document.getElementById('walletModalTitle').textContent = w.name;
+  document.getElementById('wal-id').value = w.id;
+  const modeBtnEl = document.getElementById('wal-mode-btn');
+  modeBtnEl.style.display = '';
+  document.getElementById('wal-mode-icon').className = 'ph-bold ph-pencil';
+  document.getElementById('wal-info-mode').style.display = 'block';
+  document.getElementById('wal-edit-mode').style.display = 'none';
+  const iconBg = w.iconType === 'image' ? 'background:var(--bg3);' : `background:${w.color || '#2ecc87'}22;`;
+  const iconColor = w.iconType === 'image' ? '' : `color:${w.color || '#2ecc87'};`;
+  document.getElementById('wal-info-content').innerHTML = `
+    <div style="display:flex; align-items:center; gap:16px; padding:16px; background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:20px;">
+      <div style="width:52px; height:52px; border-radius:14px; display:grid; place-items:center; flex-shrink:0; ${iconBg} ${iconColor}">${walletIconHTML(w, 28)}</div>
+      <div>
+        <div style="font-size:12px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">${escapeHTML(w.name)}</div>
+        <div style="font-size:22px; font-weight:700; letter-spacing:-0.5px;">${fmt(bal)}</div>
+      </div>
+    </div>`;
+  document.getElementById('wal-actions').innerHTML = '';
+}
+
+function _showWalletEditMode(walletId) {
+  document.getElementById('wal-info-mode').style.display = 'none';
+  document.getElementById('wal-edit-mode').style.display = 'block';
+  const actContainer = document.getElementById('wal-actions');
+  const modeBtnEl = document.getElementById('wal-mode-btn');
+  if (walletId) {
+    const w = wallets.find(w => w.id === walletId); if (!w) return;
+    document.getElementById('walletModalTitle').textContent = 'Edit Dompet';
     document.getElementById('wal-id').value = w.id;
     document.getElementById('wal-name').value = w.name;
     document.getElementById('wal-balance').value = w.initialBalance.toLocaleString('id-ID');
     selectedWalletIcon = w.iconType === 'image'
       ? { type: 'image', src: w.icon, color: 'transparent' }
       : { type: 'phosphor', id: w.icon, color: w.color || '#2ecc87' };
-    if (shortcutsWrap) shortcutsWrap.style.display = 'block';
+    modeBtnEl.style.display = '';
+    document.getElementById('wal-mode-icon').className = 'ph-bold ph-arrow-left';
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
       <button class="btn btn-danger" onclick="deleteWallet('${w.id}')"><i class="ph-bold ph-trash"></i></button>
       <button class="btn btn-primary" onclick="saveWallet()"><i class="ph-bold ph-check"></i> Simpan</button>`;
   } else {
-    title.textContent = "Tambah Dompet Baru";
+    document.getElementById('walletModalTitle').textContent = 'Tambah Dompet Baru';
     document.getElementById('wal-id').value = '';
     document.getElementById('wal-name').value = '';
     document.getElementById('wal-balance').value = '';
     selectedWalletIcon = { type: 'phosphor', id: WALLET_ICONS[0].id, color: WALLET_ICONS[0].color };
-    if (shortcutsWrap) shortcutsWrap.style.display = 'none';
+    modeBtnEl.style.display = 'none';
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
       <button class="btn btn-primary" onclick="saveWallet()"><i class="ph-bold ph-check"></i> Tambahkan</button>`;
   }
-  renderWalletIcons(); modal.classList.add('open');
+  renderWalletIcons();
+}
+
+function toggleWalletEditMode() {
+  if (document.getElementById('wal-info-mode').style.display === 'block') {
+    _showWalletEditMode(_walCurrentEditId);
+  } else {
+    _showWalletInfoMode(_walCurrentEditId);
+  }
 }
 
 function closeWalletModal() { document.getElementById('walletModal').classList.remove('open'); }
@@ -1413,7 +1475,7 @@ function renderWalletIcons() {
   const phosphorHTML = `
     <div style="grid-column: 1/-1; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Ikon Umum</div>
     ${WALLET_ICONS.map(i => `
-      <button class="cat-pick${selectedWalletIcon.type === 'phosphor' && selectedWalletIcon.id === i.id ? ' selected' : ''}" style="padding:8px 4px;" onclick="selectWalletIcon('phosphor','${i.id}','${i.color}')">
+      <button class="cat-pick${selectedWalletIcon.type === 'phosphor' && selectedWalletIcon.id === i.id ? ' selected' : ''}" style="padding:8px 4px; min-height:auto;" onclick="selectWalletIcon('phosphor','${i.id}','${i.color}')">
         <i class="${i.id}" style="color:${i.color}; font-size:22px;"></i>
         <span class="cat-pick-label" style="font-size:10px;">${i.label}</span>
       </button>`).join('')}`;
@@ -1422,7 +1484,7 @@ function renderWalletIcons() {
   const logoHTML = `
     <div style="grid-column: 1/-1; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-top:12px; margin-bottom:4px;">Bank & E-Wallet</div>
     ${BANK_LOGOS.map(l => `
-      <button class="cat-pick${selectedWalletIcon.type === 'image' && selectedWalletIcon.src === l.src ? ' selected' : ''}" style="padding:6px 4px;" onclick="selectWalletIcon('image','${l.src}','')">
+      <button class="cat-pick${selectedWalletIcon.type === 'image' && selectedWalletIcon.src === l.src ? ' selected' : ''}" style="padding:6px 4px; min-height:auto;" onclick="selectWalletIcon('image','${l.src}','')">
         <img src="${l.src}" alt="${l.label}" style="width:32px; height:32px; object-fit:contain; border-radius:6px;">
         <span class="cat-pick-label" style="font-size:10px;">${l.label}</span>
       </button>`).join('')}`;
