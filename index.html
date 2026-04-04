@@ -173,13 +173,13 @@
   .amount-input-wrap { position: relative; }
   .amount-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 18px; color: var(--text2); }
   .amount-input-wrap .form-input { padding-left: 54px; font-size: 24px; font-weight: 700; height: 60px; }
-  .cat-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 8px; }
-  .cat-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 6px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); background: var(--bg3); transition: all 0.2s; color: var(--text2); }
+  .cat-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+  .cat-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--border); background: var(--bg3); transition: all 0.2s; color: var(--text2); }
   .cat-pick:hover { border-color: var(--border2); color: var(--text); }
   .cat-pick.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
-  .cat-pick i { font-size: 28px; transition: transform 0.2s; }
+  .cat-pick i { font-size: 22px; transition: transform 0.2s; }
   .cat-pick.selected i { transform: scale(1.1); color: var(--accent); }
-  .cat-pick-label { font-size: 11px; font-weight: 600; text-align: center; }
+  .cat-pick-label { font-size: 10px; font-weight: 600; text-align: center; }
   .color-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; }
   .color-circle { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: 0.2s; display: grid; place-items: center; border: 2px solid transparent; }
   .color-circle:hover { transform: scale(1.1); }
@@ -888,6 +888,31 @@ const WALLET_ICONS = [
   { id: 'ph-fill ph-money', color: '#ff8c42', label: 'Tunai' }
 ];
 
+// Logo Bank & E-Wallet (file ada di root repo)
+const BANK_LOGOS = [
+  { src: 'BCA.png',          label: 'BCA' },
+  { src: 'BNI.png',          label: 'BNI' },
+  { src: 'BRI.png',          label: 'BRI' },
+  { src: 'BSI.png',          label: 'BSI' },
+  { src: 'BTN.png',          label: 'BTN' },
+  { src: 'BTN Syariah.png',  label: 'BTN Syariah' },
+  { src: 'Blu BCA.png',      label: 'Blu BCA' },
+  { src: 'Jago.png',         label: 'Jago' },
+  { src: 'KEB Hana Bank.png',label: 'KEB Hana' },
+  { src: 'LINE Bank.png',    label: 'LINE Bank' },
+  { src: 'Mandiri.png',      label: 'Mandiri' },
+  { src: 'Maybank.png',      label: 'Maybank' },
+  { src: 'Permata.png',      label: 'Permata' },
+  { src: 'SeaBank.png',      label: 'SeaBank' },
+  { src: 'DANA.png',         label: 'DANA' },
+  { src: 'DOKU.png',         label: 'DOKU' },
+  { src: 'Gopay.png',        label: 'GoPay' },
+  { src: 'iSaku.png',        label: 'iSaku' },
+  { src: 'LinkAja.png',      label: 'LinkAja' },
+  { src: 'OVO.png',          label: 'OVO' },
+  { src: 'SPay.png',         label: 'ShopeePay' },
+];
+
 let customCats = JSON.parse(localStorage.getItem('dompet_cats')) || DEFAULT_CATS;
 let transactions = JSON.parse(localStorage.getItem('dompet_tx') || '[]');
 let budgets = JSON.parse(localStorage.getItem('dompet_bud') || '{}');
@@ -999,9 +1024,13 @@ function openWalletPicker(target) {
   const list = document.getElementById('walletPickerList');
   list.innerHTML = wallets.map(w => {
     const bal = getWalletCurrentBalance(w.id);
+    const iconEl = w.iconType === 'image'
+      ? `<img src="${escapeHTML(w.icon)}" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">`
+      : `<i class="${escapeHTML(w.icon)}" style="font-size:24px;"></i>`;
+    const iconBg = w.iconType === 'image' ? 'background:var(--bg3);' : `background:${w.color}22; color:${w.color};`;
     return `<div class="settings-item" onclick="selectWalletPick('${w.id}')" style="background:var(--bg2); padding: 12px 16px;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <div style="background:${w.color}22; color:${w.color}; width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:24px; flex-shrink:0;"><i class="${w.icon}"></i></div>
+        <div style="${iconBg} width:40px; height:40px; border-radius:10px; display:grid; place-items:center; flex-shrink:0;">${iconEl}</div>
         <div style="min-width:0;"><div style="font-weight:600; color:var(--text);">${escapeHTML(w.name)}</div><div style="font-size:13px; color:var(--text3); margin-top:2px;">Sisa: ${fmt(bal)}</div></div>
       </div></div>`;
   }).join('');
@@ -1021,9 +1050,13 @@ function openAllWalletsModal() {
   const list = document.getElementById('allWalletsList');
   list.innerHTML = wallets.map(w => {
     const bal = getWalletCurrentBalance(w.id);
+    const iconEl = w.iconType === 'image'
+      ? `<img src="${escapeHTML(w.icon)}" style="width:24px;height:24px;object-fit:contain;border-radius:4px;">`
+      : `<i class="${escapeHTML(w.icon)}" style="font-size:24px;"></i>`;
+    const iconBg = w.iconType === 'image' ? 'background:var(--bg3);' : `background:${w.color}22; color:${w.color};`;
     return `<div class="settings-item" onclick="closeAllWalletsModal(); openWalletModal('${w.id}')" style="background:var(--bg2); padding: 12px 16px;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <div style="background:${w.color}22; color:${w.color}; width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:24px; flex-shrink:0;"><i class="${w.icon}"></i></div>
+        <div style="${iconBg} width:40px; height:40px; border-radius:10px; display:grid; place-items:center; flex-shrink:0;">${iconEl}</div>
         <div style="min-width:0;"><div style="font-weight:600; color:var(--text);">${escapeHTML(w.name)}</div><div style="font-size:13px; color:var(--text3); margin-top:2px;">Saldo: ${fmt(bal)}</div></div>
       </div></div>`;
   }).join('');
@@ -1330,6 +1363,14 @@ function undoDeleteTx() {
 window.addEventListener('beforeunload', () => { if (pendingDeleteTx) commitDeleteTx(); });
 
 // ─── WALLET MODAL ─────────────────────────────────────────────────
+// Helper: render icon dompet — support phosphor & image
+function walletIconHTML(w, size = 20) {
+  if (w.iconType === 'image') {
+    return `<img src="${escapeHTML(w.icon)}" alt="${escapeHTML(w.name)}" style="width:${size}px; height:${size}px; object-fit:contain; border-radius:4px;">`;
+  }
+  return `<i class="${escapeHTML(w.icon)}" style="font-size:${size}px;"></i>`;
+}
+
 function openWalletModal(editId = null) {
   const modal = document.getElementById('walletModal');
   const title = document.getElementById('walletModalTitle');
@@ -1341,7 +1382,9 @@ function openWalletModal(editId = null) {
     document.getElementById('wal-id').value = w.id;
     document.getElementById('wal-name').value = w.name;
     document.getElementById('wal-balance').value = w.initialBalance.toLocaleString('id-ID');
-    selectedWalletIcon = WALLET_ICONS.find(i => i.id === w.icon) || WALLET_ICONS[0];
+    selectedWalletIcon = w.iconType === 'image'
+      ? { type: 'image', src: w.icon, color: 'transparent' }
+      : { type: 'phosphor', id: w.icon, color: w.color || '#2ecc87' };
     if (shortcutsWrap) shortcutsWrap.style.display = 'block';
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
@@ -1352,7 +1395,7 @@ function openWalletModal(editId = null) {
     document.getElementById('wal-id').value = '';
     document.getElementById('wal-name').value = '';
     document.getElementById('wal-balance').value = '';
-    selectedWalletIcon = WALLET_ICONS[0];
+    selectedWalletIcon = { type: 'phosphor', id: WALLET_ICONS[0].id, color: WALLET_ICONS[0].color };
     if (shortcutsWrap) shortcutsWrap.style.display = 'none';
     actContainer.innerHTML = `
       <button class="btn btn-ghost" onclick="closeWalletModal()">Batal</button>
@@ -1364,20 +1407,52 @@ function openWalletModal(editId = null) {
 function closeWalletModal() { document.getElementById('walletModal').classList.remove('open'); }
 
 function renderWalletIcons() {
-  document.getElementById('walIconPicker').innerHTML = WALLET_ICONS.map(i => `
-    <button class="cat-pick${selectedWalletIcon.id === i.id ? ' selected' : ''}" style="padding:8px 4px;" onclick="selectWalletIcon('${i.id}')">
-      <i class="${i.id}" style="color:${i.color}; font-size:24px;"></i>
-    </button>`).join('');
+  const pickerEl = document.getElementById('walIconPicker');
+
+  // Bagian 1: Ikon Phosphor (generik)
+  const phosphorHTML = `
+    <div style="grid-column: 1/-1; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Ikon Umum</div>
+    ${WALLET_ICONS.map(i => `
+      <button class="cat-pick${selectedWalletIcon.type === 'phosphor' && selectedWalletIcon.id === i.id ? ' selected' : ''}" style="padding:8px 4px;" onclick="selectWalletIcon('phosphor','${i.id}','${i.color}')">
+        <i class="${i.id}" style="color:${i.color}; font-size:22px;"></i>
+        <span class="cat-pick-label" style="font-size:10px;">${i.label}</span>
+      </button>`).join('')}`;
+
+  // Bagian 2: Logo Bank & E-Wallet
+  const logoHTML = `
+    <div style="grid-column: 1/-1; font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-top:12px; margin-bottom:4px;">Bank & E-Wallet</div>
+    ${BANK_LOGOS.map(l => `
+      <button class="cat-pick${selectedWalletIcon.type === 'image' && selectedWalletIcon.src === l.src ? ' selected' : ''}" style="padding:6px 4px;" onclick="selectWalletIcon('image','${l.src}','')">
+        <img src="${l.src}" alt="${l.label}" style="width:32px; height:32px; object-fit:contain; border-radius:6px;">
+        <span class="cat-pick-label" style="font-size:10px;">${l.label}</span>
+      </button>`).join('')}`;
+
+  pickerEl.style.gridTemplateColumns = 'repeat(5, 1fr)';
+  pickerEl.innerHTML = phosphorHTML + logoHTML;
 }
 
-function selectWalletIcon(id) { selectedWalletIcon = WALLET_ICONS.find(i => i.id === id); renderWalletIcons(); }
+function selectWalletIcon(type, idOrSrc, color) {
+  if (type === 'phosphor') {
+    selectedWalletIcon = { type: 'phosphor', id: idOrSrc, color };
+  } else {
+    selectedWalletIcon = { type: 'image', src: idOrSrc, color: 'transparent' };
+  }
+  renderWalletIcons();
+}
 
 function saveWallet() {
   const editId = document.getElementById('wal-id').value;
   const name = document.getElementById('wal-name').value.trim();
   const initBal = unformatRibuan(document.getElementById('wal-balance').value) || 0;
   if (!name) return alert('Nama dompet wajib diisi.');
-  const walData = { id: editId ? editId : 'w' + Date.now(), name, initialBalance: initBal, icon: selectedWalletIcon.id, color: selectedWalletIcon.color };
+
+  let walData;
+  if (selectedWalletIcon.type === 'image') {
+    walData = { id: editId ? editId : 'w' + Date.now(), name, initialBalance: initBal, icon: selectedWalletIcon.src, iconType: 'image', color: '#5b8dee' };
+  } else {
+    walData = { id: editId ? editId : 'w' + Date.now(), name, initialBalance: initBal, icon: selectedWalletIcon.id, iconType: 'phosphor', color: selectedWalletIcon.color };
+  }
+
   if (editId) { const idx = wallets.findIndex(w => w.id === editId); if(idx !== -1) wallets[idx] = walData; }
   else { wallets.push(walData); }
   localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
@@ -1445,9 +1520,13 @@ function openWalletReportModal() {
     const net = inc - exp, total = inc + exp;
     let incPct = 0, expPct = 0;
     if (total > 0) { incPct = (inc / total) * 100; expPct = (exp / total) * 100; }
+    const iconEl = w.iconType === 'image'
+      ? `<img src="${escapeHTML(w.icon)}" style="width:18px;height:18px;object-fit:contain;border-radius:3px;">`
+      : `<i class="${escapeHTML(w.icon)}" style="font-size:18px;"></i>`;
+    const iconBg = w.iconType === 'image' ? 'background:var(--bg3);' : `background:${w.color}22; color:${w.color};`;
     html += `<div class="budget-card" style="margin-bottom:0; padding:16px; cursor:pointer;" onclick="openWalletDetailModal('${w.id}')">
       <div class="budget-top" style="margin-bottom:12px; align-items:center;">
-        <div><div class="budget-name"><div style="background:${w.color}22; padding:8px; border-radius:10px; color:${w.color}; display:flex;"><i class="${w.icon}" style="font-size:18px;"></i></div> ${escapeHTML(w.name)}</div></div>
+        <div><div class="budget-name"><div style="${iconBg} padding:8px; border-radius:10px; display:flex;">${iconEl}</div> ${escapeHTML(w.name)}</div></div>
         <div style="text-align:right;"><div style="font-size:16px; font-weight:700; color:${net > 0 ? 'var(--green)' : net < 0 ? 'var(--red)' : 'var(--text)'}">${net > 0 ? '+' : ''}${fmt(net)}</div><div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Bersih</div></div>
       </div>
       <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
@@ -1474,7 +1553,11 @@ function openWalletDetailModal(walletId) {
   const inc = wTx.filter(t => t.type === 'income' || t.type === 'transfer_in').reduce((s, t) => s + t.amount, 0);
   const exp = wTx.filter(t => t.type === 'expense' || t.type === 'transfer_out').reduce((s, t) => s + t.amount, 0);
   const net = inc - exp;
-  document.getElementById('walletDetailTitle').innerHTML = `<div style="background:${w.color}22; padding:6px; border-radius:8px; color:${w.color}; display:flex;"><i class="${w.icon}" style="font-size:20px;"></i></div> ${escapeHTML(w.name)}`;
+  const detailIconEl = w.iconType === 'image'
+    ? `<img src="${escapeHTML(w.icon)}" style="width:20px;height:20px;object-fit:contain;border-radius:3px;">`
+    : `<i class="${escapeHTML(w.icon)}" style="font-size:20px;"></i>`;
+  const detailIconBg = w.iconType === 'image' ? 'background:var(--bg3);' : `background:${w.color}22; color:${w.color};`;
+  document.getElementById('walletDetailTitle').innerHTML = `<div style="${detailIconBg} padding:6px; border-radius:8px; display:flex;">${detailIconEl}</div> ${escapeHTML(w.name)}`;
   document.getElementById('walletDetailCycleLabel').textContent = getCycleRange(currentMonth).label;
   document.getElementById('walletDetailSummary').innerHTML = `
     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
@@ -1647,7 +1730,11 @@ function renderDashboard() {
     const visibleWallets = wallets.slice(0, maxShow);
     let html = visibleWallets.map(w => {
       const bal = getWalletCurrentBalance(w.id);
-      return `<div class="wallet-card" onclick="openWalletModal('${w.id}')"><div class="wallet-icon" style="background: ${w.color};"><i class="${w.icon}"></i></div><div class="wallet-name">${escapeHTML(w.name)}</div><div class="wallet-bal">${fmt(bal)}</div></div>`;
+      const iconBg = w.iconType === 'image' ? 'background:#f0f0f022;' : `background:${w.color};`;
+      const iconEl = w.iconType === 'image'
+        ? `<img src="${escapeHTML(w.icon)}" style="width:22px;height:22px;object-fit:contain;border-radius:4px;">`
+        : `<i class="${escapeHTML(w.icon)}"></i>`;
+      return `<div class="wallet-card" onclick="openWalletModal('${w.id}')"><div class="wallet-icon" style="${iconBg}">${iconEl}</div><div class="wallet-name">${escapeHTML(w.name)}</div><div class="wallet-bal">${fmt(bal)}</div></div>`;
     }).join('');
     html += `<div class="wallet-add" onclick="openWalletModal()"><i class="ph-bold ph-plus"></i> Tambah Dompet</div>`;
     walListEl.innerHTML = html;
@@ -1658,8 +1745,12 @@ function renderDashboard() {
     html += wallets.map((w, i) => {
       const bal = getWalletCurrentBalance(w.id);
       const border = i < wallets.length - 1 ? 'border-bottom:1px solid var(--border);' : '';
+      const iconEl = w.iconType === 'image'
+        ? `<img src="${escapeHTML(w.icon)}" style="width:22px;height:22px;object-fit:contain;border-radius:4px;">`
+        : `<i class="${escapeHTML(w.icon)}" style="font-size:20px;"></i>`;
+      const iconBg = w.iconType === 'image' ? `background:var(--bg3);` : `background:${w.color}22; color:${w.color};`;
       return `<div style="display:flex; align-items:center; justify-content:space-between; padding:16px 0; cursor:pointer; ${border}" onclick="openWalletModal('${w.id}')">
-        <div style="display:flex; align-items:center; gap:12px;"><div style="background:${w.color}22; color:${w.color}; width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:20px; flex-shrink:0;"><i class="${w.icon}"></i></div><span style="font-weight:600; font-size:14px;">${escapeHTML(w.name)}</span></div>
+        <div style="display:flex; align-items:center; gap:12px;"><div style="${iconBg} width:36px; height:36px; border-radius:10px; display:grid; place-items:center; flex-shrink:0;">${iconEl}</div><span style="font-weight:600; font-size:14px;">${escapeHTML(w.name)}</span></div>
         <div style="font-weight:700; font-size:16px;">${fmt(bal)}</div>
       </div>`;
     }).join('');
