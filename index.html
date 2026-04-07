@@ -2049,6 +2049,89 @@ document.getElementById('walletReportModal').addEventListener('click', function(
 document.getElementById('walletDetailModal').addEventListener('click', function(e) { if (e.target === this) closeWalletDetailModal(); });
 document.getElementById('confirmModal').addEventListener('click', function(e) { if (e.target === this) closeConfirmModal(); });
 
+
+// ─── MIGRASI ICON KATEGORI: PHOSPHOR → EMOJI ──────────────────────────
+// Dijalankan sekali otomatis saat app dibuka.
+// Mengganti icon Phosphor lama di customCats dengan emoji yang sesuai.
+// Tidak menyentuh data transaksi sama sekali.
+function migrateIconsToEmoji() {
+  const ICON_MAP = {
+    'ph-fill ph-fork-knife':     '🍜',
+    'ph-fill ph-car-profile':    '🚗',
+    'ph-fill ph-shopping-bag':   '🛍️',
+    'ph-fill ph-lightbulb':      '💡',
+    'ph-fill ph-first-aid-kit':  '💊',
+    'ph-fill ph-film-strip':     '🎬',
+    'ph-fill ph-books':          '📚',
+    'ph-fill ph-package':        '📦',
+    'ph-fill ph-briefcase':      '💼',
+    'ph-fill ph-storefront':     '🏪',
+    'ph-fill ph-laptop':         '💻',
+    'ph-fill ph-chart-line-up':  '📈',
+    'ph-fill ph-gift':           '🎁',
+    'ph-fill ph-coins':          '🪙',
+    // icon tambahan yang mungkin dipakai user
+    'ph-fill ph-house':          '🏠',
+    'ph-fill ph-airplane-tilt':  '✈️',
+    'ph-fill ph-baby':           '👶',
+    'ph-fill ph-paw-print':      '🐾',
+    'ph-fill ph-game-controller':'🎮',
+    'ph-fill ph-heart':          '❤️',
+    'ph-fill ph-wifi':           '📶',
+    'ph-fill ph-globe':          '🌐',
+    'ph-fill ph-monitor':        '🖥️',
+    'ph-fill ph-printer':        '🖨️',
+    'ph-fill ph-gas-pump':       '⛽',
+    'ph-fill ph-broom':          '🧹',
+    'ph-fill ph-scissors':       '✂️',
+    'ph-fill ph-hammer':         '🔨',
+    'ph-fill ph-wrench':         '🔧',
+    'ph-fill ph-paint-brush':    '🎨',
+    'ph-fill ph-t-shirt':        '👕',
+    'ph-fill ph-sneaker':        '👟',
+    'ph-fill ph-sun':            '☀️',
+    'ph-fill ph-moon':           '🌙',
+    'ph-fill ph-umbrella':       '☂️',
+    'ph-fill ph-tree':           '🌳',
+    'ph-fill ph-flower':         '🌸',
+    'ph-fill ph-mosque':         '🕌',
+    'ph-fill ph-church':         '⛪',
+    'ph-fill ph-hands-praying':  '🙏',
+    'ph-fill ph-piggy-bank':     '🐷',
+    'ph-fill ph-bank':           '🏦',
+    'ph-fill ph-receipt':        '🧾',
+    'ph-fill ph-currency-circle-dollar': '💵',
+    'ph-fill ph-barbell':        '🏋️',
+    'ph-fill ph-person-simple-run': '🏃',
+    'ph-fill ph-soccer-ball':    '⚽',
+    'ph-fill ph-music-note':     '🎵',
+    'ph-fill ph-microphone':     '🎤',
+    'ph-fill ph-camera':         '📷',
+    'ph-fill ph-video-camera':   '🎥',
+    'ph-fill ph-device-tablet':  '📱',
+    'ph-fill ph-plugs':          '🔌',
+    'ph-fill ph-toilet':         '🚿',
+    'ph-fill ph-warning-circle': '⚠️',
+  };
+
+  let changed = false;
+  ['expense', 'income'].forEach(type => {
+    if (!customCats[type]) return;
+    customCats[type].forEach(cat => {
+      if (cat.icon && ICON_MAP[cat.icon]) {
+        cat.icon = ICON_MAP[cat.icon];
+        changed = true;
+      }
+    });
+  });
+
+  if (changed) {
+    localStorage.setItem('dompet_cats', JSON.stringify(customCats));
+    console.log('DompetKu: icon kategori berhasil dimigrasi ke emoji.');
+  }
+}
+
+migrateIconsToEmoji();
 initTheme();
 document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
 renderDashboard();
