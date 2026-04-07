@@ -122,10 +122,10 @@
   .tx-list { display: flex; flex-direction: column; gap: 8px; }
   .tx-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 16px; border-radius: var(--radius-sm); background: var(--bg3); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; }
   .tx-item:hover { border-color: var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-  .tx-icon { grid-column: 1; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; flex-shrink: 0; }
+  .tx-icon { grid-column: 1; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
   .tx-info { grid-column: 2; min-width: 0; }
   .tx-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
-  .tx-cat { font-size: 13px; color: var(--text3); display: flex; align-items: center; gap: 6px; }
+  .tx-cat { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; overflow: hidden; min-width: 0; }
   .tx-right { grid-column: 3; display: flex; align-items: center; gap: 16px; }
   .tx-amount { font-size: 16px; font-weight: 700; text-align: right; letter-spacing: -0.3px; white-space: nowrap; }
   .tx-amount.income { color: var(--green); } .tx-amount.expense { color: var(--text); }
@@ -212,8 +212,9 @@
   .budget-pct-big { font-size: 28px; font-weight: 800; letter-spacing:-1px;}
   .budget-bar-bg { height: 10px; background: var(--bg3); border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
   .budget-bar { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(0.34,1.2,0.64,1); }
-  .filter-bar { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
-  .filter-chip { padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.2s; font-family: 'Inter', sans-serif; }
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-chip { padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.2s; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0; }
   .filter-chip:hover { border-color: var(--text3); color: var(--text); }
   .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-dim); }
   .search-wrap { position: relative; flex: 1; min-width: 250px; }
@@ -268,9 +269,11 @@
     .tx-controls { flex-direction: column; align-items: stretch; gap: 16px; }
     .search-wrap { width: 100%; }
     .tx-item { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 16px; }
-    .tx-icon { width: 44px; height: 44px; flex-shrink: 0; }
-    .tx-info { width: calc(100% - 56px); flex: none; }
+    .tx-icon { width: 40px; height: 40px; flex-shrink: 0; font-size: 18px; }
+    .tx-info { width: calc(100% - 52px); flex: none; min-width: 0; }
     .tx-name { white-space: normal; }
+    .tx-cat { font-size: 11px; gap: 3px; white-space: nowrap; overflow: hidden; }
+    .tx-cat span { white-space: nowrap; }
     .tx-right { width: 100%; display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px; }
     .tx-amount { font-size: 18px; font-weight: 700; text-align: left; margin: 0; }
     .tx-actions { display: flex; gap: 8px; margin: 0; }
@@ -326,7 +329,7 @@
       <div class="nav-label">Menu Utama</div>
       <div class="nav-item active" onclick="navigate('dashboard')"><i class="ph ph-squares-four"></i> Dashboard</div>
       <div class="nav-item" onclick="navigate('transactions'); setTimeout(()=>setSubTab('tx'),50)"><i class="ph ph-receipt"></i> Transaksi</div>
-      <div class="nav-item" onclick="navigate('transactions'); setTimeout(()=>setSubTab('debt'),50)" style="position:relative;"><i class="ph ph-handshake"></i> Hutang & Piutang<span id="debtSidebarBadge" class="nav-badge" style="display:none; position:static; margin-left:6px;"></span></div>
+      <div class="nav-item" onclick="navigate('transactions'); setTimeout(()=>setSubTab('debt'),50)" style="position:relative;"><i class="ph ph-handshake"></i> Hutang & Piutang<span id="debtSidebarBadge" class="nav-badge" style="display:none;position:static;margin-left:6px;"></span></div>
       <div class="nav-item" onclick="navigate('budget')"><i class="ph ph-target"></i> Budget</div>
       <div class="nav-item" onclick="navigate('report')"><i class="ph ph-chart-line-up"></i> Laporan</div>
     </div>
@@ -407,12 +410,10 @@
 
       <!-- TRANSACTIONS -->
       <div class="page" id="page-transactions">
-        <!-- SUB TABS -->
         <div class="subtab-group">
           <div class="subtab active" id="subtab-tx" onclick="setSubTab('tx')"><i class="ph-bold ph-receipt" style="margin-right:4px;"></i> Transaksi</div>
           <div class="subtab" id="subtab-debt" onclick="setSubTab('debt')" style="position:relative;"><i class="ph-bold ph-handshake" style="margin-right:4px;"></i> Hutang & Piutang<span id="debtSubBadge" class="subtab-badge" style="display:none;"></span></div>
         </div>
-
         <!-- PANEL: TRANSAKSI -->
         <div id="panel-tx">
           <div class="tx-controls">
@@ -429,34 +430,30 @@
             <div id="txEmpty" class="empty" style="display:none;"><i class="ph ph-folder-open"></i><div class="empty-text">Belum ada transaksi di siklus ini.</div><button class="btn btn-primary" style="margin-top:16px;" onclick="openModal()">Catat Transaksi Pertama</button></div>
           </div>
         </div>
-
         <!-- PANEL: HUTANG & PIUTANG -->
         <div id="panel-debt" style="display:none;">
-          <!-- Summary -->
           <div class="debt-summary-card">
             <div class="debt-summary-item" style="background:var(--red-dim);">
-              <div style="font-size:11px; color:var(--text3); font-weight:700; text-transform:uppercase; margin-bottom:4px;">Total Hutang</div>
-              <div style="font-size:18px; font-weight:700; color:var(--red);" id="debt-total-hutang">Rp 0</div>
-              <div style="font-size:11px; color:var(--text3); margin-top:2px;" id="debt-count-hutang">0 aktif</div>
+              <div style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Total Hutang</div>
+              <div style="font-size:18px;font-weight:700;color:var(--red);" id="debt-total-hutang">Rp 0</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px;" id="debt-count-hutang">0 aktif</div>
             </div>
             <div class="debt-summary-item" style="background:var(--green-dim);">
-              <div style="font-size:11px; color:var(--text3); font-weight:700; text-transform:uppercase; margin-bottom:4px;">Total Piutang</div>
-              <div style="font-size:18px; font-weight:700; color:var(--green);" id="debt-total-piutang">Rp 0</div>
-              <div style="font-size:11px; color:var(--text3); margin-top:2px;" id="debt-count-piutang">0 aktif</div>
+              <div style="font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-bottom:4px;">Total Piutang</div>
+              <div style="font-size:18px;font-weight:700;color:var(--green);" id="debt-total-piutang">Rp 0</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px;" id="debt-count-piutang">0 aktif</div>
             </div>
           </div>
-          <!-- Filter & Add -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:12px;">
-            <div class="filter-bar" style="margin:0; flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;">
+            <div class="filter-bar" style="margin:0;flex:1;">
               <button class="filter-chip active" onclick="setDebtFilter('semua',this)">Semua</button>
               <button class="filter-chip" onclick="setDebtFilter('hutang',this)">Hutang</button>
               <button class="filter-chip" onclick="setDebtFilter('piutang',this)">Piutang</button>
               <button class="filter-chip" onclick="setDebtFilter('lunas',this)">Lunas</button>
             </div>
-            <button class="btn btn-primary" style="padding:8px 14px; font-size:13px; flex-shrink:0;" onclick="openDebtModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
+            <button class="btn btn-primary" style="padding:8px 14px;font-size:13px;flex-shrink:0;" onclick="openDebtModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
           </div>
-          <!-- List -->
-          <div id="debtList" style="display:flex; flex-direction:column; gap:12px;"></div>
+          <div id="debtList" style="display:flex;flex-direction:column;gap:12px;"></div>
         </div>
       </div>
 
@@ -778,12 +775,10 @@
   <div class="modal">
     <div class="modal-title"><span id="debtModalTitle">Catat Hutang / Piutang</span><button class="close-modal" onclick="closeDebtModal()"><i class="ph-bold ph-x"></i></button></div>
     <input type="hidden" id="debt-inp-id">
-
     <div class="tab-group">
       <div class="tab active" id="debt-tab-piutang" style="color:var(--green);" onclick="setDebtType('piutang')">💸 Piutang <small style="display:block;font-size:10px;font-weight:400;opacity:0.8;">Saya pinjamkan</small></div>
-      <div class="tab" id="debt-tab-hutang" style="" onclick="setDebtType('hutang')">🤝 Hutang <small style="display:block;font-size:10px;font-weight:400;opacity:0.8;">Saya pinjam</small></div>
+      <div class="tab" id="debt-tab-hutang" onclick="setDebtType('hutang')">🤝 Hutang <small style="display:block;font-size:10px;font-weight:400;opacity:0.8;">Saya pinjam</small></div>
     </div>
-
     <div class="form-group"><label class="form-label">Nama Kontak / Pihak</label><input type="text" class="form-input" id="debt-inp-contact" placeholder="Contoh: Budi, Pak Andi"></div>
     <div class="form-group"><label class="form-label" id="debt-lbl-nominal">Jumlah Piutang</label><div class="amount-input-wrap"><span class="amount-prefix">Rp</span><input type="text" inputmode="numeric" class="form-input" id="debt-inp-nominal" placeholder="0" oninput="formatInputRibuan(event)"></div></div>
     <div class="form-group">
@@ -791,7 +786,7 @@
       <button type="button" class="wallet-pick-btn green" id="debt-btn-wallet" onclick="openWalletPicker('debt')">
         <i class="ph-bold ph-wallet wallet-pick-icon" style="font-size:22px;"></i>
         <div class="wallet-pick-info"><span class="wallet-pick-label" id="debt-lbl-wallet">Dompet Asal Dana</span><span class="wallet-pick-name">Pilih Dompet</span></div>
-        <i class="ph-bold ph-caret-down" style="margin-left:auto; opacity:0.5;"></i>
+        <i class="ph-bold ph-caret-down" style="margin-left:auto;opacity:0.5;"></i>
       </button>
     </div>
     <div class="form-row">
@@ -802,7 +797,6 @@
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeDebtModal()">Batal</button><button class="btn btn-primary" onclick="saveDebt()"><i class="ph-bold ph-check"></i> Simpan</button></div>
   </div>
 </div>
-
 <!-- MODAL: DETAIL HUTANG PIUTANG -->
 <div class="modal-overlay" id="debtDetailModal" style="z-index:1010;">
   <div class="modal" style="max-width:480px;">
@@ -814,10 +808,9 @@
       </div>
     </div>
     <div id="debtDetailContent"></div>
-    <div id="debtDetailActions" style="display:flex; flex-direction:column; gap:8px; margin-top:20px;"></div>
+    <div id="debtDetailActions" style="display:flex;flex-direction:column;gap:8px;margin-top:20px;"></div>
   </div>
 </div>
-
 <!-- MODAL: BAYAR/TERIMA CICILAN -->
 <div class="modal-overlay" id="debtPaymentModal" style="z-index:1020;">
   <div class="modal" style="max-width:400px;">
@@ -829,14 +822,13 @@
       <button type="button" class="wallet-pick-btn" id="pay-btn-wallet" onclick="openWalletPicker('payment')">
         <i class="ph-bold ph-wallet wallet-pick-icon" style="font-size:22px;"></i>
         <div class="wallet-pick-info"><span class="wallet-pick-label">Dompet</span><span class="wallet-pick-name">Pilih Dompet</span></div>
-        <i class="ph-bold ph-caret-down" style="margin-left:auto; opacity:0.5;"></i>
+        <i class="ph-bold ph-caret-down" style="margin-left:auto;opacity:0.5;"></i>
       </button>
     </div>
     <div class="form-group"><label class="form-label">Tanggal Bayar</label><input type="date" class="form-input" id="pay-inp-date"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closePaymentModal()">Batal</button><button class="btn btn-primary" onclick="savePayment()"><i class="ph-bold ph-check"></i> Konfirmasi</button></div>
   </div>
 </div>
-
 <!-- TOAST NOTIFICATION -->
 <div id="undoToast" class="undo-toast">
   <span>Transaksi dihapus.</span>
@@ -998,30 +990,51 @@ function escapeHTML(str) {
   return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
+function catIconHTML(icon, size = '20px') {
+  if (!icon) return '';
+  if (icon.startsWith('ph-')) return `<i class="${icon}" style="font-size:${size};"></i>`;
+  return `<span style="font-size:${size}; line-height:1; display:inline-block;">${icon}</span>`;
+}
+
 // ─── DATA & STATE ─────────────────────────────────────────────────
 const DEFAULT_CATS = {
   expense: [
-    { id: 'makan', label: 'Makan', icon: 'ph-fill ph-fork-knife', color: '#ff8c42' },
-    { id: 'transport', label: 'Transport', icon: 'ph-fill ph-car-profile', color: '#5b8dee' },
-    { id: 'belanja', label: 'Belanja', icon: 'ph-fill ph-shopping-bag', color: '#e879f9' },
-    { id: 'tagihan', label: 'Tagihan', icon: 'ph-fill ph-lightbulb', color: '#f5c518' },
-    { id: 'kesehatan', label: 'Kesehatan', icon: 'ph-fill ph-first-aid-kit', color: '#2ecc87' },
-    { id: 'hiburan', label: 'Hiburan', icon: 'ph-fill ph-film-strip', color: '#ff5f6d' },
-    { id: 'pendidikan', label: 'Pendidikan', icon: 'ph-fill ph-books', color: '#7c6ff7' },
-    { id: 'lainnya_exp', label: 'Lainnya', icon: 'ph-fill ph-package', color: '#8b8fa8' },
+    { id: 'makan',       label: 'Makan',      icon: '🍜', color: '#ff8c42' },
+    { id: 'transport',   label: 'Transport',  icon: '🚗', color: '#5b8dee' },
+    { id: 'belanja',     label: 'Belanja',    icon: '🛍️', color: '#e879f9' },
+    { id: 'tagihan',     label: 'Tagihan',    icon: '💡', color: '#f5c518' },
+    { id: 'kesehatan',   label: 'Kesehatan',  icon: '💊', color: '#2ecc87' },
+    { id: 'hiburan',     label: 'Hiburan',    icon: '🎬', color: '#ff5f6d' },
+    { id: 'pendidikan',  label: 'Pendidikan', icon: '📚', color: '#7c6ff7' },
+    { id: 'lainnya_exp', label: 'Lainnya',    icon: '📦', color: '#8b8fa8' },
   ],
   income: [
-    { id: 'gaji', label: 'Gaji', icon: 'ph-fill ph-briefcase', color: '#2ecc87' },
-    { id: 'bisnis', label: 'Bisnis', icon: 'ph-fill ph-storefront', color: '#f5c518' },
-    { id: 'freelance', label: 'Sampingan', icon: 'ph-fill ph-laptop', color: '#5b8dee' },
-    { id: 'investasi', label: 'Investasi', icon: 'ph-fill ph-chart-line-up', color: '#ff8c42' },
-    { id: 'hadiah', label: 'Hadiah', icon: 'ph-fill ph-gift', color: '#e879f9' },
-    { id: 'lainnya_inc', label: 'Lainnya', icon: 'ph-fill ph-coins', color: '#8b8fa8' },
+    { id: 'gaji',        label: 'Gaji',       icon: '💼', color: '#2ecc87' },
+    { id: 'bisnis',      label: 'Bisnis',     icon: '🏪', color: '#f5c518' },
+    { id: 'freelance',   label: 'Sampingan',  icon: '💻', color: '#5b8dee' },
+    { id: 'investasi',   label: 'Investasi',  icon: '📈', color: '#ff8c42' },
+    { id: 'hadiah',      label: 'Hadiah',     icon: '🎁', color: '#e879f9' },
+    { id: 'lainnya_inc', label: 'Lainnya',    icon: '🪙', color: '#8b8fa8' },
   ]
 };
 
 const PRESET_COLORS = ['#ff8c42','#5b8dee','#e879f9','#f5c518','#2ecc87','#ff5f6d','#7c6ff7','#8b8fa8','#ef4444','#3b82f6','#10b981','#f59e0b','#ec4899','#14b8a6','#8b5cf6'];
-const PRESET_ICONS = ['ph-fill ph-fork-knife','ph-fill ph-car-profile','ph-fill ph-shopping-bag','ph-fill ph-lightbulb','ph-fill ph-first-aid-kit','ph-fill ph-film-strip','ph-fill ph-books','ph-fill ph-package','ph-fill ph-briefcase','ph-fill ph-storefront','ph-fill ph-laptop','ph-fill ph-chart-line-up','ph-fill ph-gift','ph-fill ph-coins','ph-fill ph-house','ph-fill ph-airplane-tilt','ph-fill ph-baby','ph-fill ph-paw-print','ph-fill ph-game-controller','ph-fill ph-heart','ph-fill ph-wifi','ph-fill ph-globe','ph-fill ph-device-tablet','ph-fill ph-monitor','ph-fill ph-printer','ph-fill ph-plugs','ph-fill ph-gas-pump','ph-fill ph-toilet','ph-fill ph-broom','ph-fill ph-scissors','ph-fill ph-hammer','ph-fill ph-wrench','ph-fill ph-paint-brush','ph-fill ph-t-shirt','ph-fill ph-sneaker','ph-fill ph-sun','ph-fill ph-moon','ph-fill ph-umbrella','ph-fill ph-tree','ph-fill ph-flower','ph-fill ph-mosque','ph-fill ph-church','ph-fill ph-hands-praying','ph-fill ph-piggy-bank','ph-fill ph-bank','ph-fill ph-receipt','ph-fill ph-currency-circle-dollar','ph-fill ph-barbell','ph-fill ph-person-simple-run','ph-fill ph-soccer-ball','ph-fill ph-music-note','ph-fill ph-microphone','ph-fill ph-camera','ph-fill ph-video-camera'];
+const PRESET_ICONS = [
+  '🍜','🍱','🍔','🍕','🥗','☕','🧃','🍰','🍣','🥩',
+  '🚗','🏍️','🚌','✈️','🚂','⛽','🅿️','🚢','🛵','🚁',
+  '🛍️','👕','👟','💄','⌚','🕶️','💍','🛒','👗','🧴',
+  '💡','💧','🔥','📶','🌐','🖨️','🔌','📺','📡','🔋',
+  '💊','🏥','🧹','🪥','🩺','💉','🧘','🌡️','🩹','🧬',
+  '🎬','🎮','🎵','🎤','📷','🎨','📖','🎭','🎲','🎧',
+  '📚','🎓','✏️','💼','🖥️','📊','🔬','📝','🏆','🗂️',
+  '🏠','🛋️','🔨','🔧','🪟','🌿','🪴','🏡','🛏️','🚿',
+  '💰','📈','🏦','🧾','💵','🪙','💳','📉','💸','🤑',
+  '👶','🐾','🎁','❤️','🤝','🎂','🌸','🫂','🐶',
+  '⚽','🏋️','🏃','🚴','🏊','🎾','🏀','⛳','🥊','🧗',
+  '🕌','⛪','🙏','📿','🕯️','☪️','✝️',
+  '🌳','☀️','🌧️','☂️','🌊','🏔️','🌺','🌙','🌈','❄️',
+  '📦','✂️','🎀','🔑','🧳','🛠️','📌','⭐','🎯','🔖',
+];
 const WALLET_ICONS = [
   { id: 'ph-fill ph-wallet', color: '#2ecc87', label: 'Dompet' },
   { id: 'ph-fill ph-bank', color: '#5b8dee', label: 'Bank' },
@@ -1271,7 +1284,7 @@ function renderCatManagerList() {
   const list = customCats[catManagerType];
   document.getElementById('catManagerList').innerHTML = list.map(c => `
     <div class="settings-item" style="margin-bottom:8px; padding:12px; background:var(--bg2);">
-      <div style="display:flex;align-items:center; gap:12px;"><div style="background:${c.color}22; color:${c.color}; width:36px; height:36px; border-radius:8px; display:grid; place-items:center; font-size:20px;"><i class="${c.icon}"></i></div><span style="font-weight:600">${escapeHTML(c.label)}</span></div>
+      <div style="display:flex;align-items:center; gap:12px;"><div style="background:${c.color}22; color:${c.color}; width:36px; height:36px; border-radius:8px; display:grid; place-items:center;">${catIconHTML(c.icon, '20px')}</div><span style="font-weight:600">${escapeHTML(c.label)}</span></div>
       <div><button class="btn btn-ghost" style="padding:6px 10px; font-size:16px;" onclick="openCatEditModal('${c.id}')"><i class="ph-bold ph-pencil-simple"></i></button></div>
     </div>`).join('');
 }
@@ -1320,7 +1333,7 @@ function closeCatEditModal() {
 
 function renderCatPickersUI() {
   document.getElementById('editcat-colors').innerHTML = PRESET_COLORS.map(c => `<div class="color-circle ${c === editCatColor ? 'selected' : ''}" style="background:${c};" onclick="setEditCatColor('${c}')"></div>`).join('');
-  document.getElementById('editcat-icons').innerHTML = PRESET_ICONS.map(i => `<div class="icon-option ${i === editCatIcon ? 'selected' : ''}" onclick="setEditCatIcon('${i}')"><i class="${i}"></i></div>`).join('');
+  document.getElementById('editcat-icons').innerHTML = PRESET_ICONS.map(i => `<div class="icon-option ${i === editCatIcon ? 'selected' : ''}" onclick="setEditCatIcon('${i}')" style="font-size:22px;line-height:1;">${i.startsWith('ph-') ? '<i class="'+i+'"></i>' : i}</div>`).join('');
 }
 function setEditCatColor(c) { editCatColor = c; renderCatPickersUI(); }
 function setEditCatIcon(i) { editCatIcon = i; renderCatPickersUI(); }
@@ -1422,7 +1435,7 @@ function setTxType(type, resetCat = true) {
     const cats = customCats[type];
     document.getElementById('catPicker').innerHTML = cats.map(c => `
       <button class="cat-pick${selectedCat === c.id ? ' selected' : ''}" onclick="selectCat('${c.id}')">
-        <i class="${c.icon}"></i><span class="cat-pick-label">${escapeHTML(c.label)}</span>
+        ${catIconHTML(c.icon)}<span class="cat-pick-label">${escapeHTML(c.label)}</span>
       </button>`).join('') + `
       <button class="cat-pick" style="border: 1px dashed var(--text3); background: transparent;" onclick="openCatEditModalFromTx()">
         <i class="ph-bold ph-plus" style="color: var(--text3);"></i><span class="cat-pick-label" style="color: var(--text3);">Tambah</span>
@@ -1785,7 +1798,7 @@ function openWalletDetailModal(walletId) {
       const isInc = t.type === 'income' || t.type === 'transfer_in';
       const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
       return `<div style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--border);">
-        <div style="background:${cat.color}22; color:${cat.color}; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 20px;"><i class="${cat.icon}"></i></div>
+        <div style="background:${cat.color}22; color:${cat.color}; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;">${catIconHTML(cat.icon, '20px')}</div>
         <div style="min-width: 0;"><div style="font-size: 14px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text);">${escapeHTML(t.desc)}</div><div style="font-size: 12px; color: var(--text3);">${escapeHTML(cat.label)} • ${dateStr}</div></div>
         <div style="text-align: right;"><div class="tx-amount ${isInc ? 'income' : 'expense'}" style="font-size: 15px;">${amountStr}</div></div>
       </div>`;
@@ -1846,12 +1859,12 @@ function importData(event) {
           if(Array.isArray(data.debts)) debts = data.debts;
           if(Array.isArray(data.debtPayments)) debtPayments = data.debtPayments;
           save();
+          localStorage.setItem('dompet_debts', JSON.stringify(debts));
+          localStorage.setItem('dompet_debt_payments', JSON.stringify(debtPayments));
           localStorage.setItem('dompet_bud', JSON.stringify(budgets));
           localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
           localStorage.setItem('dompet_cats', JSON.stringify(customCats));
           localStorage.setItem('dompet_settings', JSON.stringify(userSettings));
-          localStorage.setItem('dompet_debts', JSON.stringify(debts));
-          localStorage.setItem('dompet_debt_payments', JSON.stringify(debtPayments));
           alert('Backup JSON berhasil dipulihkan!'); initTheme(); renderPage();
         } else { alert('Format file JSON tidak kompatibel.'); }
       } else if (ext === 'csv') {
@@ -1880,12 +1893,12 @@ function resetData() {
     customCats = DEFAULT_CATS; userSettings = { cycleStartDay: 1, cycleLength: 1 };
     debts = []; debtPayments = [];
     save();
+    localStorage.setItem('dompet_debts', JSON.stringify(debts));
+    localStorage.setItem('dompet_debt_payments', JSON.stringify(debtPayments));
     localStorage.setItem('dompet_bud', JSON.stringify(budgets));
     localStorage.setItem('dompet_wallets', JSON.stringify(wallets));
     localStorage.setItem('dompet_cats', JSON.stringify(customCats));
     localStorage.setItem('dompet_settings', JSON.stringify(userSettings));
-    localStorage.setItem('dompet_debts', JSON.stringify(debts));
-    localStorage.setItem('dompet_debt_payments', JSON.stringify(debtPayments));
     alert('Aplikasi telah di-reset.'); initTheme(); navigate('dashboard');
   }
 }
@@ -1910,8 +1923,8 @@ function buildTxList(txs) {
     const colorClass = isInc ? 'income' : 'expense';
     const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
     return `<div class="tx-item">
-      <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}"><i class="${cat.icon}"></i></div>
-      <div class="tx-info"><div class="tx-name">${escapeHTML(t.desc)}</div><div class="tx-cat">${escapeHTML(cat.label)} • <span style="color:${wal.color};font-weight:600;">${escapeHTML(wal.name)}</span> • <span style="opacity:0.6">${dateStr}</span></div></div>
+      <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}">${catIconHTML(cat.icon, '20px')}</div>
+      <div class="tx-info"><div class="tx-name">${escapeHTML(t.desc)}</div><div class="tx-cat"><span style="flex-shrink:0;">${escapeHTML(cat.label)}</span><span style="flex-shrink:0;"> • </span><span style="color:${wal.color};font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px;flex-shrink:1;"> ${escapeHTML(wal.name)}</span><span style="flex-shrink:0;opacity:0.6;"> • ${dateStr}</span></div></div>
       <div class="tx-right">
         <div class="tx-amount ${colorClass}">${amountStr}</div>
         <div class="tx-actions">
@@ -2071,7 +2084,7 @@ function drawDonut(txs) {
   ctx.beginPath(); ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2); ctx.fillStyle = innerColor; ctx.fill();
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId), pct = Math.round((val / total) * 100);
-    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
+    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${catIconHTML(cat.icon)} ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
   }).join('');
 }
 
@@ -2104,7 +2117,7 @@ function renderBudget() {
   el.innerHTML = entries.map(e => {
     const pct = e.budget > 0 ? Math.min((e.spent / e.budget) * 100, 100) : 0, over = e.budget > 0 && e.spent > e.budget;
     const barColor = over ? 'var(--red)' : pct > 80 ? 'var(--yellow)' : 'var(--green)', sisa = e.budget - e.spent;
-    return `<div class="budget-card"><div class="budget-top"><div><div class="budget-name"><div style="background:${e.cat.color}22; padding:8px; border-radius:10px; color:${e.cat.color}; display:flex;"><i class="${e.cat.icon}"></i></div> ${escapeHTML(e.cat.label)}</div><div class="budget-amounts">Terpakai ${fmt(e.spent)} dari ${e.budget > 0 ? fmt(e.budget) : 'Tanpa Batas'}</div></div><div class="budget-pct-big" style="color:${barColor}">${e.budget > 0 ? Math.round(pct) + '%' : '—'}</div></div>
+    return `<div class="budget-card"><div class="budget-top"><div><div class="budget-name"><div style="background:${e.cat.color}22; padding:8px; border-radius:10px; color:${e.cat.color}; display:flex; align-items:center;">${catIconHTML(e.cat.icon, '18px')}</div> ${escapeHTML(e.cat.label)}</div><div class="budget-amounts">Terpakai ${fmt(e.spent)} dari ${e.budget > 0 ? fmt(e.budget) : 'Tanpa Batas'}</div></div><div class="budget-pct-big" style="color:${barColor}">${e.budget > 0 ? Math.round(pct) + '%' : '—'}</div></div>
       ${e.budget > 0 ? `<div class="budget-bar-bg"><div class="budget-bar" style="width:${pct}%;background:${barColor}; box-shadow: 0 0 10px ${barColor}"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text3); align-items:center;"><span style="color:${over ? 'var(--red)' : 'var(--text2)'}; font-weight:600;">${over ? '⚠️ Defisit ' + fmt(Math.abs(sisa)) : 'Sisa ' + fmt(sisa)}</span><span class="card-action" onclick="deleteBudget('${e.cat.id}')">Hapus Aturan</span></div>` : `<div style="font-size:13px;color:var(--text3); border-top:1px dashed var(--border); padding-top:12px; margin-top:8px;">Hanya ada pengeluaran, budget belum ditentukan. <span class="card-action" style="margin-left:8px;" onclick="openBudgetModalFor('${e.cat.id}')">Set Budget</span></div>`}
     </div>`;
   }).join('');
@@ -2140,7 +2153,7 @@ function renderReport() {
   if (!sorted.length) { catEl.innerHTML = '<div class="empty" style="padding:20px;"><div class="empty-text">Belum ada data</div></div>'; return; }
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId), pct = totalExp > 0 ? Math.round((val / totalExp) * 100) : 0;
-    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
+    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${catIconHTML(cat.icon)} ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
   }).join('');
 }
 
@@ -2162,8 +2175,7 @@ function getDebtBadgeCount() {
   const today = new Date(); today.setHours(0,0,0,0);
   const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
   return debts.filter(d => {
-    if (d.status === 'lunas') return false;
-    if (!d.tanggalJatuhTempo) return false;
+    if (d.status === 'lunas' || !d.tanggalJatuhTempo) return false;
     const due = new Date(d.tanggalJatuhTempo); due.setHours(0,0,0,0);
     return due <= in7;
   }).length;
@@ -2171,12 +2183,14 @@ function getDebtBadgeCount() {
 
 function updateDebtBadge() {
   const count = getDebtBadgeCount();
+  const show = count > 0;
+  const label = count > 9 ? '9+' : String(count);
   const navBadge = document.getElementById('debtNavBadge');
   const subBadge = document.getElementById('debtSubBadge');
-  if (navBadge) { navBadge.textContent = count > 9 ? '9+' : count; navBadge.style.display = count > 0 ? 'flex' : 'none'; }
-  if (subBadge) { subBadge.textContent = count > 9 ? '9+' : count; subBadge.style.display = count > 0 ? 'flex' : 'none'; }
   const sideBadge = document.getElementById('debtSidebarBadge');
-  if (sideBadge) { sideBadge.textContent = count > 9 ? '9+' : count; sideBadge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+  if (navBadge) { navBadge.textContent = label; navBadge.style.display = show ? 'flex' : 'none'; }
+  if (subBadge) { subBadge.textContent = label; subBadge.style.display = show ? 'flex' : 'none'; }
+  if (sideBadge) { sideBadge.textContent = label; sideBadge.style.display = show ? 'inline-flex' : 'none'; }
 }
 
 function setDebtFilter(f, el) {
@@ -2195,102 +2209,64 @@ function renderDebtList() {
   const el = document.getElementById('debtList'); if (!el) return;
   const today = new Date(); today.setHours(0,0,0,0);
   const in7 = new Date(today); in7.setDate(in7.getDate() + 7);
+  const activeH = debts.filter(d => d.type === 'hutang' && d.status !== 'lunas');
+  const activeP = debts.filter(d => d.type === 'piutang' && d.status !== 'lunas');
+  const elH = document.getElementById('debt-total-hutang'), elP = document.getElementById('debt-total-piutang');
+  const elHC = document.getElementById('debt-count-hutang'), elPC = document.getElementById('debt-count-piutang');
+  if (elH) elH.textContent = fmt(activeH.reduce((s,d)=>s+d.sisaNominal,0));
+  if (elP) elP.textContent = fmt(activeP.reduce((s,d)=>s+d.sisaNominal,0));
+  if (elHC) elHC.textContent = `${activeH.length} aktif`;
+  if (elPC) elPC.textContent = `${activeP.length} aktif`;
 
-  // Update summary
-  const activeHutang = debts.filter(d => d.type === 'hutang' && d.status !== 'lunas');
-  const activePiutang = debts.filter(d => d.type === 'piutang' && d.status !== 'lunas');
-  const totalHutang = activeHutang.reduce((s,d) => s + d.sisaNominal, 0);
-  const totalPiutang = activePiutang.reduce((s,d) => s + d.sisaNominal, 0);
-  const elH = document.getElementById('debt-total-hutang');
-  const elP = document.getElementById('debt-total-piutang');
-  const elHC = document.getElementById('debt-count-hutang');
-  const elPC = document.getElementById('debt-count-piutang');
-  if (elH) elH.textContent = fmt(totalHutang);
-  if (elP) elP.textContent = fmt(totalPiutang);
-  if (elHC) elHC.textContent = `${activeHutang.length} aktif`;
-  if (elPC) elPC.textContent = `${activePiutang.length} aktif`;
-
-  // Filter
   let filtered = [...debts];
   if (currentDebtFilter === 'hutang') filtered = filtered.filter(d => d.type === 'hutang');
   else if (currentDebtFilter === 'piutang') filtered = filtered.filter(d => d.type === 'piutang');
   else if (currentDebtFilter === 'lunas') filtered = filtered.filter(d => d.status === 'lunas');
-  else filtered = filtered.filter(d => d.status !== 'lunas'); // default: aktif saja
+  else filtered = filtered.filter(d => d.status !== 'lunas');
 
-  // Sort: overdue first, then near-due, then by date
   filtered.sort((a, b) => {
     if (a.status === 'lunas' && b.status !== 'lunas') return 1;
     if (b.status === 'lunas' && a.status !== 'lunas') return -1;
     if (a.tanggalJatuhTempo && b.tanggalJatuhTempo) return new Date(a.tanggalJatuhTempo) - new Date(b.tanggalJatuhTempo);
-    if (a.tanggalJatuhTempo) return -1;
-    if (b.tanggalJatuhTempo) return 1;
+    if (a.tanggalJatuhTempo) return -1; if (b.tanggalJatuhTempo) return 1;
     return new Date(b.tanggalTransaksi) - new Date(a.tanggalTransaksi);
   });
 
   if (!filtered.length) {
-    el.innerHTML = `<div class="empty"><div style="font-size:48px; margin-bottom:12px; opacity:0.5;">🤝</div><div class="empty-text">${currentDebtFilter === 'lunas' ? 'Belum ada catatan yang lunas.' : 'Belum ada catatan hutang/piutang aktif.'}</div></div>`;
+    el.innerHTML = `<div class="empty"><div style="font-size:48px;margin-bottom:12px;opacity:0.5;">🤝</div><div class="empty-text">${currentDebtFilter === 'lunas' ? 'Belum ada catatan yang lunas.' : 'Belum ada hutang/piutang aktif.'}</div></div>`;
     return;
   }
 
   el.innerHTML = filtered.map(d => {
-    const paid = getDebtPaidAmount(d.id);
-    const total = d.nominal;
-    const sisa = d.sisaNominal;
-    const pct = total > 0 ? Math.min(((total - sisa) / total) * 100, 100) : 0;
+    const sisa = d.sisaNominal, total = d.nominal;
+    const pct = total > 0 ? Math.min(((total-sisa)/total)*100, 100) : 0;
     const isHutang = d.type === 'hutang';
-
-    let dueLabel = '', cardClass = '', dueBadge = '';
+    let dueLabel = '', cardClass = '';
     if (d.tanggalJatuhTempo && d.status !== 'lunas') {
       const due = new Date(d.tanggalJatuhTempo); due.setHours(0,0,0,0);
-      const diffDays = Math.round((due - today) / (1000*60*60*24));
-      if (diffDays < 0) {
-        dueLabel = `⚠️ Lewat ${Math.abs(diffDays)} hari`;
-        cardClass = 'overdue';
-      } else if (diffDays <= 7) {
-        dueLabel = diffDays === 0 ? '⏰ Jatuh tempo hari ini!' : `⏰ ${diffDays} hari lagi`;
-        cardClass = 'near-due';
-      } else {
-        const opts = { day: 'numeric', month: 'short', year: 'numeric' };
-        dueLabel = `📅 ${due.toLocaleDateString('id-ID', opts)}`;
-      }
+      const diff = Math.round((due - today)/(1000*60*60*24));
+      if (diff < 0) { dueLabel = `⚠️ Lewat ${Math.abs(diff)} hari`; cardClass = 'overdue'; }
+      else if (diff === 0) { dueLabel = '⏰ Jatuh tempo hari ini!'; cardClass = 'near-due'; }
+      else if (diff <= 7) { dueLabel = `⏰ ${diff} hari lagi`; cardClass = 'near-due'; }
+      else { dueLabel = `📅 ${new Date(d.tanggalJatuhTempo).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}`; }
     }
     if (d.status === 'lunas') cardClass = 'lunas';
-
-    const statusBadge = {
-      'belum_lunas': '<span class="debt-status belum">Belum Lunas</span>',
-      'nyicil': '<span class="debt-status nyicil">Dicicil</span>',
-      'lunas': '<span class="debt-status lunas">✓ Lunas</span>',
-    }[d.status] || '';
-
-    const typeLabel = isHutang
-      ? `<span style="color:var(--red); font-weight:700; font-size:12px;">💸 Hutang</span>`
-      : `<span style="color:var(--green); font-weight:700; font-size:12px;">🤲 Piutang</span>`;
-
-    const dateStr = new Date(d.tanggalTransaksi).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-
+    const statusBadge = {'belum_lunas':'<span class="debt-status belum">Belum Lunas</span>','nyicil':'<span class="debt-status nyicil">Dicicil</span>','lunas':'<span class="debt-status lunas">✓ Lunas</span>'}[d.status]||'';
+    const typeLabel = isHutang ? `<span style="color:var(--red);font-weight:700;font-size:12px;">💸 Hutang</span>` : `<span style="color:var(--green);font-weight:700;font-size:12px;">🤲 Piutang</span>`;
+    const dateStr = new Date(d.tanggalTransaksi).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
     return `<div class="debt-card ${cardClass}" onclick="openDebtDetailModal('${d.id}')">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-        <div>
-          <div style="font-size:16px; font-weight:700; color:var(--text);">${escapeHTML(d.contact)}</div>
-          <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">${typeLabel} ${statusBadge}</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:18px; font-weight:700; color:${isHutang ? 'var(--red)' : 'var(--green)'};">${fmt(sisa)}</div>
-          ${total !== sisa ? `<div style="font-size:11px; color:var(--text3);">dari ${fmt(total)}</div>` : ''}
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div style="font-size:16px;font-weight:700;">${escapeHTML(d.contact)}</div><div style="display:flex;align-items:center;gap:8px;margin-top:4px;">${typeLabel} ${statusBadge}</div></div>
+        <div style="text-align:right;"><div style="font-size:18px;font-weight:700;color:${isHutang?'var(--red)':'var(--green)'};">${fmt(sisa)}</div>${total!==sisa?`<div style="font-size:11px;color:var(--text3);">dari ${fmt(total)}</div>`:''}</div>
       </div>
-      ${d.status !== 'lunas' && total !== sisa ? `
-        <div class="debt-progress-bg"><div class="debt-progress-bar" style="width:${pct}%; background:${isHutang ? 'var(--red)' : 'var(--green)'};"></div></div>
-      ` : ''}
-      <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text3); margin-top:4px;">
-        <span>${dateStr}${d.catatan ? ' · ' + escapeHTML(d.catatan) : ''}</span>
-        <span>${dueLabel}</span>
+      ${d.status!=='lunas'&&total!==sisa?`<div class="debt-progress-bg"><div class="debt-progress-bar" style="width:${pct}%;background:${isHutang?'var(--red)':'var(--green)'};"></div></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text3);margin-top:4px;">
+        <span>${dateStr}${d.catatan?' · '+escapeHTML(d.catatan):''}</span><span>${dueLabel}</span>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── MODAL ADD/EDIT DEBT ───────────────────────────────────────────
 function setDebtType(type) {
   currentDebtType = type;
   document.getElementById('debt-tab-piutang').classList.toggle('active', type === 'piutang');
@@ -2298,13 +2274,12 @@ function setDebtType(type) {
   document.getElementById('debt-tab-hutang').style.color = type === 'hutang' ? 'var(--red)' : '';
   document.getElementById('debt-lbl-nominal').textContent = type === 'piutang' ? 'Jumlah Piutang (Uang yang Dipinjamkan)' : 'Jumlah Hutang (Uang yang Dipinjam)';
   document.getElementById('debt-lbl-wallet').textContent = type === 'piutang' ? 'Dompet Asal Dana' : 'Dompet Tujuan Dana Masuk';
-  const btn = document.getElementById('debt-btn-wallet');
-  btn.className = 'wallet-pick-btn ' + (type === 'piutang' ? 'red' : 'green');
+  document.getElementById('debt-btn-wallet').className = 'wallet-pick-btn ' + (type === 'piutang' ? 'red' : 'green');
 }
 
 function openDebtModal(editId = null) {
   document.getElementById('debtDetailModal').classList.remove('open');
-  const defaultWalletId = wallets[0]?.id || '';
+  const defWallet = wallets[0]?.id || '';
   if (editId) {
     const d = debts.find(x => x.id === editId); if (!d) return;
     document.getElementById('debtModalTitle').textContent = 'Edit Catatan';
@@ -2315,8 +2290,7 @@ function openDebtModal(editId = null) {
     document.getElementById('debt-inp-due').value = d.tanggalJatuhTempo || '';
     document.getElementById('debt-inp-note').value = d.catatan || '';
     document.getElementById('debt-inp-wallet-id').value = d.walletId;
-    const btn = document.getElementById('debt-btn-wallet');
-    if(btn) btn.querySelector('.wallet-pick-name').textContent = getWallet(d.walletId).name;
+    document.getElementById('debt-btn-wallet').querySelector('.wallet-pick-name').textContent = getWallet(d.walletId).name;
     setDebtType(d.type);
   } else {
     document.getElementById('debtModalTitle').textContent = 'Catat Hutang / Piutang';
@@ -2326,9 +2300,8 @@ function openDebtModal(editId = null) {
     document.getElementById('debt-inp-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('debt-inp-due').value = '';
     document.getElementById('debt-inp-note').value = '';
-    document.getElementById('debt-inp-wallet-id').value = defaultWalletId;
-    const btn = document.getElementById('debt-btn-wallet');
-    if(btn) btn.querySelector('.wallet-pick-name').textContent = getWallet(defaultWalletId).name;
+    document.getElementById('debt-inp-wallet-id').value = defWallet;
+    document.getElementById('debt-btn-wallet').querySelector('.wallet-pick-name').textContent = getWallet(defWallet).name;
     setDebtType('piutang');
   }
   document.getElementById('debtModal').classList.add('open');
@@ -2344,154 +2317,88 @@ function saveDebt() {
   const date = document.getElementById('debt-inp-date').value;
   const due = document.getElementById('debt-inp-due').value;
   const note = document.getElementById('debt-inp-note').value.trim();
-
   if (!contact) return alert('Nama kontak wajib diisi.');
   if (!nominal || nominal <= 0) return alert('Nominal wajib diisi.');
   if (!date) return alert('Tanggal transaksi wajib diisi.');
   if (!walletId) return alert('Pilih dompet terlebih dahulu.');
-
   if (editId) {
-    // Edit: hanya update field non-finansial (tidak ubah saldo dompet)
-    const idx = debts.findIndex(d => d.id === editId);
-    if (idx === -1) return;
-    const d = debts[idx];
-    const diff = nominal - d.nominal;
-    d.contact = contact;
-    d.nominal = nominal;
-    d.sisaNominal = Math.max(0, d.sisaNominal + diff);
-    d.tanggalJatuhTempo = due || null;
-    d.catatan = note;
+    const idx = debts.findIndex(d => d.id === editId); if (idx === -1) return;
+    const d = debts[idx], diff = nominal - d.nominal;
+    d.contact = contact; d.nominal = nominal; d.sisaNominal = Math.max(0, d.sisaNominal + diff);
+    d.tanggalJatuhTempo = due || null; d.catatan = note;
     if (d.sisaNominal <= 0) d.status = 'lunas';
     else if (d.sisaNominal < d.nominal) d.status = 'nyicil';
     else d.status = 'belum_lunas';
     debts[idx] = d;
   } else {
-    // Baru: catat transaksi ke dompet
-    const txId = Date.now();
-    const debtId = 'debt_' + txId;
-
-    // Piutang → uang keluar dari dompet (expense)
-    // Hutang → uang masuk ke dompet (income)
+    const txId = Date.now(), debtId = 'debt_' + txId;
     const txType = currentDebtType === 'piutang' ? 'expense' : 'income';
-    const txDesc = currentDebtType === 'piutang'
-      ? `Piutang ke ${contact}${note ? ' - ' + note : ''}`
-      : `Hutang dari ${contact}${note ? ' - ' + note : ''}`;
-
-    // Validasi saldo jika piutang
+    const txDesc = currentDebtType === 'piutang' ? `Piutang ke ${contact}${note?' - '+note:''}` : `Hutang dari ${contact}${note?' - '+note:''}`;
     if (currentDebtType === 'piutang') {
       const bal = getWalletCurrentBalance(walletId);
-      if (nominal > bal) {
-        const w = getWallet(walletId);
-        return alert(`Saldo ${w.name} tidak mencukupi.
+      if (nominal > bal) return alert(`Saldo ${getWallet(walletId).name} tidak mencukupi.
 Saldo: ${fmt(bal)}
 Dibutuhkan: ${fmt(nominal)}`);
-      }
     }
-
-    const newTx = {
-      id: txId,
-      type: txType,
-      amount: nominal,
-      category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc',
-      walletId,
-      desc: txDesc,
-      date,
-      isDebtTx: true,
-      debtId
-    };
-    transactions.unshift(newTx);
+    transactions.unshift({ id: txId, type: txType, amount: nominal, category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc', walletId, desc: txDesc, date, isDebtTx: true, debtId });
     transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
     save();
-
-    debts.unshift({
-      id: debtId,
-      type: currentDebtType,
-      contact,
-      nominal,
-      sisaNominal: nominal,
-      tanggalTransaksi: date,
-      tanggalJatuhTempo: due || null,
-      status: 'belum_lunas',
-      catatan: note,
-      walletId,
-      txId
-    });
+    debts.unshift({ id: debtId, type: currentDebtType, contact, nominal, sisaNominal: nominal, tanggalTransaksi: date, tanggalJatuhTempo: due||null, status: 'belum_lunas', catatan: note, walletId, txId });
   }
-
-  saveDebts();
-  closeDebtModal();
-  renderDebtList();
+  saveDebts(); closeDebtModal(); renderDebtList();
   if (currentPage === 'dashboard') renderDashboard();
 }
 
-// ── DETAIL MODAL ──────────────────────────────────────────────────
 function openDebtDetailModal(debtId) {
   currentDebtDetailId = debtId;
   const d = debts.find(x => x.id === debtId); if (!d) return;
   const paid = getDebtPaidAmount(d.id);
-  const pct = d.nominal > 0 ? Math.min(((d.nominal - d.sisaNominal) / d.nominal) * 100, 100) : 0;
+  const pct = d.nominal > 0 ? Math.min(((d.nominal-d.sisaNominal)/d.nominal)*100, 100) : 0;
   const isHutang = d.type === 'hutang';
   const wal = getWallet(d.walletId);
   const today = new Date(); today.setHours(0,0,0,0);
-
   document.getElementById('debtDetailTitle').textContent = (isHutang ? '💸 Hutang' : '🤲 Piutang') + ' — ' + d.contact;
-
   let dueInfo = '';
   if (d.tanggalJatuhTempo) {
     const due = new Date(d.tanggalJatuhTempo); due.setHours(0,0,0,0);
-    const diffDays = Math.round((due - today) / (1000*60*60*24));
-    const dueStr = due.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const diff = Math.round((due-today)/(1000*60*60*24));
+    const dueStr = due.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
     if (d.status === 'lunas') dueInfo = `<span style="color:var(--green);">✓ Lunas</span>`;
-    else if (diffDays < 0) dueInfo = `<span style="color:var(--red);">⚠️ Lewat ${Math.abs(diffDays)} hari (${dueStr})</span>`;
-    else if (diffDays === 0) dueInfo = `<span style="color:var(--yellow);">⏰ Jatuh tempo hari ini!</span>`;
-    else dueInfo = `<span style="color:var(--text2);">📅 ${dueStr} (${diffDays} hari lagi)</span>`;
+    else if (diff < 0) dueInfo = `<span style="color:var(--red);">⚠️ Lewat ${Math.abs(diff)} hari (${dueStr})</span>`;
+    else if (diff === 0) dueInfo = `<span style="color:var(--yellow);">⏰ Jatuh tempo hari ini!</span>`;
+    else dueInfo = `<span style="color:var(--text2);">📅 ${dueStr} (${diff} hari lagi)</span>`;
   }
-
-  // Payment history
-  const payments = debtPayments.filter(p => p.debtId === d.id).sort((a,b) => new Date(b.tanggalBayar) - new Date(a.tanggalBayar));
-  const payHistoryHtml = payments.length ? payments.map(p => {
+  const payments = debtPayments.filter(p => p.debtId === d.id).sort((a,b) => new Date(b.tanggalBayar)-new Date(a.tanggalBayar));
+  const payHtml = payments.length ? payments.map(p => {
     const pWal = getWallet(p.walletId);
-    const pDate = new Date(p.tanggalBayar).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
-      <div><div style="font-weight:600; font-size:14px;">${pDate}</div><div style="font-size:12px; color:var(--text3);">${escapeHTML(pWal.name)}</div></div>
-      <div style="font-weight:700; color:${isHutang ? 'var(--red)' : 'var(--green)'};">${fmt(p.nominalBayar)}</div>
-    </div>`;
-  }).join('') : `<div style="color:var(--text3); font-size:13px; text-align:center; padding:12px 0;">Belum ada riwayat pembayaran</div>`;
-
+    return `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><div><div style="font-weight:600;font-size:14px;">${new Date(p.tanggalBayar).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}</div><div style="font-size:12px;color:var(--text3);">${escapeHTML(pWal.name)}</div></div><div style="font-weight:700;color:${isHutang?'var(--red)':'var(--green)'};">${fmt(p.nominalBayar)}</div></div>`;
+  }).join('') : `<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px 0;">Belum ada riwayat pembayaran</div>`;
   document.getElementById('debtDetailContent').innerHTML = `
-    <div style="background:var(--bg3); border-radius:var(--radius-sm); padding:16px; margin-bottom:16px; border:1px solid var(--border);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-        <div><div style="font-size:11px; color:var(--text3); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Nominal Awal</div><div style="font-size:16px; font-weight:700;">${fmt(d.nominal)}</div></div>
-        <div style="text-align:right;"><div style="font-size:11px; color:var(--text3); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Sisa</div><div style="font-size:20px; font-weight:800; color:${isHutang ? 'var(--red)' : 'var(--green)'};">${fmt(d.sisaNominal)}</div></div>
+    <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Nominal Awal</div><div style="font-size:16px;font-weight:700;">${fmt(d.nominal)}</div></div>
+        <div style="text-align:right;"><div style="font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:4px;">Sisa</div><div style="font-size:20px;font-weight:800;color:${isHutang?'var(--red)':'var(--green)'};">${fmt(d.sisaNominal)}</div></div>
       </div>
-      ${paid > 0 ? `<div class="debt-progress-bg"><div class="debt-progress-bar" style="width:${pct}%; background:${isHutang ? 'var(--red)' : 'var(--green)'};"></div></div><div style="font-size:12px; color:var(--text3); margin-top:4px;">Sudah terbayar ${fmt(paid)} (${Math.round(pct)}%)</div>` : ''}
-      ${dueInfo ? `<div style="margin-top:8px; font-size:13px;">${dueInfo}</div>` : ''}
-      ${d.catatan ? `<div style="margin-top:8px; font-size:13px; color:var(--text2);">📝 ${escapeHTML(d.catatan)}</div>` : ''}
-      <div style="font-size:12px; color:var(--text3); margin-top:8px;">Dompet: ${escapeHTML(wal.name)}</div>
+      ${paid>0?`<div class="debt-progress-bg"><div class="debt-progress-bar" style="width:${pct}%;background:${isHutang?'var(--red)':'var(--green)'};"></div></div><div style="font-size:12px;color:var(--text3);margin-top:4px;">Sudah terbayar ${fmt(paid)} (${Math.round(pct)}%)</div>`:''}
+      ${dueInfo?`<div style="margin-top:8px;font-size:13px;">${dueInfo}</div>`:''}
+      ${d.catatan?`<div style="margin-top:8px;font-size:13px;color:var(--text2);">📝 ${escapeHTML(d.catatan)}</div>`:''}
+      <div style="font-size:12px;color:var(--text3);margin-top:8px;">Dompet: ${escapeHTML(wal.name)}</div>
     </div>
-    ${d.status !== 'lunas' ? `<h4 style="font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Riwayat Pembayaran</h4>` : ''}
-    ${d.status !== 'lunas' ? payHistoryHtml : ''}
+    ${d.status!=='lunas'?`<h4 style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Riwayat Pembayaran</h4>${payHtml}`:''}
   `;
-
-  const actionsEl = document.getElementById('debtDetailActions');
-  let actionsHtml = '';
+  const actEl = document.getElementById('debtDetailActions');
+  let act = '';
   if (d.status !== 'lunas') {
-    const actionLabel = isHutang ? '💸 Bayar Cicilan' : '💰 Terima Pembayaran';
-    actionsHtml += `<button class="btn btn-primary" style="justify-content:center;" onclick="openPaymentModal('${d.id}')">${actionLabel}</button>`;
-    actionsHtml += `<button class="btn" style="background:var(--green-dim); color:var(--green); justify-content:center;" onclick="markDebtLunas('${d.id}')"><i class="ph-bold ph-check-circle"></i> Tandai Lunas Penuh</button>`;
+    act += `<button class="btn btn-primary" style="justify-content:center;" onclick="openPaymentModal('${d.id}')">${isHutang?'💸 Bayar Cicilan':'💰 Terima Pembayaran'}</button>`;
+    act += `<button class="btn" style="background:var(--green-dim);color:var(--green);justify-content:center;" onclick="markDebtLunas('${d.id}')"><i class="ph-bold ph-check-circle"></i> Tandai Lunas Penuh</button>`;
   }
-  actionsHtml += `<button class="btn btn-danger" style="justify-content:center;" onclick="deleteDebt('${d.id}')"><i class="ph-bold ph-trash"></i> Hapus Catatan</button>`;
-  actionsEl.innerHTML = actionsHtml;
-
+  act += `<button class="btn btn-danger" style="justify-content:center;" onclick="deleteDebt('${d.id}')"><i class="ph-bold ph-trash"></i> Hapus Catatan</button>`;
+  actEl.innerHTML = act;
   document.getElementById('debtDetailModal').classList.add('open');
 }
 
-function closeDebtDetailModal() {
-  document.getElementById('debtDetailModal').classList.remove('open');
-  currentDebtDetailId = null;
-}
+function closeDebtDetailModal() { document.getElementById('debtDetailModal').classList.remove('open'); currentDebtDetailId = null; }
 
-// ── PAYMENT MODAL ─────────────────────────────────────────────────
 function openPaymentModal(debtId) {
   const d = debts.find(x => x.id === debtId); if (!d) return;
   document.getElementById('debtDetailModal').classList.remove('open');
@@ -2503,17 +2410,11 @@ function openPaymentModal(debtId) {
   document.getElementById('pay-inp-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('pay-inp-wallet-id').value = d.walletId;
   const btn = document.getElementById('pay-btn-wallet');
-  if(btn) {
-    btn.className = 'wallet-pick-btn ' + (d.type === 'hutang' ? 'red' : 'green');
-    btn.querySelector('.wallet-pick-name').textContent = getWallet(d.walletId).name;
-  }
+  if(btn) { btn.className = 'wallet-pick-btn '+(d.type==='hutang'?'red':'green'); btn.querySelector('.wallet-pick-name').textContent = getWallet(d.walletId).name; }
   document.getElementById('debtPaymentModal').classList.add('open');
 }
 
-function closePaymentModal() {
-  document.getElementById('debtPaymentModal').classList.remove('open');
-  if (currentDebtDetailId) document.getElementById('debtDetailModal').classList.add('open');
-}
+function closePaymentModal() { document.getElementById('debtPaymentModal').classList.remove('open'); if(currentDebtDetailId) document.getElementById('debtDetailModal').classList.add('open'); }
 
 function savePayment() {
   const debtId = document.getElementById('pay-inp-debt-id').value;
@@ -2521,43 +2422,25 @@ function savePayment() {
   const nominal = unformatRibuan(document.getElementById('pay-inp-nominal').value);
   const walletId = document.getElementById('pay-inp-wallet-id').value;
   const date = document.getElementById('pay-inp-date').value;
-
   if (!nominal || nominal <= 0) return alert('Masukkan jumlah yang valid.');
   if (nominal > d.sisaNominal) return alert(`Jumlah melebihi sisa tagihan (${fmt(d.sisaNominal)}).`);
   if (!date) return alert('Tanggal wajib diisi.');
-
-  // Hutang bayar → expense dari dompet
-  // Piutang terima → income ke dompet
   const txType = d.type === 'hutang' ? 'expense' : 'income';
-  const txDesc = d.type === 'hutang'
-    ? `Bayar hutang ke ${d.contact}`
-    : `Terima piutang dari ${d.contact}`;
-
   if (d.type === 'hutang') {
     const bal = getWalletCurrentBalance(walletId);
-    if (nominal > bal) {
-      const w = getWallet(walletId);
-      return alert(`Saldo ${w.name} tidak mencukupi.
+    if (nominal > bal) return alert(`Saldo ${getWallet(walletId).name} tidak mencukupi.
 Saldo: ${fmt(bal)}
 Dibutuhkan: ${fmt(nominal)}`);
-    }
   }
-
   const txId = Date.now();
-  transactions.unshift({ id: txId, type: txType, amount: nominal, category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc', walletId, desc: txDesc, date, isDebtTx: true, debtId });
-  transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
-  save();
-
-  debtPayments.push({ id: 'pay_' + txId, debtId, tanggalBayar: date, nominalBayar: nominal, walletId, txId });
+  transactions.unshift({ id: txId, type: txType, amount: nominal, category: txType==='expense'?'lainnya_exp':'lainnya_inc', walletId, desc: (d.type==='hutang'?'Bayar hutang ke ':'Terima piutang dari ')+d.contact, date, isDebtTx: true, debtId });
+  transactions.sort((a,b) => new Date(b.date)-new Date(a.date)); save();
+  debtPayments.push({ id: 'pay_'+txId, debtId, tanggalBayar: date, nominalBayar: nominal, walletId, txId });
   saveDebtPayments();
-
-  // Update sisa & status
   const idx = debts.findIndex(x => x.id === debtId);
   debts[idx].sisaNominal = Math.max(0, debts[idx].sisaNominal - nominal);
-  if (debts[idx].sisaNominal <= 0) debts[idx].status = 'lunas';
-  else debts[idx].status = 'nyicil';
+  debts[idx].status = debts[idx].sisaNominal <= 0 ? 'lunas' : 'nyicil';
   saveDebts();
-
   document.getElementById('debtPaymentModal').classList.remove('open');
   currentDebtDetailId = null;
   renderDebtList();
@@ -2568,44 +2451,26 @@ function markDebtLunas(debtId) {
   const idx = debts.findIndex(x => x.id === debtId); if (idx === -1) return;
   const d = debts[idx];
   if (d.sisaNominal > 0) {
-    // Catat transaksi pelunasan sisa
     const txType = d.type === 'hutang' ? 'expense' : 'income';
     const txId = Date.now();
-    transactions.unshift({ id: txId, type: txType, amount: d.sisaNominal, category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc', walletId: d.walletId, desc: (d.type === 'hutang' ? 'Lunas hutang ke ' : 'Lunas piutang dari ') + d.contact, date: new Date().toISOString().split('T')[0], isDebtTx: true, debtId });
-    transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
-    save();
-    debtPayments.push({ id: 'pay_' + txId, debtId, tanggalBayar: new Date().toISOString().split('T')[0], nominalBayar: d.sisaNominal, walletId: d.walletId, txId });
+    transactions.unshift({ id: txId, type: txType, amount: d.sisaNominal, category: txType==='expense'?'lainnya_exp':'lainnya_inc', walletId: d.walletId, desc: (d.type==='hutang'?'Lunas hutang ke ':'Lunas piutang dari ')+d.contact, date: new Date().toISOString().split('T')[0], isDebtTx: true, debtId });
+    transactions.sort((a,b)=>new Date(b.date)-new Date(a.date)); save();
+    debtPayments.push({ id:'pay_'+txId, debtId, tanggalBayar: new Date().toISOString().split('T')[0], nominalBayar: d.sisaNominal, walletId: d.walletId, txId });
     saveDebtPayments();
   }
-  debts[idx].sisaNominal = 0;
-  debts[idx].status = 'lunas';
-  saveDebts();
-  closeDebtDetailModal();
-  renderDebtList();
+  debts[idx].sisaNominal = 0; debts[idx].status = 'lunas';
+  saveDebts(); closeDebtDetailModal(); renderDebtList();
   if (currentPage === 'dashboard') renderDashboard();
 }
 
 function deleteDebt(debtId) {
-  openConfirmModal({
-    icon: '🗑️',
-    title: 'Hapus Catatan?',
-    msg: 'Catatan hutang/piutang ini akan dihapus. Transaksi dompet terkait juga akan ikut dihapus.',
-    okLabel: 'Hapus',
-    callback: () => {
-      // Hapus semua transaksi terkait
-      transactions = transactions.filter(t => t.debtId !== debtId);
-      save();
-      // Hapus payment history
-      debtPayments = debtPayments.filter(p => p.debtId !== debtId);
-      saveDebtPayments();
-      // Hapus debt
-      debts = debts.filter(d => d.id !== debtId);
-      saveDebts();
-      closeDebtDetailModal();
-      renderDebtList();
-      if (currentPage === 'dashboard') renderDashboard();
-    }
-  });
+  openConfirmModal({ icon:'🗑️', title:'Hapus Catatan?', msg:'Catatan ini dan semua transaksi terkait akan dihapus.', okLabel:'Hapus', callback: () => {
+    transactions = transactions.filter(t => t.debtId !== debtId); save();
+    debtPayments = debtPayments.filter(p => p.debtId !== debtId); saveDebtPayments();
+    debts = debts.filter(d => d.id !== debtId); saveDebts();
+    closeDebtDetailModal(); renderDebtList();
+    if (currentPage === 'dashboard') renderDashboard();
+  }});
 }
 
 // ─── EVENT LISTENERS ──────────────────────────────────────────────
@@ -2626,9 +2491,43 @@ document.getElementById('debtModal').addEventListener('click', function(e) { if 
 document.getElementById('debtDetailModal').addEventListener('click', function(e) { if (e.target === this) closeDebtDetailModal(); });
 document.getElementById('debtPaymentModal').addEventListener('click', function(e) { if (e.target === this) closePaymentModal(); });
 
+
+function migrateIconsToEmoji() {
+  const ICON_MAP = {
+    'ph-fill ph-fork-knife':'🍜','ph-fill ph-car-profile':'🚗','ph-fill ph-shopping-bag':'🛍️',
+    'ph-fill ph-lightbulb':'💡','ph-fill ph-first-aid-kit':'💊','ph-fill ph-film-strip':'🎬',
+    'ph-fill ph-books':'📚','ph-fill ph-package':'📦','ph-fill ph-briefcase':'💼',
+    'ph-fill ph-storefront':'🏪','ph-fill ph-laptop':'💻','ph-fill ph-chart-line-up':'📈',
+    'ph-fill ph-gift':'🎁','ph-fill ph-coins':'🪙','ph-fill ph-house':'🏠',
+    'ph-fill ph-airplane-tilt':'✈️','ph-fill ph-baby':'👶','ph-fill ph-paw-print':'🐾',
+    'ph-fill ph-game-controller':'🎮','ph-fill ph-heart':'❤️','ph-fill ph-wifi':'📶',
+    'ph-fill ph-globe':'🌐','ph-fill ph-monitor':'🖥️','ph-fill ph-printer':'🖨️',
+    'ph-fill ph-gas-pump':'⛽','ph-fill ph-broom':'🧹','ph-fill ph-scissors':'✂️',
+    'ph-fill ph-hammer':'🔨','ph-fill ph-wrench':'🔧','ph-fill ph-paint-brush':'🎨',
+    'ph-fill ph-t-shirt':'👕','ph-fill ph-sneaker':'👟','ph-fill ph-sun':'☀️',
+    'ph-fill ph-moon':'🌙','ph-fill ph-umbrella':'☂️','ph-fill ph-tree':'🌳',
+    'ph-fill ph-flower':'🌸','ph-fill ph-mosque':'🕌','ph-fill ph-church':'⛪',
+    'ph-fill ph-hands-praying':'🙏','ph-fill ph-piggy-bank':'🐷','ph-fill ph-bank':'🏦',
+    'ph-fill ph-receipt':'🧾','ph-fill ph-currency-circle-dollar':'💵',
+    'ph-fill ph-barbell':'🏋️','ph-fill ph-person-simple-run':'🏃',
+    'ph-fill ph-soccer-ball':'⚽','ph-fill ph-music-note':'🎵','ph-fill ph-microphone':'🎤',
+    'ph-fill ph-camera':'📷','ph-fill ph-video-camera':'🎥','ph-fill ph-device-tablet':'📱',
+    'ph-fill ph-plugs':'🔌','ph-fill ph-toilet':'🚿','ph-fill ph-warning-circle':'⚠️',
+  };
+  let changed = false;
+  ['expense','income'].forEach(type => {
+    if (!customCats[type]) return;
+    customCats[type].forEach(cat => {
+      if (cat.icon && ICON_MAP[cat.icon]) { cat.icon = ICON_MAP[cat.icon]; changed = true; }
+    });
+  });
+  if (changed) { localStorage.setItem('dompet_cats', JSON.stringify(customCats)); }
+}
+migrateIconsToEmoji();
 initTheme();
 document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
 renderDashboard();
+updateDebtBadge();
 checkWelcome();
 
 let resizeTimeout;
