@@ -794,6 +794,25 @@
       <div class="form-group"><label class="form-label">Jatuh Tempo <span style="color:var(--text3);font-weight:400;">(Opsional)</span></label><input type="date" class="form-input" id="debt-inp-due"></div>
     </div>
     <div class="form-group"><label class="form-label">Catatan <span style="color:var(--text3);font-weight:400;">(Opsional)</span></label><input type="text" class="form-input" id="debt-inp-note" placeholder="Misal: untuk uang makan"></div>
+
+    <!-- TOGGLE: Baru atau Lama -->
+    <div style="margin-bottom:20px;">
+      <label class="form-label">Jenis Pencatatan</label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="debt-mode-picker">
+        <div id="debt-mode-baru" onclick="setDebtMode('baru')" style="padding:12px; border-radius:var(--radius-sm); border:2px solid var(--accent); background:var(--accent-dim); cursor:pointer; transition:0.2s;">
+          <div style="font-size:18px; margin-bottom:4px;">🆕</div>
+          <div style="font-size:13px; font-weight:700; color:var(--text);">Baru / Saat Ini</div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px; line-height:1.4;">Saldo dompet ikut berubah saat ini</div>
+        </div>
+        <div id="debt-mode-lama" onclick="setDebtMode('lama')" style="padding:12px; border-radius:var(--radius-sm); border:2px solid var(--border); background:var(--bg3); cursor:pointer; transition:0.2s;">
+          <div style="font-size:18px; margin-bottom:4px;">📋</div>
+          <div style="font-size:13px; font-weight:700; color:var(--text2);">Sudah Ada Sebelumnya</div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px; line-height:1.4;">Hanya catat kewajiban, saldo tidak berubah</div>
+        </div>
+      </div>
+      <div id="debt-mode-hint" style="font-size:12px; color:var(--accent); margin-top:8px; padding:8px 12px; background:var(--accent-dim); border-radius:var(--radius-sm); display:none;"></div>
+    </div>
+
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeDebtModal()">Batal</button><button class="btn btn-primary" onclick="saveDebt()"><i class="ph-bold ph-check"></i> Simpan</button></div>
   </div>
 </div>
@@ -1099,6 +1118,7 @@ let currentDebtType = 'piutang';
 let currentDebtFilter = 'semua';
 let currentSubTab = 'tx';
 let currentDebtDetailId = null;
+let currentDebtMode = 'baru';
 
 // ─── UTILITIES ────────────────────────────────────────────────────
 function save() { localStorage.setItem('dompet_tx', JSON.stringify(transactions)); }
@@ -2275,6 +2295,39 @@ function setDebtType(type) {
   document.getElementById('debt-lbl-nominal').textContent = type === 'piutang' ? 'Jumlah Piutang (Uang yang Dipinjamkan)' : 'Jumlah Hutang (Uang yang Dipinjam)';
   document.getElementById('debt-lbl-wallet').textContent = type === 'piutang' ? 'Dompet Asal Dana' : 'Dompet Tujuan Dana Masuk';
   document.getElementById('debt-btn-wallet').className = 'wallet-pick-btn ' + (type === 'piutang' ? 'red' : 'green');
+  // Refresh hint jika mode lama aktif
+  if (currentDebtMode === 'lama') setDebtMode('lama');
+}
+
+function setDebtMode(mode) {
+  currentDebtMode = mode;
+  const baruEl = document.getElementById('debt-mode-baru');
+  const lamaEl = document.getElementById('debt-mode-lama');
+  const hintEl = document.getElementById('debt-mode-hint');
+  const isLama = mode === 'lama';
+  const type = currentDebtType;
+
+  // Style active/inactive
+  baruEl.style.borderColor = !isLama ? 'var(--accent)' : 'var(--border)';
+  baruEl.style.background = !isLama ? 'var(--accent-dim)' : 'var(--bg3)';
+  baruEl.querySelector('div:nth-child(2)').style.color = !isLama ? 'var(--text)' : 'var(--text2)';
+  lamaEl.style.borderColor = isLama ? 'var(--accent)' : 'var(--border)';
+  lamaEl.style.background = isLama ? 'var(--accent-dim)' : 'var(--bg3)';
+  lamaEl.querySelector('div:nth-child(2)').style.color = isLama ? 'var(--text)' : 'var(--text2)';
+
+  // Hint text
+  if (isLama) {
+    const hint = type === 'hutang'
+      ? '📋 Hutang ini tidak akan menambah saldo dompet. Cocok untuk hutang lama yang uangnya sudah habis dipakai.'
+      : '📋 Piutang ini tidak akan mengurangi saldo dompet. Cocok untuk uang yang sudah lama dipinjamkan.';
+    hintEl.textContent = hint;
+    hintEl.style.display = 'block';
+    // Sembunyikan pilihan dompet karena tidak relevan
+    document.getElementById('debt-btn-wallet').closest('.form-group').style.display = 'none';
+  } else {
+    hintEl.style.display = 'none';
+    document.getElementById('debt-btn-wallet').closest('.form-group').style.display = 'block';
+  }
 }
 
 function openDebtModal(editId = null) {
@@ -2303,6 +2356,7 @@ function openDebtModal(editId = null) {
     document.getElementById('debt-inp-wallet-id').value = defWallet;
     document.getElementById('debt-btn-wallet').querySelector('.wallet-pick-name').textContent = getWallet(defWallet).name;
     setDebtType('piutang');
+    setDebtMode('baru');
   }
   document.getElementById('debtModal').classList.add('open');
 }
@@ -2332,18 +2386,24 @@ function saveDebt() {
     debts[idx] = d;
   } else {
     const txId = Date.now(), debtId = 'debt_' + txId;
-    const txType = currentDebtType === 'piutang' ? 'expense' : 'income';
-    const txDesc = currentDebtType === 'piutang' ? `Piutang ke ${contact}${note?' - '+note:''}` : `Hutang dari ${contact}${note?' - '+note:''}`;
-    if (currentDebtType === 'piutang') {
-      const bal = getWalletCurrentBalance(walletId);
-      if (nominal > bal) return alert(`Saldo ${getWallet(walletId).name} tidak mencukupi.
+    const isLama = currentDebtMode === 'lama';
+
+    if (!isLama) {
+      // Mode BARU: catat transaksi ke dompet, saldo berubah
+      const txType = currentDebtType === 'piutang' ? 'expense' : 'income';
+      const txDesc = currentDebtType === 'piutang' ? `Piutang ke ${contact}${note?' - '+note:''}` : `Hutang dari ${contact}${note?' - '+note:''}`;
+      if (currentDebtType === 'piutang') {
+        const bal = getWalletCurrentBalance(walletId);
+        if (nominal > bal) return alert(`Saldo ${getWallet(walletId).name} tidak mencukupi.
 Saldo: ${fmt(bal)}
 Dibutuhkan: ${fmt(nominal)}`);
+      }
+      transactions.unshift({ id: txId, type: txType, amount: nominal, category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc', walletId, desc: txDesc, date, isDebtTx: true, debtId });
+      transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
+      save();
     }
-    transactions.unshift({ id: txId, type: txType, amount: nominal, category: txType === 'expense' ? 'lainnya_exp' : 'lainnya_inc', walletId, desc: txDesc, date, isDebtTx: true, debtId });
-    transactions.sort((a,b) => new Date(b.date) - new Date(a.date));
-    save();
-    debts.unshift({ id: debtId, type: currentDebtType, contact, nominal, sisaNominal: nominal, tanggalTransaksi: date, tanggalJatuhTempo: due||null, status: 'belum_lunas', catatan: note, walletId, txId });
+    // Mode LAMA: hanya catat kewajiban, tidak sentuh saldo dompet
+    debts.unshift({ id: debtId, type: currentDebtType, contact, nominal, sisaNominal: nominal, tanggalTransaksi: date, tanggalJatuhTempo: due||null, status: 'belum_lunas', catatan: note, walletId: isLama ? null : walletId, txId: isLama ? null : txId, isLama });
   }
   saveDebts(); closeDebtModal(); renderDebtList();
   if (currentPage === 'dashboard') renderDashboard();
@@ -2382,7 +2442,7 @@ function openDebtDetailModal(debtId) {
       ${paid>0?`<div class="debt-progress-bg"><div class="debt-progress-bar" style="width:${pct}%;background:${isHutang?'var(--red)':'var(--green)'};"></div></div><div style="font-size:12px;color:var(--text3);margin-top:4px;">Sudah terbayar ${fmt(paid)} (${Math.round(pct)}%)</div>`:''}
       ${dueInfo?`<div style="margin-top:8px;font-size:13px;">${dueInfo}</div>`:''}
       ${d.catatan?`<div style="margin-top:8px;font-size:13px;color:var(--text2);">📝 ${escapeHTML(d.catatan)}</div>`:''}
-      <div style="font-size:12px;color:var(--text3);margin-top:8px;">Dompet: ${escapeHTML(wal.name)}</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:8px;">${d.isLama ? '<span style="background:var(--yellow-dim);color:var(--yellow);padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">📋 Hutang/Piutang Lama</span>' : 'Dompet: '+escapeHTML(wal.name)}</div>
     </div>
     ${d.status!=='lunas'?`<h4 style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Riwayat Pembayaran</h4>${payHtml}`:''}
   `;
@@ -2408,9 +2468,10 @@ function openPaymentModal(debtId) {
   document.getElementById('pay-inp-nominal').value = d.sisaNominal.toLocaleString('id-ID');
   document.getElementById('pay-sisa-info').textContent = `Sisa tagihan: ${fmt(d.sisaNominal)}`;
   document.getElementById('pay-inp-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('pay-inp-wallet-id').value = d.walletId;
+  const payWalletId = d.walletId || wallets[0]?.id || '';
+  document.getElementById('pay-inp-wallet-id').value = payWalletId;
   const btn = document.getElementById('pay-btn-wallet');
-  if(btn) { btn.className = 'wallet-pick-btn '+(d.type==='hutang'?'red':'green'); btn.querySelector('.wallet-pick-name').textContent = getWallet(d.walletId).name; }
+  if(btn) { btn.className = 'wallet-pick-btn '+(d.type==='hutang'?'red':'green'); btn.querySelector('.wallet-pick-name').textContent = getWallet(payWalletId).name; }
   document.getElementById('debtPaymentModal').classList.add('open');
 }
 
