@@ -874,30 +874,68 @@ function escapeHTML(str) {
   return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
+// Helper: render icon kategori — support Phosphor class (legacy) & Emoji
+function catIconHTML(icon, size = '20px') {
+  if (!icon) return '';
+  if (icon.startsWith('ph-')) {
+    return `<i class="${icon}" style="font-size:${size};"></i>`;
+  }
+  return `<span style="font-size:${size}; line-height:1; display:inline-block;">${icon}</span>`;
+}
+
 // ─── DATA & STATE ─────────────────────────────────────────────────
 const DEFAULT_CATS = {
   expense: [
-    { id: 'makan', label: 'Makan', icon: 'ph-fill ph-fork-knife', color: '#ff8c42' },
-    { id: 'transport', label: 'Transport', icon: 'ph-fill ph-car-profile', color: '#5b8dee' },
-    { id: 'belanja', label: 'Belanja', icon: 'ph-fill ph-shopping-bag', color: '#e879f9' },
-    { id: 'tagihan', label: 'Tagihan', icon: 'ph-fill ph-lightbulb', color: '#f5c518' },
-    { id: 'kesehatan', label: 'Kesehatan', icon: 'ph-fill ph-first-aid-kit', color: '#2ecc87' },
-    { id: 'hiburan', label: 'Hiburan', icon: 'ph-fill ph-film-strip', color: '#ff5f6d' },
-    { id: 'pendidikan', label: 'Pendidikan', icon: 'ph-fill ph-books', color: '#7c6ff7' },
-    { id: 'lainnya_exp', label: 'Lainnya', icon: 'ph-fill ph-package', color: '#8b8fa8' },
+    { id: 'makan',       label: 'Makan',      icon: '🍜', color: '#ff8c42' },
+    { id: 'transport',   label: 'Transport',  icon: '🚗', color: '#5b8dee' },
+    { id: 'belanja',     label: 'Belanja',    icon: '🛍️', color: '#e879f9' },
+    { id: 'tagihan',     label: 'Tagihan',    icon: '💡', color: '#f5c518' },
+    { id: 'kesehatan',   label: 'Kesehatan',  icon: '💊', color: '#2ecc87' },
+    { id: 'hiburan',     label: 'Hiburan',    icon: '🎬', color: '#ff5f6d' },
+    { id: 'pendidikan',  label: 'Pendidikan', icon: '📚', color: '#7c6ff7' },
+    { id: 'lainnya_exp', label: 'Lainnya',    icon: '📦', color: '#8b8fa8' },
   ],
   income: [
-    { id: 'gaji', label: 'Gaji', icon: 'ph-fill ph-briefcase', color: '#2ecc87' },
-    { id: 'bisnis', label: 'Bisnis', icon: 'ph-fill ph-storefront', color: '#f5c518' },
-    { id: 'freelance', label: 'Sampingan', icon: 'ph-fill ph-laptop', color: '#5b8dee' },
-    { id: 'investasi', label: 'Investasi', icon: 'ph-fill ph-chart-line-up', color: '#ff8c42' },
-    { id: 'hadiah', label: 'Hadiah', icon: 'ph-fill ph-gift', color: '#e879f9' },
-    { id: 'lainnya_inc', label: 'Lainnya', icon: 'ph-fill ph-coins', color: '#8b8fa8' },
+    { id: 'gaji',        label: 'Gaji',       icon: '💼', color: '#2ecc87' },
+    { id: 'bisnis',      label: 'Bisnis',     icon: '🏪', color: '#f5c518' },
+    { id: 'freelance',   label: 'Sampingan',  icon: '💻', color: '#5b8dee' },
+    { id: 'investasi',   label: 'Investasi',  icon: '📈', color: '#ff8c42' },
+    { id: 'hadiah',      label: 'Hadiah',     icon: '🎁', color: '#e879f9' },
+    { id: 'lainnya_inc', label: 'Lainnya',    icon: '🪙', color: '#8b8fa8' },
   ]
 };
 
 const PRESET_COLORS = ['#ff8c42','#5b8dee','#e879f9','#f5c518','#2ecc87','#ff5f6d','#7c6ff7','#8b8fa8','#ef4444','#3b82f6','#10b981','#f59e0b','#ec4899','#14b8a6','#8b5cf6'];
-const PRESET_ICONS = ['ph-fill ph-fork-knife','ph-fill ph-car-profile','ph-fill ph-shopping-bag','ph-fill ph-lightbulb','ph-fill ph-first-aid-kit','ph-fill ph-film-strip','ph-fill ph-books','ph-fill ph-package','ph-fill ph-briefcase','ph-fill ph-storefront','ph-fill ph-laptop','ph-fill ph-chart-line-up','ph-fill ph-gift','ph-fill ph-coins','ph-fill ph-house','ph-fill ph-airplane-tilt','ph-fill ph-baby','ph-fill ph-paw-print','ph-fill ph-game-controller','ph-fill ph-heart','ph-fill ph-wifi','ph-fill ph-globe','ph-fill ph-device-tablet','ph-fill ph-monitor','ph-fill ph-printer','ph-fill ph-plugs','ph-fill ph-gas-pump','ph-fill ph-toilet','ph-fill ph-broom','ph-fill ph-scissors','ph-fill ph-hammer','ph-fill ph-wrench','ph-fill ph-paint-brush','ph-fill ph-t-shirt','ph-fill ph-sneaker','ph-fill ph-sun','ph-fill ph-moon','ph-fill ph-umbrella','ph-fill ph-tree','ph-fill ph-flower','ph-fill ph-mosque','ph-fill ph-church','ph-fill ph-hands-praying','ph-fill ph-piggy-bank','ph-fill ph-bank','ph-fill ph-receipt','ph-fill ph-currency-circle-dollar','ph-fill ph-barbell','ph-fill ph-person-simple-run','ph-fill ph-soccer-ball','ph-fill ph-music-note','ph-fill ph-microphone','ph-fill ph-camera','ph-fill ph-video-camera'];
+const PRESET_ICONS = [
+  // Makanan & Minuman
+  '🍜','🍱','🍔','🍕','🥗','☕','🧃','🍰','🍣','🥩',
+  // Transport & Perjalanan
+  '🚗','🏍️','🚌','✈️','🚂','⛽','🅿️','🚢','🛵','🚁',
+  // Belanja & Gaya Hidup
+  '🛍️','👕','👟','💄','⌚','🕶️','💍','🛒','👗','🧴',
+  // Tagihan & Utilitas
+  '💡','💧','🔥','📶','🌐','🖨️','🔌','📺','📡','🔋',
+  // Kesehatan & Kebersihan
+  '💊','🏥','🧹','🪥','🩺','💉','🧘','🌡️','🩹','🧬',
+  // Hiburan & Hobi
+  '🎬','🎮','🎵','🎤','📷','🎨','📖','🎭','🎲','🎧',
+  // Pendidikan & Karier
+  '📚','🎓','✏️','💼','🖥️','📊','🔬','📝','🏆','🗂️',
+  // Rumah & Properti
+  '🏠','🛋️','🔨','🔧','🪟','🌿','🪴','🏡','🛏️','🚿',
+  // Keuangan & Investasi
+  '💰','📈','🏦','🧾','💵','🪙','💳','📉','💸','🤑',
+  // Keluarga & Sosial
+  '👶','🐾','🎁','❤️','🤝','🎂','🌸','👨‍👩‍👧','🫂','🐶',
+  // Olahraga & Kebugaran
+  '⚽','🏋️','🏃','🚴','🏊','🎾','🏀','⛳','🥊','🧗',
+  // Ibadah & Spiritual
+  '🕌','⛪','🙏','📿','🕯️','☪️','✝️','🕍',
+  // Alam & Cuaca
+  '🌳','☀️','🌧️','☂️','🌊','🏔️','🌺','🌙','🌈','❄️',
+  // Lain-lain
+  '📦','✂️','🎀','🔑','🧳','🛠️','📌','⭐','🎯','🔖',
+];
 const WALLET_ICONS = [
   { id: 'ph-fill ph-wallet', color: '#2ecc87', label: 'Dompet' },
   { id: 'ph-fill ph-bank', color: '#5b8dee', label: 'Bank' },
@@ -1130,7 +1168,7 @@ function renderCatManagerList() {
   const list = customCats[catManagerType];
   document.getElementById('catManagerList').innerHTML = list.map(c => `
     <div class="settings-item" style="margin-bottom:8px; padding:12px; background:var(--bg2);">
-      <div style="display:flex;align-items:center; gap:12px;"><div style="background:${c.color}22; color:${c.color}; width:36px; height:36px; border-radius:8px; display:grid; place-items:center; font-size:20px;"><i class="${c.icon}"></i></div><span style="font-weight:600">${escapeHTML(c.label)}</span></div>
+      <div style="display:flex;align-items:center; gap:12px;"><div style="background:${c.color}22; color:${c.color}; width:36px; height:36px; border-radius:8px; display:grid; place-items:center;">${catIconHTML(c.icon, '20px')}</div><span style="font-weight:600">${escapeHTML(c.label)}</span></div>
       <div><button class="btn btn-ghost" style="padding:6px 10px; font-size:16px;" onclick="openCatEditModal('${c.id}')"><i class="ph-bold ph-pencil-simple"></i></button></div>
     </div>`).join('');
 }
@@ -1179,7 +1217,7 @@ function closeCatEditModal() {
 
 function renderCatPickersUI() {
   document.getElementById('editcat-colors').innerHTML = PRESET_COLORS.map(c => `<div class="color-circle ${c === editCatColor ? 'selected' : ''}" style="background:${c};" onclick="setEditCatColor('${c}')"></div>`).join('');
-  document.getElementById('editcat-icons').innerHTML = PRESET_ICONS.map(i => `<div class="icon-option ${i === editCatIcon ? 'selected' : ''}" onclick="setEditCatIcon('${i}')"><i class="${i}"></i></div>`).join('');
+  document.getElementById('editcat-icons').innerHTML = PRESET_ICONS.map(i => `<div class="icon-option ${i === editCatIcon ? 'selected' : ''}" onclick="setEditCatIcon('${i}')" style="font-size:22px; line-height:1;">${i.startsWith('ph-') ? '<i class="'+i+'"></i>' : i}</div>`).join('');
 }
 function setEditCatColor(c) { editCatColor = c; renderCatPickersUI(); }
 function setEditCatIcon(i) { editCatIcon = i; renderCatPickersUI(); }
@@ -1281,7 +1319,7 @@ function setTxType(type, resetCat = true) {
     const cats = customCats[type];
     document.getElementById('catPicker').innerHTML = cats.map(c => `
       <button class="cat-pick${selectedCat === c.id ? ' selected' : ''}" onclick="selectCat('${c.id}')">
-        <i class="${c.icon}"></i><span class="cat-pick-label">${escapeHTML(c.label)}</span>
+        ${catIconHTML(c.icon)}<span class="cat-pick-label">${escapeHTML(c.label)}</span>
       </button>`).join('') + `
       <button class="cat-pick" style="border: 1px dashed var(--text3); background: transparent;" onclick="openCatEditModalFromTx()">
         <i class="ph-bold ph-plus" style="color: var(--text3);"></i><span class="cat-pick-label" style="color: var(--text3);">Tambah</span>
@@ -1644,7 +1682,7 @@ function openWalletDetailModal(walletId) {
       const isInc = t.type === 'income' || t.type === 'transfer_in';
       const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
       return `<div style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-sm); background: var(--bg2); border: 1px solid var(--border);">
-        <div style="background:${cat.color}22; color:${cat.color}; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 20px;"><i class="${cat.icon}"></i></div>
+        <div style="background:${cat.color}22; color:${cat.color}; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;">${catIconHTML(cat.icon, '20px')}</div>
         <div style="min-width: 0;"><div style="font-size: 14px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text);">${escapeHTML(t.desc)}</div><div style="font-size: 12px; color: var(--text3);">${escapeHTML(cat.label)} • ${dateStr}</div></div>
         <div style="text-align: right;"><div class="tx-amount ${isInc ? 'income' : 'expense'}" style="font-size: 15px;">${amountStr}</div></div>
       </div>`;
@@ -1762,7 +1800,7 @@ function buildTxList(txs) {
     const colorClass = isInc ? 'income' : 'expense';
     const amountStr = (isInc ? '+' : '-') + fmt(t.amount);
     return `<div class="tx-item">
-      <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}"><i class="${cat.icon}"></i></div>
+      <div class="tx-icon" style="background:${cat.color}22; color:${cat.color}">${catIconHTML(cat.icon, '22px')}</div>
       <div class="tx-info"><div class="tx-name">${escapeHTML(t.desc)}</div><div class="tx-cat">${escapeHTML(cat.label)} • <span style="color:${wal.color};font-weight:600;">${escapeHTML(wal.name)}</span> • <span style="opacity:0.6">${dateStr}</span></div></div>
       <div class="tx-right">
         <div class="tx-amount ${colorClass}">${amountStr}</div>
@@ -1923,7 +1961,7 @@ function drawDonut(txs) {
   ctx.beginPath(); ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2); ctx.fillStyle = innerColor; ctx.fill();
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId), pct = Math.round((val / total) * 100);
-    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
+    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${catIconHTML(cat.icon)} ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
   }).join('');
 }
 
@@ -1956,7 +1994,7 @@ function renderBudget() {
   el.innerHTML = entries.map(e => {
     const pct = e.budget > 0 ? Math.min((e.spent / e.budget) * 100, 100) : 0, over = e.budget > 0 && e.spent > e.budget;
     const barColor = over ? 'var(--red)' : pct > 80 ? 'var(--yellow)' : 'var(--green)', sisa = e.budget - e.spent;
-    return `<div class="budget-card"><div class="budget-top"><div><div class="budget-name"><div style="background:${e.cat.color}22; padding:8px; border-radius:10px; color:${e.cat.color}; display:flex;"><i class="${e.cat.icon}"></i></div> ${escapeHTML(e.cat.label)}</div><div class="budget-amounts">Terpakai ${fmt(e.spent)} dari ${e.budget > 0 ? fmt(e.budget) : 'Tanpa Batas'}</div></div><div class="budget-pct-big" style="color:${barColor}">${e.budget > 0 ? Math.round(pct) + '%' : '—'}</div></div>
+    return `<div class="budget-card"><div class="budget-top"><div><div class="budget-name"><div style="background:${e.cat.color}22; padding:8px; border-radius:10px; color:${e.cat.color}; display:flex; align-items:center;">${catIconHTML(e.cat.icon, '18px')}</div> ${escapeHTML(e.cat.label)}</div><div class="budget-amounts">Terpakai ${fmt(e.spent)} dari ${e.budget > 0 ? fmt(e.budget) : 'Tanpa Batas'}</div></div><div class="budget-pct-big" style="color:${barColor}">${e.budget > 0 ? Math.round(pct) + '%' : '—'}</div></div>
       ${e.budget > 0 ? `<div class="budget-bar-bg"><div class="budget-bar" style="width:${pct}%;background:${barColor}; box-shadow: 0 0 10px ${barColor}"></div></div><div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text3); align-items:center;"><span style="color:${over ? 'var(--red)' : 'var(--text2)'}; font-weight:600;">${over ? '⚠️ Defisit ' + fmt(Math.abs(sisa)) : 'Sisa ' + fmt(sisa)}</span><span class="card-action" onclick="deleteBudget('${e.cat.id}')">Hapus Aturan</span></div>` : `<div style="font-size:13px;color:var(--text3); border-top:1px dashed var(--border); padding-top:12px; margin-top:8px;">Hanya ada pengeluaran, budget belum ditentukan. <span class="card-action" style="margin-left:8px;" onclick="openBudgetModalFor('${e.cat.id}')">Set Budget</span></div>`}
     </div>`;
   }).join('');
@@ -1992,7 +2030,7 @@ function renderReport() {
   if (!sorted.length) { catEl.innerHTML = '<div class="empty" style="padding:20px;"><div class="empty-text">Belum ada data</div></div>'; return; }
   catEl.innerHTML = sorted.map(([catId, val]) => {
     const cat = getCat('expense', catId), pct = totalExp > 0 ? Math.round((val / totalExp) * 100) : 0;
-    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span><i class="${cat.icon}" style="color:${cat.color}"></i> ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
+    return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${catIconHTML(cat.icon)} ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
   }).join('');
 }
 
