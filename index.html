@@ -214,7 +214,9 @@
   .budget-bar { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(0.34,1.2,0.64,1); }
   .filter-bar { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
   .filter-bar::-webkit-scrollbar { display: none; }
-  .filter-chip { padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.2s; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0; }
+  .filter-chip { padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all 0.2s; font-family: 'Inter', sans-serif; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .filter-chip i { font-size: 16px; margin: 0; }
+  .filter-chip .chip-text { white-space: nowrap; }
   .filter-chip:hover { border-color: var(--text3); color: var(--text); }
   .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-dim); }
   .search-wrap { position: relative; flex: 1; min-width: 250px; }
@@ -268,6 +270,12 @@
     .topbar-right { width: 100%; justify-content: space-between; }
     .tx-controls { flex-direction: column; align-items: stretch; gap: 16px; }
     .search-wrap { width: 100%; }
+    
+    /* Responsive Filter Chips */
+    .filter-chip { padding: 8px 16px; }
+    .filter-chip:not(.active) .chip-text { display: none; }
+    .filter-chip:not(.active) { padding: 0; width: 36px; height: 36px; border-radius: 50%; gap: 0; }
+
     .tx-item { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 16px; }
     .tx-icon { width: 40px; height: 40px; flex-shrink: 0; font-size: 18px; }
     .tx-info { width: calc(100% - 52px); flex: none; min-width: 0; }
@@ -327,17 +335,17 @@
     </div>
     <div class="nav-section">
       <div class="nav-label">Menu Utama</div>
-      <div class="nav-item active" onclick="navigate('dashboard')"><i class="ph ph-squares-four"></i> Dashboard</div>
-      <div class="nav-item" onclick="navigate('transactions'); setTimeout(()=>setSubTab('tx'),50)"><i class="ph ph-receipt"></i> Transaksi</div>
-      <div class="nav-item" onclick="navigate('transactions'); setTimeout(()=>setSubTab('debt'),50)" style="position:relative;"><i class="ph ph-handshake"></i> Hutang & Piutang<span id="debtSidebarBadge" class="nav-badge" style="display:none;position:static;margin-left:6px;"></span></div>
-      <div class="nav-item" onclick="navigate('budget')"><i class="ph ph-target"></i> Budget</div>
-      <div class="nav-item" onclick="navigate('report')"><i class="ph ph-chart-line-up"></i> Laporan</div>
+      <div class="nav-item active" id="nav-desktop-dashboard" onclick="navigate('dashboard')"><i class="ph ph-squares-four"></i> Dashboard</div>
+      <div class="nav-item" id="nav-desktop-transactions" onclick="navigate('transactions', 'tx')"><i class="ph ph-receipt"></i> Transaksi</div>
+      <div class="nav-item" id="nav-desktop-debt" onclick="navigate('transactions', 'debt')" style="position:relative;"><i class="ph ph-handshake"></i> Hutang & Piutang<span id="debtSidebarBadge" class="nav-badge" style="display:none;position:static;margin-left:6px;"></span></div>
+      <div class="nav-item" id="nav-desktop-budget" onclick="navigate('budget')"><i class="ph ph-target"></i> Budget</div>
+      <div class="nav-item" id="nav-desktop-report" onclick="navigate('report')"><i class="ph ph-chart-line-up"></i> Laporan</div>
     </div>
     <div class="nav-section" style="margin-top: auto;">
       <div class="theme-toggle-wrap" style="margin-bottom: 12px;">
         <div class="theme-toggle-btn" onclick="toggleTheme()"><i class="ph ph-moon" id="themeIcon"></i> <span id="themeText">Dark Mode</span></div>
       </div>
-      <div class="nav-item" onclick="navigate('settings')"><i class="ph ph-gear"></i> Pengaturan</div>
+      <div class="nav-item" id="nav-desktop-settings" onclick="navigate('settings')"><i class="ph ph-gear"></i> Pengaturan</div>
     </div>
   </aside>
 
@@ -403,7 +411,7 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title">Transaksi Terbaru</div><div class="card-action" onclick="navigate('transactions')">Lihat Semua <i class="ph-bold ph-arrow-right"></i></div></div>
+          <div class="card-header"><div class="card-title">Transaksi Terbaru</div><div class="card-action" onclick="navigate('transactions', 'tx')">Lihat Semua <i class="ph-bold ph-arrow-right"></i></div></div>
           <div class="tx-list" id="recentList"></div>
         </div>
       </div>
@@ -419,10 +427,10 @@
           <div class="tx-controls">
             <div class="search-wrap"><i class="ph-bold ph-magnifying-glass search-icon"></i><input class="form-input" placeholder="Cari catatan transaksi..." id="searchInput" oninput="renderTransactions()"></div>
             <div class="filter-bar" style="margin:0;">
-              <button class="filter-chip active" onclick="setFilter('all',this)">Semua</button>
-              <button class="filter-chip" onclick="setFilter('income',this)">Pemasukan</button>
-              <button class="filter-chip" onclick="setFilter('expense',this)">Pengeluaran</button>
-              <button class="filter-chip" onclick="setFilter('transfer',this)">Transfer</button>
+              <button class="filter-chip active" onclick="setFilter('all',this)"><i class="ph-bold ph-squares-four"></i><span class="chip-text">Semua</span></button>
+              <button class="filter-chip" onclick="setFilter('income',this)"><i class="ph-bold ph-download-simple"></i><span class="chip-text">Pemasukan</span></button>
+              <button class="filter-chip" onclick="setFilter('expense',this)"><i class="ph-bold ph-upload-simple"></i><span class="chip-text">Pengeluaran</span></button>
+              <button class="filter-chip" onclick="setFilter('transfer',this)"><i class="ph-bold ph-arrows-left-right"></i><span class="chip-text">Transfer</span></button>
             </div>
           </div>
           <div class="card">
@@ -446,10 +454,10 @@
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;">
             <div class="filter-bar" style="margin:0;flex:1;">
-              <button class="filter-chip active" onclick="setDebtFilter('semua',this)">Semua</button>
-              <button class="filter-chip" onclick="setDebtFilter('hutang',this)">Hutang</button>
-              <button class="filter-chip" onclick="setDebtFilter('piutang',this)">Piutang</button>
-              <button class="filter-chip" onclick="setDebtFilter('lunas',this)">Lunas</button>
+              <button class="filter-chip active" onclick="setDebtFilter('semua',this)"><i class="ph-bold ph-squares-four"></i><span class="chip-text">Semua</span></button>
+              <button class="filter-chip" onclick="setDebtFilter('hutang',this)"><i class="ph-bold ph-hand-pointing"></i><span class="chip-text">Hutang</span></button>
+              <button class="filter-chip" onclick="setDebtFilter('piutang',this)"><i class="ph-bold ph-hand-coins"></i><span class="chip-text">Piutang</span></button>
+              <button class="filter-chip" onclick="setDebtFilter('lunas',this)"><i class="ph-bold ph-check-circle"></i><span class="chip-text">Lunas</span></button>
             </div>
             <button class="btn btn-primary" style="padding:8px 14px;font-size:13px;flex-shrink:0;" onclick="openDebtModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
           </div>
@@ -477,7 +485,7 @@
         </div>
         <div class="grid2">
           <div class="card"><div class="card-header"><div class="card-title">Perbandingan Siklus</div></div><div class="chart-wrap"><canvas id="reportBarChart"></canvas></div></div>
-          <div class="card"><div class="card-header"><div class="card-title">Top 5 Kategori Paling Boros</div></div><div class="cat-list" id="reportCatList"></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">Semua Kategori Pengeluaran</div></div><div class="cat-list" id="reportCatList"></div></div>
         </div>
       </div>
 
@@ -1174,19 +1182,43 @@ function getWalletCurrentBalance(walletId) {
 }
 
 // ─── NAVIGATION ───────────────────────────────────────────────────
-function navigate(page) {
+function navigate(page, subTab = null) {
   currentPage = page;
+  
+  // Bersihkan highlight lama
   document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
-  const mapDesktop = { dashboard: 0, transactions: 1, budget: 2, report: 3, settings: 4 };
-  if(mapDesktop[page] !== undefined) document.querySelectorAll('.sidebar .nav-item')[mapDesktop[page]]?.classList.add('active');
+  
+  // Tambahkan highlight desktop baru menggunakan ID khusus (Menghindari bug index)
+  if (page === 'dashboard') document.getElementById('nav-desktop-dashboard')?.classList.add('active');
+  else if (page === 'transactions') {
+    if (subTab === 'debt' || (subTab === null && currentSubTab === 'debt')) {
+      document.getElementById('nav-desktop-debt')?.classList.add('active');
+    } else {
+      document.getElementById('nav-desktop-transactions')?.classList.add('active');
+    }
+  }
+  else if (page === 'budget') document.getElementById('nav-desktop-budget')?.classList.add('active');
+  else if (page === 'report') document.getElementById('nav-desktop-report')?.classList.add('active');
+  else if (page === 'settings') document.getElementById('nav-desktop-settings')?.classList.add('active');
+
+  // Bersihkan dan atur highlight di navigasi bawah (mobile)
   document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
   const mapMobile = { dashboard: 0, transactions: 1, budget: 3, settings: 4 };
   if(mapMobile[page] !== undefined) document.querySelectorAll('.bottom-nav-item')[mapMobile[page]]?.classList.add('active');
+  
+  // Tampilkan page yang sesuai
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.getElementById('page-' + page)?.classList.add('active');
+  
   const titles = { dashboard: 'Beranda', transactions: 'Riwayat Transaksi', budget: 'Rencana Anggaran', report: 'Laporan Analisis', settings: 'Pengaturan Sistem' };
   document.getElementById('pageTitle').textContent = titles[page];
-  window.scrollTo(0, 0); renderPage();
+  
+  window.scrollTo(0, 0); 
+  
+  // Set tab bagian dalam jika diarahkan (seperti Transaksi -> Hutang/Piutang)
+  if (subTab) setSubTab(subTab);
+
+  renderPage();
   if (page === 'transactions') renderDebtList();
 }
 
@@ -2079,7 +2111,8 @@ function drawDonut(txs) {
   valEl.textContent = valText;
   if(valText.length > 15) valEl.style.fontSize = '12px'; else if(valText.length > 12) valEl.style.fontSize = '14px'; else valEl.style.fontSize = '18px';
   const agg = {}; expenses.forEach(t => { agg[t.category] = (agg[t.category] || 0) + t.amount; });
-  const sorted = Object.entries(agg).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const allSorted = Object.entries(agg).sort((a, b) => b[1] - a[1]);
+  const top5 = allSorted.slice(0, 5);
   const catEl = document.getElementById('catList'), canvas = document.getElementById('donutChart');
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -2096,16 +2129,23 @@ function drawDonut(txs) {
     ctx.beginPath(); ctx.arc(centerX, centerY, outerRadius - 8, 0, Math.PI * 2); ctx.stroke(); return;
   }
   ctx.clearRect(0, 0, SIZE, SIZE); let start = -Math.PI / 2;
-  sorted.forEach(([catId, val]) => {
+  allSorted.forEach(([catId, val]) => {
     const cat = getCat('expense', catId), slice = (val / total) * Math.PI * 2;
     ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.arc(centerX, centerY, outerRadius, start, start + slice); ctx.closePath();
     ctx.fillStyle = cat.color; ctx.fill(); start += slice;
   });
   ctx.beginPath(); ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2); ctx.fillStyle = innerColor; ctx.fill();
-  catEl.innerHTML = sorted.map(([catId, val]) => {
+  
+  let listHTML = top5.map(([catId, val]) => {
     const cat = getCat('expense', catId), pct = Math.round((val / total) * 100);
     return `<div class="cat-item"><div class="cat-row"><div class="cat-name"><span class="cat-dot" style="background:${cat.color}"></span>${catIconHTML(cat.icon)} ${escapeHTML(cat.label)}</div><div class="cat-amount">${fmt(val)}</div></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${pct}%;background:${cat.color}"></div></div></div>`;
   }).join('');
+
+  if (allSorted.length > 5) {
+    listHTML += `<button class="btn btn-ghost" style="width:100%; justify-content:center; margin-top: 8px;" onclick="navigate('report')">Lihat Semua Kategori</button>`;
+  }
+
+  catEl.innerHTML = listHTML;
 }
 
 // ─── TRANSACTIONS PAGE ────────────────────────────────────────────
@@ -2168,7 +2208,7 @@ function renderReport() {
   }, 10);
   const agg = {}; transactions.filter(t => t.type === 'expense').forEach(t => { agg[t.category] = (agg[t.category] || 0) + t.amount; });
   const totalExp = Object.values(agg).reduce((s, v) => s + v, 0);
-  const sorted = Object.entries(agg).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const sorted = Object.entries(agg).sort((a, b) => b[1] - a[1]);
   const catEl = document.getElementById('reportCatList');
   if (!sorted.length) { catEl.innerHTML = '<div class="empty" style="padding:20px;"><div class="empty-text">Belum ada data</div></div>'; return; }
   catEl.innerHTML = sorted.map(([catId, val]) => {
@@ -2510,95 +2550,40 @@ Dibutuhkan: ${fmt(nominal)}`);
 
 function markDebtLunas(debtId) {
   const idx = debts.findIndex(x => x.id === debtId); if (idx === -1) return;
-  const d = debts[idx];
-  if (d.sisaNominal > 0) {
-    const txType = d.type === 'hutang' ? 'expense' : 'income';
-    const txId = Date.now();
-    transactions.unshift({ id: txId, type: txType, amount: d.sisaNominal, category: txType==='expense'?'lainnya_exp':'lainnya_inc', walletId: d.walletId, desc: (d.type==='hutang'?'Lunas hutang ke ':'Lunas piutang dari ')+d.contact, date: new Date().toISOString().split('T')[0], isDebtTx: true, debtId });
-    transactions.sort((a,b)=>new Date(b.date)-new Date(a.date)); save();
-    debtPayments.push({ id:'pay_'+txId, debtId, tanggalBayar: new Date().toISOString().split('T')[0], nominalBayar: d.sisaNominal, walletId: d.walletId, txId });
-    saveDebtPayments();
-  }
-  debts[idx].sisaNominal = 0; debts[idx].status = 'lunas';
-  saveDebts(); closeDebtDetailModal(); renderDebtList();
+  if (!confirm('Anda yakin ingin menandai catatan ini sebagai lunas sepenuhnya?')) return;
+  
+  debts[idx].sisaNominal = 0;
+  debts[idx].status = 'lunas';
+  
+  saveDebts();
+  closeDebtDetailModal();
+  renderDebtList();
   if (currentPage === 'dashboard') renderDashboard();
 }
 
 function deleteDebt(debtId) {
-  openConfirmModal({ icon:'🗑️', title:'Hapus Catatan?', msg:'Catatan ini dan semua transaksi terkait akan dihapus.', okLabel:'Hapus', callback: () => {
-    transactions = transactions.filter(t => t.debtId !== debtId); save();
-    debtPayments = debtPayments.filter(p => p.debtId !== debtId); saveDebtPayments();
-    debts = debts.filter(d => d.id !== debtId); saveDebts();
-    closeDebtDetailModal(); renderDebtList();
-    if (currentPage === 'dashboard') renderDashboard();
-  }});
-}
-
-// ─── EVENT LISTENERS ──────────────────────────────────────────────
-document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-document.getElementById('walletPickerModal').addEventListener('click', function(e) { if (e.target === this) closeWalletPicker(); });
-document.getElementById('allWalletsModal').addEventListener('click', function(e) { if (e.target === this) closeAllWalletsModal(); });
-document.getElementById('budgetModal').addEventListener('click', function(e) { if (e.target === this) closeBudgetModal(); });
-document.getElementById('walletModal').addEventListener('click', function(e) { if (e.target === this) closeWalletModal(); });
-document.getElementById('catManagerModal').addEventListener('click', function(e) { if (e.target === this) closeCatManagerModal(); });
-document.getElementById('catEditModal').addEventListener('click', function(e) { if (e.target === this) closeCatEditModal(); });
-document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
-document.getElementById('welcomeModal').addEventListener('click', function(e) { if (e.target === this) closeWelcomeModal(); });
-document.getElementById('guideModal').addEventListener('click', function(e) { if (e.target === this) closeGuideModal(); });
-document.getElementById('walletReportModal').addEventListener('click', function(e) { if (e.target === this) closeWalletReportModal(); });
-document.getElementById('walletDetailModal').addEventListener('click', function(e) { if (e.target === this) closeWalletDetailModal(); });
-document.getElementById('confirmModal').addEventListener('click', function(e) { if (e.target === this) closeConfirmModal(); });
-document.getElementById('debtModal').addEventListener('click', function(e) { if (e.target === this) closeDebtModal(); });
-document.getElementById('debtDetailModal').addEventListener('click', function(e) { if (e.target === this) closeDebtDetailModal(); });
-document.getElementById('debtPaymentModal').addEventListener('click', function(e) { if (e.target === this) closePaymentModal(); });
-
-
-function migrateIconsToEmoji() {
-  const ICON_MAP = {
-    'ph-fill ph-fork-knife':'🍜','ph-fill ph-car-profile':'🚗','ph-fill ph-shopping-bag':'🛍️',
-    'ph-fill ph-lightbulb':'💡','ph-fill ph-first-aid-kit':'💊','ph-fill ph-film-strip':'🎬',
-    'ph-fill ph-books':'📚','ph-fill ph-package':'📦','ph-fill ph-briefcase':'💼',
-    'ph-fill ph-storefront':'🏪','ph-fill ph-laptop':'💻','ph-fill ph-chart-line-up':'📈',
-    'ph-fill ph-gift':'🎁','ph-fill ph-coins':'🪙','ph-fill ph-house':'🏠',
-    'ph-fill ph-airplane-tilt':'✈️','ph-fill ph-baby':'👶','ph-fill ph-paw-print':'🐾',
-    'ph-fill ph-game-controller':'🎮','ph-fill ph-heart':'❤️','ph-fill ph-wifi':'📶',
-    'ph-fill ph-globe':'🌐','ph-fill ph-monitor':'🖥️','ph-fill ph-printer':'🖨️',
-    'ph-fill ph-gas-pump':'⛽','ph-fill ph-broom':'🧹','ph-fill ph-scissors':'✂️',
-    'ph-fill ph-hammer':'🔨','ph-fill ph-wrench':'🔧','ph-fill ph-paint-brush':'🎨',
-    'ph-fill ph-t-shirt':'👕','ph-fill ph-sneaker':'👟','ph-fill ph-sun':'☀️',
-    'ph-fill ph-moon':'🌙','ph-fill ph-umbrella':'☂️','ph-fill ph-tree':'🌳',
-    'ph-fill ph-flower':'🌸','ph-fill ph-mosque':'🕌','ph-fill ph-church':'⛪',
-    'ph-fill ph-hands-praying':'🙏','ph-fill ph-piggy-bank':'🐷','ph-fill ph-bank':'🏦',
-    'ph-fill ph-receipt':'🧾','ph-fill ph-currency-circle-dollar':'💵',
-    'ph-fill ph-barbell':'🏋️','ph-fill ph-person-simple-run':'🏃',
-    'ph-fill ph-soccer-ball':'⚽','ph-fill ph-music-note':'🎵','ph-fill ph-microphone':'🎤',
-    'ph-fill ph-camera':'📷','ph-fill ph-video-camera':'🎥','ph-fill ph-device-tablet':'📱',
-    'ph-fill ph-plugs':'🔌','ph-fill ph-toilet':'🚿','ph-fill ph-warning-circle':'⚠️',
-  };
-  let changed = false;
-  ['expense','income'].forEach(type => {
-    if (!customCats[type]) return;
-    customCats[type].forEach(cat => {
-      if (cat.icon && ICON_MAP[cat.icon]) { cat.icon = ICON_MAP[cat.icon]; changed = true; }
-    });
+  openConfirmModal({
+    icon: '🗑️',
+    title: 'Hapus Catatan',
+    msg: 'Catatan hutang/piutang ini beserta riwayat pembayarannya akan dihapus secara permanen. Lanjutkan?',
+    callback: () => {
+      debts = debts.filter(x => x.id !== debtId);
+      debtPayments = debtPayments.filter(x => x.debtId !== debtId);
+      
+      saveDebts();
+      saveDebtPayments();
+      closeDebtDetailModal();
+      renderDebtList();
+      if (currentPage === 'dashboard') renderDashboard();
+    }
   });
-  if (changed) { localStorage.setItem('dompet_cats', JSON.stringify(customCats)); }
 }
-migrateIconsToEmoji();
-initTheme();
-document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
-renderDashboard();
-updateDebtBadge();
-checkWelcome();
 
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    if (currentPage === 'dashboard') renderDashboard();
-    if (currentPage === 'report') renderReport();
-  }, 100);
-});
+// ─── INIT APPLICATION ─────────────────────────────────────────────
+checkWelcome();
+initTheme();
+renderPage();
+
 </script>
 </body>
 </html>
