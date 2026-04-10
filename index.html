@@ -2582,6 +2582,7 @@ function deleteDebt(debtId) {
 // ─── INIT APPLICATION ─────────────────────────────────────────────
 checkWelcome();
 initTheme();
+document.getElementById('monthLabel').textContent = getCycleRange(currentMonth).label;
 renderPage();
 
 </script>
