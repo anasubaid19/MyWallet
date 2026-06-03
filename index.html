@@ -696,7 +696,15 @@
 </div>
 
 <!-- MODAL: WALLET PICKER -->
-<div class="modal-overlay" id="walletPickerModal" style="z-index: 1010;">
+<div class="modal-overlay" id="walletPickerModal" style="z-index: 1060;">
+  <div class="modal" style="max-width: 400px; padding: 24px;">
+    <div class="modal-title" style="margin-bottom: 16px;"><span>Pilih Dompet</span><button class="close-modal" onclick="closeWalletPicker()"><i class="ph-bold ph-x"></i></button></div>
+    <div class="settings-list" id="walletPickerList" style="max-height: 60vh; overflow-y: auto; padding-right: 4px;"></div>
+  </div>
+</div>
+
+<!-- MODAL: SEMUA DOMPET -->
+<div class="modal-overlay" id="allWalletsModal" style="z-index: 1060;">
   <div class="modal" style="max-width: 400px; padding: 24px;">
     <div class="modal-title" style="margin-bottom: 16px;"><span>Pilih Dompet</span><button class="close-modal" onclick="closeWalletPicker()"><i class="ph-bold ph-x"></i></button></div>
     <div class="settings-list" id="walletPickerList" style="max-height: 60vh; overflow-y: auto; padding-right: 4px;"></div>
