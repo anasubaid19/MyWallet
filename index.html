@@ -2437,7 +2437,7 @@ function openBudgetModalFor(catId) {
 function renderSavings() {
   const el = document.getElementById('savingList');
   if (!savings.length) {
-    el.innerHTML = `<div class="empty"><span style="font-size:56px;opacity:0.5;">🐷</span><div class="empty-text">Belum ada target tabungan. Buat target baru untuk mulai menabung!</div></div>`;
+    el.innerHTML = `<div class="empty"><span style="font-size:56px;opacity:0.5;">💰</span><div class="empty-text">Belum ada target tabungan. Buat target baru untuk mulai menabung!</div></div>`;
     return;
   }
   el.innerHTML = savings.map(s => {
@@ -2451,7 +2451,7 @@ function renderSavings() {
     return `<div class="saving-card" onclick="openSavingActionModal('${s.id}','add')">
       <div class="progress-ring">
         <svg viewBox="0 0 72 72"><circle class="bg" cx="36" cy="36" r="30"/><circle class="bar" cx="36" cy="36" r="30" stroke="${s.color || '#2ecc87'}" style="stroke-dashoffset:${offset};"/></svg>
-        <div class="progress-ring-center"><div class="progress-ring-icon">${s.icon || '🐷'}</div><div class="progress-ring-pct">${Math.round(pct)}%</div></div>
+        <div class="progress-ring-center"><div class="progress-ring-icon">${s.icon || '💰'}</div><div class="progress-ring-pct">${Math.round(pct)}%</div></div>
       </div>
       <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:16px;margin-bottom:4px;">${escapeHTML(s.name)}</div>
         <div style="font-size:13px;color:var(--text2);">${fmt(balance)} dari ${fmt(s.targetAmount)}</div>
