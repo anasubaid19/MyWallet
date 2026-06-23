@@ -380,7 +380,7 @@
         <button class="topbar-icon-btn" onclick="toggleTheme()" title="Ganti Tema">
           <i id="topbarThemeIcon" class="ph-bold ph-moon" style="font-size: 22px;"></i>
         </button>
-        <button class="btn btn-primary" onclick="openModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
+        <button class="btn btn-primary" onclick="showAddOptionModal()"><i class="ph-bold ph-plus"></i> Tambah</button>
       </div>
     </div>
 
@@ -591,7 +591,7 @@
   <nav class="bottom-nav">
     <div class="bottom-nav-item active" onclick="navigate('dashboard')"><i class="ph-fill ph-squares-four"></i> Beranda</div>
     <div class="bottom-nav-item" onclick="navigate('transactions')" id="nav-catatan" style="position:relative;"><i class="ph-fill ph-receipt"></i> Catatan<span id="debtNavBadge" class="nav-badge" style="display:none;"></span></div>
-    <div class="bottom-nav-item fab" onclick="openModal()"><i class="ph-bold ph-plus"></i></div>
+    <div class="bottom-nav-item fab" onclick="showAddOptionModal()"><i class="ph-bold ph-plus"></i></div>
     <div class="bottom-nav-item" onclick="navigate('budget')"><i class="ph-fill ph-target"></i> Budget</div>
     <div class="bottom-nav-item" onclick="navigate('settings')"><i class="ph-fill ph-gear"></i> Sistem</div>
   </nav>
@@ -981,6 +981,56 @@
     </div>
     <div class="form-group"><label class="form-label">Tanggal Bayar</label><input type="date" class="form-input" id="pay-inp-date"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closePaymentModal()">Batal</button><button class="btn btn-primary" onclick="savePayment()"><i class="ph-bold ph-check"></i> Konfirmasi</button></div>
+  </div>
+</div>
+
+<!-- CAMERA INPUT (hidden) -->
+<input type="file" accept="image/*" capture="environment" id="receiptCameraInput" style="display:none" onchange="processReceiptImage(this.files[0])">
+
+<!-- MODAL: PILIH METODE TAMBAH -->
+<div class="modal-overlay" id="addOptionModal">
+  <div class="modal" style="max-width:360px;align-self:center;border-radius:24px;margin:0 auto;padding:32px 24px;text-align:center;">
+    <div style="font-size:40px;color:var(--accent);margin-bottom:12px;"><i class="ph-fill ph-plus-circle"></i></div>
+    <h3 style="font-size:20px;font-weight:800;margin-bottom:24px;">Tambah Catatan Baru</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div onclick="closeAddOptionModal();openModal()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px;cursor:pointer;transition:0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="font-size:36px;line-height:1;">📝</div>
+        <div style="font-weight:700;font-size:14px;">Catat Manual</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.4;">Isi data transaksi secara langsung</div>
+      </div>
+      <div onclick="closeAddOptionModal();openReceiptScanner()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px 16px;cursor:pointer;transition:0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="font-size:36px;line-height:1;">📸</div>
+        <div style="font-weight:700;font-size:14px;">Foto Struk</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.4;">Struk dibaca AI, data terisi otomatis</div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:20px;" onclick="closeAddOptionModal()">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL: LOADING OCR -->
+<div class="modal-overlay" id="ocrLoadingModal">
+  <div class="modal" style="max-width:300px;align-self:center;border-radius:24px;margin:0 auto;padding:40px 32px;text-align:center;">
+    <div style="font-size:48px;color:var(--accent);margin-bottom:16px;animation:spin 1s linear infinite;"><i class="ph-bold ph-circle-notch"></i></div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Membaca data struk...</div>
+    <div style="font-size:13px;color:var(--text3);">AI sedang mengekstrak informasi dari gambar</div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+</style>
+
+<!-- MODAL: ERROR OCR -->
+<div class="modal-overlay" id="ocrErrorModal">
+  <div class="modal" style="max-width:360px;align-self:center;border-radius:24px;margin:0 auto;padding:32px 24px;text-align:center;">
+    <div style="font-size:48px;color:var(--red);margin-bottom:12px;">😕</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Gagal Membaca Struk</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:24px;line-height:1.6;">AI tidak bisa membaca struk ini. Coba foto ulang dengan pencahayaan lebih baik.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <button class="btn btn-ghost" style="padding:12px;justify-content:center;" onclick="closeOcrErrorModal();openModal()">Catat Manual</button>
+      <button class="btn btn-primary" style="padding:12px;justify-content:center;" onclick="closeOcrErrorModal();openReceiptScanner()">Coba Lagi</button>
+    </div>
   </div>
 </div>
 
@@ -3100,6 +3150,112 @@ function renderPage() {
   else if (currentPage === 'transactions') { renderTransactions(); renderDebtList(); }
   else if (currentPage === 'budget') { renderBudget(); renderSavings(); }
   else if (currentPage === 'report') renderReport();
+}
+
+// ─── AI OCR CONFIG ────────────────────────────────────────────────
+const GEMINI_API_KEY = 'AQ.Ab8RN6K3OrczsZG1CEcNQFQ8ZrStyJrngdfm0uXV14nOiZdivQ';
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
+// ─── FITUR FOTO STRUK (AI OCR) ────────────────────────────────────
+function showAddOptionModal() {
+  document.getElementById('addOptionModal').classList.add('open');
+}
+function closeAddOptionModal() {
+  document.getElementById('addOptionModal').classList.remove('open');
+}
+
+function openReceiptScanner() {
+  document.getElementById('receiptCameraInput').click();
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function showLoadingModal() {
+  document.getElementById('ocrLoadingModal').classList.add('open');
+}
+function hideLoadingModal() {
+  document.getElementById('ocrLoadingModal').classList.remove('open');
+}
+function showOcrErrorModal() {
+  document.getElementById('ocrErrorModal').classList.add('open');
+}
+function closeOcrErrorModal() {
+  document.getElementById('ocrErrorModal').classList.remove('open');
+}
+
+async function processReceiptImage(file) {
+  if (!file) return;
+  const validTypes = ['image/jpeg','image/png','image/webp','image/heic'];
+  if (!validTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp|heic)$/i)) {
+    alert('Format gambar tidak didukung. Gunakan JPG, PNG, atau WebP.');
+    return;
+  }
+  showLoadingModal();
+  try {
+    const base64 = await fileToBase64(file);
+    let data;
+    data = await extractWithGemini(base64, file.type || 'image/jpeg');
+    hideLoadingModal();
+    if (data && data.total) {
+      autoFillForm(data);
+      const toast = document.getElementById('undoToast');
+      const origText = toast.querySelector('span').textContent;
+      toast.querySelector('span').textContent = 'Data struk berhasil dibaca! Periksa & simpan.';
+      toast.querySelector('button').style.display = 'none';
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); toast.querySelector('span').textContent = origText; toast.querySelector('button').style.display = ''; }, 3000);
+    } else {
+      showOcrErrorModal();
+    }
+  } catch (e) {
+    hideLoadingModal();
+    showOcrErrorModal();
+  }
+}
+
+async function extractWithGemini(base64, mimeType) {
+  const body = {
+    contents: [{
+      parts: [
+        { inline_data: { mime_type: mimeType, data: base64 } },
+        { text: "Ekstrak data dari struk belanja Indonesia ini. Kembalikan hanya JSON tanpa markdown, tanpa teks lain: {\"tanggal\":\"YYYY-MM-DD atau null jika tidak terbaca\",\"nama_toko\":\"string atau null\",\"total\":number (angka saja tanpa Rp),\"kategori\":string pilih dari: makan,transport,belanja,tagihan,kesehatan,hiburan,pendidikan,lainnya_exp,\"deskripsi\":\"string singkat\"}. Jika ragu kategori, pakai lainnya_exp." }
+      ]
+    }]
+  };
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + GEMINI_API_KEY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error('Gemini API error: ' + res.status);
+  const json = await res.json();
+  const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  return JSON.parse(cleaned);
+}
+
+function autoFillForm(data) {
+  openModal();
+  if (data.tanggal) {
+    document.getElementById('inp-date').value = data.tanggal;
+  }
+  if (data.total) {
+    document.getElementById('inp-amount').value = data.total.toLocaleString('id-ID');
+  }
+  if (data.deskripsi) {
+    document.getElementById('inp-desc').value = data.deskripsi;
+  }
+  if (data.kategori) {
+    selectedCat = data.kategori;
+    setTxType('expense', false);
+  }
 }
 
 // ─── INIT APPLICATION ─────────────────────────────────────────────
